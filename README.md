@@ -20,8 +20,8 @@ Open http://127.0.0.1:3000. `npm run build` creates the static export in `out/`.
 - `app/globals.css`: visual design and responsive breakpoints.
 - `public/images/`: official logo, supplied-deck portrait extracts and labeled illustrative stock assets from the old site.
 - `research/zunoon-research.md`: source-backed dossier, known conflicts and client checklist.
-- `/research/`: interactive evidence and content review page for the client preview.
+- `research/internal/`: archived research page and source excerpts; not served on the website.
 
 The site intentionally prepares a WhatsApp message instead of claiming to send a backend enquiry. Visitors review and send the message themselves in WhatsApp. No personal information is stored by this site. Membership fees, upcoming events, courses and testimonials are not invented.
 
-Metadata is `noindex` for the client-preview stage. Before official public launch: replace illustrative photos with approved real event images, confirm content/figures/roles, supply privacy language and decide whether the review page remains public.
+Metadata is `noindex` for the client-preview stage. Before official public launch: replace illustrative photos with approved real event images, confirm content/figures/roles, supply privacy language and confirm the final visitor-facing copy.

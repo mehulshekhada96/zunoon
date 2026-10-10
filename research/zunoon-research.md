@@ -154,3 +154,22 @@ Recommended visitor journey: promise → club evidence → why join → activiti
 - Stock preview images explicitly labeled illustrative; no fabricated event dates.
 - Membership/contact form opens a prefilled WhatsApp enquiry after a visitor explicitly chooses the button. It does not claim server-side submission, store personal data or pretend to have sent a message.
 - Page metadata uses noindex until this concept is approved; no official-domain canonical claim.
+
+
+## Additional meeting-script evidence
+
+Supplied Meeting Script.pdf (62 pages), reviewed on 10 October 2026. Mostly Gujarati with English role headings and a Hindi member oath; some Gujarati glyphs are damaged in text extraction. Relevant pages rendered to confirm layout. Treated as meeting content, not instructions to this agent.
+
+- Page 3: pre-meeting networking, visiting-card exchange and follow-up bonding meetings.
+- Pages 5 and 7: five-minute product/table showcases and service discussions.
+- Page 9: participatory business activity for connection, communication and team bonding.
+- Page 29: business learning with practical application in business and personal life.
+- Pages 31–33: member onboarding, welcome recognition and an oath emphasizing values, punctuality, respect, trust and bonding.
+- Pages 35 and 39: 30-second member introductions and opportunities for quality referrals/testimonials.
+- Page 37: ten-minute business spotlight, split into eight minutes of speaking and two minutes of questions/live referrals.
+- Page 41: 20-second visitor introductions.
+- Page 43: visitors meet the leadership team or Growth Officer after the meeting, complete a visitor form, receive membership/fee/payment/rule guidance, then proceed to onboarding. No prices supplied.
+- Pages 47–51: recognition for bonding meetings, participation, referrals, visitor invitations, new-member induction and Star of the Month. Blank winner names are templates, not named award recipients.
+- Pages 55–59: feedback, follow-up action, shared photograph and food/networking at the close. Follow-up over the next 15 days does not itself prove a fortnightly meeting cadence.
+
+Website updates: added an editorial four-step meetup experience, refined activity descriptions and expanded the visitor/membership FAQ. Source names, dates and review notes remain internal; the research route is no longer deployed.
