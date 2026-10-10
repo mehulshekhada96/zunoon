@@ -173,3 +173,13 @@ Supplied Meeting Script.pdf (62 pages), reviewed on 10 October 2026. Mostly Guja
 - Pages 55–59: feedback, follow-up action, shared photograph and food/networking at the close. Follow-up over the next 15 days does not itself prove a fortnightly meeting cadence.
 
 Website updates: added an editorial four-step meetup experience, refined activity descriptions and expanded the visitor/membership FAQ. Source names, dates and review notes remain internal; the research route is no longer deployed.
+
+
+## Instagram review — 10 October 2026 (internal)
+
+Reviewed both profiles and their visible recent post captions through Instagram.
+
+- https://www.instagram.com/zunoonbusinessclub/ — describes itself as a corporate owners club and professional networking community; Bonding Becomes Business; Learn, Connect, Grow; Surat, Gujarat, India. Founder linked as @jainitfinaviya. Recent posts confirm business connections, referrals, collaboration, member welcomes, Beta meetings and Theta conferences. Business enquiry phone +91 8238 8238 81 matches existing website contact. Highlights: Events, Meet up, Festival, Group, News, Leaders.
+- https://www.instagram.com/zunoon_club/ — broader lifestyle community: A Celebration of Life; community, happiness, fun and bonding. Five areas: Health, Social, Sports, Hobbies and Personal Growth. A visible post advertises 5 Life Zones, 25 Core Clubs and 100+ Experiences (marketing claims, not Business Club statistics). Main advertised phone 97121 12110. Visible activities include book reviews and cricket. Profile lists B-314 Pragati IT Park near AR Mall, Surat 394101; a book-review post names a different event venue C1-104.
+- Do not merge lifestyle contact, claims or activities into Business Club offerings without confirming the organizational relationship. Do not treat the Theta conference/visitor prices in dated event posts as permanent membership fees. Do not add past event dates to evergreen page copy.
+- Existing Business Club positioning, founder and enquiry phone align with the business Instagram profile. Lifestyle content can inspire a future distinct community section once scope is confirmed.
