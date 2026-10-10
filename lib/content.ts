@@ -1,9 +1,9 @@
 // Primary source: supplied Theta presentation, 9 October 2026.
 // Keep descriptions editorial and confirm program specifics before launch.
 export const groups = [
- {name:'Alpha',area:'Varachha',symbol:'α'}, {name:'Beta',area:'Pal Adajan',symbol:'β'},
- {name:'Gamma',area:'Vesu',symbol:'γ'}, {name:'Theta',area:'Mota Varachha',symbol:'θ'},
- {name:'Delta',area:'Katargam',symbol:'Δ'},
+ {name:'Alpha',image:'/images/group-alpha.webp',area:'Varachha',symbol:'α'}, {name:'Beta',image:'/images/group-beta.webp',area:'Pal Adajan',symbol:'β'},
+ {name:'Gamma',image:'/images/group-gamma.webp',area:'Vesu',symbol:'γ'}, {name:'Theta',image:'/images/group-theta.webp',area:'Mota Varachha',symbol:'θ'},
+ {name:'Delta',image:'/images/group-delta.webp',area:'Katargam',symbol:'Δ'},
 ];
 export const ventures = [
  {name:'Business Club',eyebrow:'CONNECT & COLLABORATE',description:'A community built around business relationships, knowledge sharing and meaningful referrals.',detail:'Discover business introductions, bonding meetups, group meetups and learning sessions. Speak with the team to find the right group for your business.',icon:'network'},
