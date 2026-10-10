@@ -15,11 +15,6 @@ export const ventures = [
 export const leadership = [
  {name:'Jainit Finaviya',role:'Founder of Zunoon',image:'/images/jainit.webp'},
  {name:'Parth Zala',role:'Regional Chairman · Surat',image:'/images/parth.webp'},
- {name:'Bhavesh Shyani',role:'Theta Chairman',image:'/images/bhavesh.webp'},
- {name:'Suhas Satani',role:'Theta President',image:'/images/suhas.webp'},
- {name:'Heenil Patel',role:'Theta Deputy President',image:'/images/heenil.webp'},
- {name:'Nikunj Miroliya',role:'Theta Finance Officer',image:'/images/nikunj.webp'},
- {name:'Mehul Shekhada',role:'Theta Growth Officer',image:'/images/mehul.webp'},
 ];
 export const members = [
  {name:'Bhavesh Shyani',business:'Fingoal Financial Services',category:'Insurance & investment',page:31},
