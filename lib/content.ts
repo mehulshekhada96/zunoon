@@ -12,8 +12,8 @@ export const clubs:{name:string;local:Words;tag:Words;description:Words;categori
 export const photos=[
  {src:'music',category:'Music',label:['A shared love for music','સંગીત સાથેની યાદગાર પળો','संगीत के साथ यादगार पल'] as Words},
  {src:'outdoors',category:'Outdoors',label:['Good company. Open skies.','મિત્રો સાથે પ્રકૃતિની નજીક','दोस्तों के साथ प्रकृति के करीब'] as Words},
- {src:'celebration',category:'Celebration',label:['Together is a celebration','સાથે મળીને ઉજવણી','साथ मिलकर उत्सव'] as Words},
+ {src:'celebration-clear',category:'Celebration',label:['Together is a celebration','સાથે મળીને ઉજવણી','साथ मिलकर उत्सव'] as Words},
  {src:'singing',category:'Music',label:['A voice. A passion. A community.','ટેલેન્ટને મળે એક મંચ','हुनर को मिले एक मंच'] as Words},
- {src:'community',category:'Community',label:['Connections beyond the everyday','રોજિંદાથી આગળ, નવા જોડાણ','रोज़मर्रा से आगे, नए रिश्ते'] as Words},
- {src:'together',category:'Music',label:['The joy of showing up','સાથે હોવાનો આનંદ','साथ होने का आनंद'] as Words},
+ {src:'group-joy',category:'Community',label:['The joy of making music together','સાથે સંગીત માણવાનો આનંદ','साथ संगीत का आनंद'] as Words},
+ {src:'tabla',category:'Music',label:['Rhythm, passion and participation','તાલ, શોખ અને ભાગીદારી','ताल, शौक और भागीदारी'] as Words},
 ];
