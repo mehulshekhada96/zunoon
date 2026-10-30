@@ -8,3 +8,5 @@
 /* Preserve more of the scene in curated gallery photos. */
 .gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.gallery-photo{aspect-ratio:4/3}.gallery-photo img[src*="tabla"]{object-position:center 56%}.gallery-photo img[src*="celebration-clear"]{object-position:center 42%}.belonging-photo img{object-position:57% center}@media(max-width:550px){.gallery-grid{grid-template-columns:1fr;gap:16px}.gallery-photo,.gallery-photo:first-child{aspect-ratio:4/3}.gallery-photo>span{font-size:13px;padding:18px}}
 .gallery-photo:has(img[src*="tabla"]){background:#171916}.gallery-photo img[src*="tabla"]{object-fit:contain;object-position:center}
+
+.club-scene{margin:0 0 24px}.club-scene img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;border-radius:14px}.club-scene figcaption{font-size:12px;line-height:1.6;margin-top:9px;color:var(--muted,#59625b)}.club-intro:has(.club-scene) .club-large-icon{display:none}
