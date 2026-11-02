@@ -6,6 +6,7 @@ import {clubs,photos,text,Lang,Words} from '@/lib/content';
 import {Purpose,Benefits,Founder,Journey,Questions,Testimonials,WhoCanJoinSection} from '@/components/story-sections';
 import {activityCatalogue} from '@/lib/activities';
 import {membershipHighlights} from '@/lib/details';
+import {trackEvent} from '@/lib/analytics';
 
 const icons=[Heart,Trophy,Handshake,TrendingUp,Palette,Sparkles];
 const wa='https://wa.me/919712112110';
@@ -75,13 +76,25 @@ export default function Home(){
         </nav>
         <div className="header-actions">
           <label className="sr-only" htmlFor="language">Website language</label>
-          <select id="language" value={lang} onChange={e=>setLang(e.target.value as Lang)}>
+          <select
+            id="language"
+            value={lang}
+            onChange={e => {
+              const val = e.target.value as Lang;
+              setLang(val);
+              trackEvent({ action: 'select_language', category: 'Preferences', label: val });
+            }}
+          >
             <option value="mix">EN + ગુ</option>
             <option value="en">English</option>
             <option value="gu">ગુજરાતી</option>
             <option value="hi">हिन्दी</option>
           </select>
-          <a className="button header-join" href="#membership">
+          <a
+            className="button header-join"
+            href="#membership"
+            onClick={() => trackEvent({ action: 'click_cta', category: 'Navigation', label: 'Header Join Button' })}
+          >
             {heading('Join the club','જોડાઓ','जुड़ें')}<ArrowUpRight size={16}/>
           </a>
           <button className="menu-toggle" onClick={()=>setMenu(!menu)} aria-expanded={menu} aria-controls="main-nav" aria-label={menu?'Close navigation':'Open navigation'}>
@@ -112,10 +125,18 @@ export default function Home(){
               )}
             </p>
             <div className="hero-actions">
-              <a className="button" href="#membership">
+              <a
+                className="button"
+                href="#membership"
+                onClick={() => trackEvent({ action: 'click_cta', category: 'Conversion', label: 'Hero Join Button', value: 2100 })}
+              >
                 {heading('Join Zunoon Now · ₹2,100','ઝુનૂન સાથે જોડાઓ · ₹2,100','ज़ुनून से जुड़ें · ₹2,100')}<ArrowUpRight size={18}/>
               </a>
-              <a className="text-link" href="#clubs">
+              <a
+                className="text-link"
+                href="#clubs"
+                onClick={() => trackEvent({ action: 'click_navigation', category: 'Navigation', label: 'Hero Explore Clubs' })}
+              >
                 {heading('Explore Our Clubs','અમારા ક્લબ્સ જુઓ','हमारे क्लब देखें')}<ArrowRight size={17}/>
               </a>
             </div>
@@ -146,7 +167,13 @@ export default function Home(){
           <span className="ribbon-star" aria-hidden="true">✳</span>
           {clubs.map((c, i) => (
             <span key={c.name} className="ribbon-entry">
-              <a href="#clubs" onClick={() => setClub(i)}>
+              <a
+                href="#clubs"
+                onClick={() => {
+                  setClub(i);
+                  trackEvent({ action: 'click_ribbon_club', category: 'Clubs', label: c.name });
+                }}
+              >
                 {c.name}
               </a>
               <span className="ribbon-star" aria-hidden="true">✳</span>
@@ -217,7 +244,10 @@ export default function Home(){
                     aria-controls="club-content"
                     tabIndex={club===i?0:-1}
                     className={club===i?'active':''}
-                    onClick={()=>setClub(i)}
+                    onClick={() => {
+                      setClub(i);
+                      trackEvent({ action: 'view_club_tab', category: 'Clubs', label: c.name });
+                    }}
                     onKeyDown={e=>{
                       if(!['ArrowRight','ArrowLeft','Home','End'].includes(e.key))return;
                       e.preventDefault();
@@ -253,7 +283,13 @@ export default function Home(){
                 <span className="eyebrow">ZUNOON {c.name.toUpperCase()} CLUB</span>
                 <h3>{text(c.tag,lang)}</h3>
                 <p>{text(c.description,lang)}</p>
-                <a className="text-link" target="_blank" rel="noopener noreferrer" href={`${wa}?text=${encodeURIComponent(`Hello! I would like to explore the Zunoon ${c.name} Club activities.`)}`}>
+                <a
+                  className="text-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={`${wa}?text=${encodeURIComponent(`Hello! I would like to explore the Zunoon ${c.name} Club activities.`)}`}
+                  onClick={() => trackEvent({ action: 'whatsapp_lead', category: 'Lead', label: `Club ${c.name} WhatsApp Enquiry` })}
+                >
                   {heading('Explore with us','વધુ જાણો','और जानें')}<ArrowUpRight size={18}/>
                 </a>
               </div>
@@ -302,7 +338,14 @@ export default function Home(){
 
             <div className="gallery-filters">
               {['All','Donation','Volunteering','Music','Outdoors','Celebration','Community'].map((f,i)=>(
-                <button key={f} aria-pressed={filter===f} onClick={()=>setFilter(f)}>
+                <button
+                  key={f}
+                  aria-pressed={filter===f}
+                  onClick={() => {
+                    setFilter(f);
+                    trackEvent({ action: 'filter_gallery', category: 'Gallery', label: f });
+                  }}
+                >
                   {heading(
                     ['All moments','Donation','Volunteering','Music','Outdoors','Celebration','Community'][i],
                     ['બધી પળો','દાન','સેવા','સંગીત','પ્રકૃતિ','ઉજવણી','કમ્યુનિટી'][i],
@@ -314,7 +357,15 @@ export default function Home(){
 
             <div className="gallery-grid">
               {photos.map((p,i)=>({...p,i})).filter(p=>filter==='All'||p.category===filter).map(p=>(
-                <button className="gallery-photo" key={p.src} onClick={()=>setPhoto(p.i)} aria-label={text(p.label,lang)}>
+                <button
+                  className="gallery-photo"
+                  key={p.src}
+                  onClick={() => {
+                    setPhoto(p.i);
+                    trackEvent({ action: 'view_gallery_photo', category: 'Gallery', label: p.src });
+                  }}
+                  aria-label={text(p.label,lang)}
+                >
                   <Image src={`/images/${p.src}.webp`} fill sizes="(max-width:600px) 100vw, 33vw" alt={text(p.label,lang)}/>
                   <span>{text(p.label,lang)}<ArrowUpRight size={20}/></span>
                 </button>
@@ -371,7 +422,13 @@ export default function Home(){
                 ))}
               </ul>
 
-              <a className="button" href={join} target="_blank" rel="noopener noreferrer">
+              <a
+                className="button"
+                href={join}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent({ action: 'whatsapp_lead', category: 'Conversion', label: 'Membership Plan WhatsApp', value: 2100 })}
+              >
                 {heading('Enquire & Join on WhatsApp','વોટ્સએપ દ્વારા જોડાઓ','व्हाट्सएप से जुड़ें')}<ArrowUpRight size={18}/>
               </a>
 
@@ -414,13 +471,30 @@ export default function Home(){
               <span className="promise-tag">🎊 {t('Celebrate Life','સેલિબ્રેટ લાઇફ','जीवन का जश्न')}</span>
             </div>
             <div className="contact-actions">
-              <a className="button light" href="#membership">
+              <a
+                className="button light"
+                href="#membership"
+                onClick={() => trackEvent({ action: 'click_cta', category: 'Conversion', label: 'Contact Join Button', value: 2100 })}
+              >
                 {heading('Join Zunoon Today · ₹2,100','આજે જ જોડાઓ · ₹2,100','आज ही जुड़ें · ₹2,100')}<ArrowUpRight size={18}/>
               </a>
-              <a className="button" style={{background:'#1f2e23',borderColor:'#3a5040'}} href={join} target="_blank" rel="noopener noreferrer">
+              <a
+                className="button"
+                style={{background:'#1f2e23',borderColor:'#3a5040'}}
+                href={join}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent({ action: 'whatsapp_lead', category: 'Conversion', label: 'Contact Section WhatsApp', value: 2100 })}
+              >
                 {heading('Chat on WhatsApp','વોટ્સએપ પર સંપર્ક કરો','व्हाट्सएप पर बात करें')}<ArrowUpRight size={18}/>
               </a>
-              <a className="call" href="tel:+919712112110"><Phone size={17}/>97 121 121 10</a>
+              <a
+                className="call"
+                href="tel:+919712112110"
+                onClick={() => trackEvent({ action: 'phone_call_click', category: 'Lead', label: '+91 97121 12110' })}
+              >
+                <Phone size={17}/>97 121 121 10
+              </a>
             </div>
           </div>
           <span className="contact-flower" aria-hidden="true">✳</span>
@@ -467,7 +541,11 @@ export default function Home(){
       </footer>
 
       {/* FLOATING ACTION BUTTON */}
-      <a className="floating-join" href="#membership">
+      <a
+        className="floating-join"
+        href="#membership"
+        onClick={() => trackEvent({ action: 'click_cta', category: 'Conversion', label: 'Floating Join Button', value: 2100 })}
+      >
         <span>
           {heading('Join Zunoon','ઝુનૂન સાથે જોડાઓ','ज़ुनून से जुड़ें')}
           <small>₹2,100 / {heading('year','વર્ષ','वर्ष')}</small>
