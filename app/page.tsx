@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import Image from 'next/image';
-import {ArrowUpRight,ArrowRight,Menu,X,Heart,Trophy,Handshake,TrendingUp,Palette,Sparkles,Check,Plus,Phone,Instagram,ChevronLeft,ChevronRight} from 'lucide-react';
+import {ArrowUpRight,ArrowRight,Menu,X,Heart,Trophy,Handshake,TrendingUp,Palette,Sparkles,Check,Plus,Phone,Instagram,ChevronLeft,ChevronRight,Languages} from 'lucide-react';
 import {clubs,photos,text,Lang,Words} from '@/lib/content';
 import {Purpose,Benefits,Founder,Journey,Questions,Testimonials,WhoCanJoinSection} from '@/components/story-sections';
 import {activityCatalogue} from '@/lib/activities';
@@ -11,13 +11,22 @@ import {trackEvent} from '@/lib/analytics';
 const icons=[Heart,Trophy,Handshake,TrendingUp,Palette,Sparkles];
 const wa='https://wa.me/919712112110';
 
+const languages: { code: Lang; label: string }[] = [
+  { code: 'mix', label: 'EN + ગુ' },
+  { code: 'en', label: 'English' },
+  { code: 'gu', label: 'ગુજરાતી' },
+  { code: 'hi', label: 'हिन्दी' },
+];
+
 export default function Home(){
   const [lang,setLang]=useState<Lang>('mix');
+  const [langOpen,setLangOpen]=useState(false);
   const [menu,setMenu]=useState(false);
   const [club,setClub]=useState(0);
   const [filter,setFilter]=useState('All');
   const [photo,setPhoto]=useState<number|null>(null);
   const dialog=useRef<HTMLDialogElement>(null);
+  const langDropdownRef=useRef<HTMLDivElement>(null);
   const opener=useRef<HTMLElement|null>(null);
 
   const t=(en:string,gu:string,hi:string)=>text([en,gu,hi],lang);
@@ -34,6 +43,27 @@ export default function Home(){
     document.documentElement.lang=lang==='mix'?'gu':lang;
     localStorage.setItem('zunoon-language',lang);
   },[lang]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent | TouchEvent) {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setLangOpen(false);
+    }
+    if (langOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [langOpen]);
 
   useEffect(()=>{
     if(photo!==null){
@@ -62,10 +92,6 @@ export default function Home(){
   return (
     <>
       <a className="skip" href="#main">Skip to content</a>
-      <div className="announcement">
-        {t('One community. Six clubs. A fuller life.','એક કમ્યુનિટી. છ ક્લબ. જીવનના અનંત અનુભવો.','एक समुदाय. छह क्लब. जीवन के अनगिनत अनुभव.')}
-        <span>SURAT, GUJARAT, INDIA</span>
-      </div>
 
       <header>
         <a href="#" className="brand" aria-label="Zunoon Club home">
@@ -75,21 +101,43 @@ export default function Home(){
           {nav.map(([title,id])=><a key={id} href={`#${id}`} onClick={()=>setMenu(false)}>{title}</a>)}
         </nav>
         <div className="header-actions">
-          <label className="sr-only" htmlFor="language">Website language</label>
-          <select
-            id="language"
-            value={lang}
-            onChange={e => {
-              const val = e.target.value as Lang;
-              setLang(val);
-              trackEvent({ action: 'select_language', category: 'Preferences', label: val });
-            }}
-          >
-            <option value="mix">EN + ગુ</option>
-            <option value="en">English</option>
-            <option value="gu">ગુજરાતી</option>
-            <option value="hi">हिन्दी</option>
-          </select>
+          <div className="lang-switcher-wrapper" ref={langDropdownRef}>
+            <button
+              type="button"
+              className="lang-icon-btn"
+              onClick={() => setLangOpen(prev => !prev)}
+              aria-expanded={langOpen}
+              aria-haspopup="listbox"
+              aria-label="Select website language"
+              title="Select language"
+            >
+              <Languages size={18} aria-hidden="true" />
+            </button>
+            {langOpen && (
+              <div className="lang-dropdown" role="listbox" aria-label="Website language">
+                {languages.map((opt) => {
+                  const isSelected = lang === opt.code;
+                  return (
+                    <button
+                      key={opt.code}
+                      type="button"
+                      role="option"
+                      aria-selected={isSelected}
+                      className={`lang-option ${isSelected ? 'selected' : ''}`}
+                      onClick={() => {
+                        setLang(opt.code);
+                        setLangOpen(false);
+                        trackEvent({ action: 'select_language', category: 'Preferences', label: opt.code });
+                      }}
+                    >
+                      <span className="lang-option-label">{opt.label}</span>
+                      {isSelected && <Check size={16} className="lang-check" aria-hidden="true" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
           <a
             className="button header-join"
             href="#membership"
