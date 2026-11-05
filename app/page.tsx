@@ -80,11 +80,11 @@ export default function Home(){
 
   const nav=[
     [heading('Our story','અમારી વાત','हमारी कहानी'),'about'],
-    [heading('Six clubs','છ ક્લબ','छह क्लब'),'clubs'],
-    [heading('Community','સભ્યો','समुदाय'),'who-can-join'],
+    [heading('Club','ક્લબ','क्लब'),'clubs'],
     [heading('Experiences','અનુભવો','अनुभव'),'testimonials'],
-    [heading('Life at Zunoon','ઝુનૂનની પળો','ज़ुनून के पल'),'gallery'],
-    [heading('Membership','મેમ્બરશિપ','सदस्यता'),'membership']
+    [heading('Community','કમ્યુનિટી','समुदाय'),'community'],
+    [heading('Gallery','ગેલેરી','गैलरी'),'gallery'],
+    [heading('Contact us','સંપર્ક કરો','संपर्क करें'),'contact']
   ];
 
   const join=`${wa}?text=${encodeURIComponent('Hello Zunoon Club! I would like to know more about annual membership and activities.')}`;
@@ -141,9 +141,9 @@ export default function Home(){
           <a
             className="button header-join"
             href="#membership"
-            onClick={() => trackEvent({ action: 'click_cta', category: 'Navigation', label: 'Header Join Button' })}
+            onClick={() => trackEvent({ action: 'click_cta', category: 'Navigation', label: 'Header Get Membership Button' })}
           >
-            {heading('Join the club','જોડાઓ','जुड़ें')}<ArrowUpRight size={16}/>
+            {heading('Get Membership','મેમ્બરશિપ મેળવો','सदस्यता लें')}<ArrowUpRight size={16}/>
           </a>
           <button className="menu-toggle" onClick={()=>setMenu(!menu)} aria-expanded={menu} aria-controls="main-nav" aria-label={menu?'Close navigation':'Open navigation'}>
             {menu?<X/>:<Menu/>}</button>
@@ -188,10 +188,6 @@ export default function Home(){
                 {heading('Explore Our Clubs','અમારા ક્લબ્સ જુઓ','हमारे क्लब देखें')}<ArrowRight size={17}/>
               </a>
             </div>
-            <div className="hero-note">
-              <span className="little-flower">✳</span>
-              <span>{t('Live better. Connect deeper. Grow together. Celebrate life.','લાઇવ બેટર. કનેક્ટ ડીપર. ગ્રો ટુગેધર. સેલિબ્રેટ લાઇફ.','बेहतर जिएँ. गहराई से जुड़ें. साथ बढ़ें. जीवन का जश्न मनाएँ.')}</span>
-            </div>
           </div>
           <div className="hero-art">
             <div className="hero-photo">
@@ -210,34 +206,11 @@ export default function Home(){
           </div>
         </section>
 
-        {/* CLUB RIBBON */}
-        <div className="club-ribbon" aria-label="Six Zunoon clubs">
-          <span className="ribbon-star" aria-hidden="true">✳</span>
-          {clubs.map((c, i) => (
-            <span key={c.name} className="ribbon-entry">
-              <a
-                href="#clubs"
-                onClick={() => {
-                  setClub(i);
-                  trackEvent({ action: 'click_ribbon_club', category: 'Clubs', label: c.name });
-                }}
-              >
-                {c.name}
-              </a>
-              <span className="ribbon-star" aria-hidden="true">✳</span>
-            </span>
-          ))}
-        </div>
-
         {/* SECTION 02: ABOUT ZUNOON */}
         <section className="wrap section about" id="about">
           <div>
-            <span className="eyebrow">01 / THE ZUNOON WAY</span>
-            <h2>
-              {heading('Life is bigger','જીવન માત્ર','ज़िंदगी सिर्फ')}<br/>
-              {heading('than your routine.','રૂટિનથી આગળ છે.','रूटीन से आगे है.')}
-            </h2>
-            <div className="about-caption">HUMAN 360° GROWTH &<br/>LIFE EXPERIENCE COMMUNITY</div>
+            <h2>{heading('Our Story','અમારી વાત','हमारी कहानी')}</h2>
+            <div className="about-caption">HUMAN 360° GROWTH &amp; LIFE EXPERIENCE COMMUNITY</div>
           </div>
           <div className="about-copy">
             <p className="lead">
@@ -554,7 +527,6 @@ export default function Home(){
         <div className="footer-top">
           <div>
             <a href="#"><Image src="/images/logo.webp" alt="Zunoon — A Celebration of Life" width={220} height={74}/></a>
-            <p style={{marginTop:'12px'}}>{t('Live better. Connect deeper. Grow together. Celebrate life.','લાઇવ બેટર. કનેક્ટ ડીપર. ગ્રો ટુગેધર. સેલિબ્રેટ લાઇફ.','बेहतर जिएँ. गहराई से जुड़ें. साथ बढ़ें. जीवन का जश्न मनाएँ.')}</p>
           </div>
           <div className="footer-contact">
             <strong>{t('Zunoon Club Community','ઝુનૂન ક્લબ કમ્યુનિટી','ज़ुनून क्लब समुदाय')}</strong><br/>

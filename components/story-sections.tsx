@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import {Lang,Words,text} from '@/lib/content';
 import {benefits,values,valuesDetail,journey,faqs,questionsWhy,testimonials,whoCanJoin} from '@/lib/details';
 import {Heart,Handshake,Trophy,TrendingUp,Palette,Sparkles,BookOpen,Users,Plus,ArrowUpRight,Quote,Compass} from 'lucide-react';
@@ -24,30 +25,36 @@ export function Purpose({lang}:{lang:Lang}){
   const {t,h,w}=copy(lang);
   return (
     <section className="purpose wrap" id="purpose">
-      <div className="purpose-grid">
-        <article>
-          <span className="eyebrow">OUR VISION</span>
-          <h3>{h('A fuller life, for everyone.','સૌ માટે સમૃદ્ધ જીવન.','सबके लिए समृद्ध जीवन.')}</h3>
-          <p>{t('A community where everyone finds opportunities to live, connect, learn, grow and celebrate. Success includes health, happiness and strong relationships, alongside professional achievement.','દરેક વ્યક્તિને જોડાવા, શીખવા, આગળ વધવા અને જીવનને સુંદર રીતે અનુભવવાની તકો મળે. સફળતામાં કરિયર સાથે સ્વાસ્થ્ય, ખુશી અને મજબૂત સંબંધો પણ એટલાં જ મહત્વના છે.','ऐसा समुदाय जहाँ सभी को जुड़ने, सीखने, बढ़ने और जीवन का आनंद लेने के अवसर मिलें. सफलता में करियर के साथ सेहत, खुशी और मजबूत रिश्ते भी ज़रूरी हैं.')}</p>
-        </article>
-        <article>
-          <span className="eyebrow">OUR MISSION</span>
-          <h3>{h('Make room for what matters.','મહત્વની બાબતોને સમય આપો.','ज़रूरी बातों को समय दें.')}</h3>
-          <p>{t('Bring health, social contribution, sports, hobbies, personal growth and celebration together through shared activities, workshops and experiences.','હેલ્થ, સમાજ સેવા, સ્પોર્ટ્સ, શોખ, વ્યક્તિગત વિકાસ અને ઉજવણીને એક્ટિવિટીઝ, વર્કશોપ અને અનુભવો દ્વારા એક પ્લેટફોર્મ પર જોડવા.','सेहत, समाज सेवा, खेल, शौक, व्यक्तिगत विकास और उत्सव को गतिविधियों, वर्कशॉप और अनुभवों से एक मंच पर जोड़ना.')}</p>
-        </article>
-        <article className="values-card">
-          <span className="eyebrow">OUR VALUES</span>
-          <h3>{h('Six guiding principles.','છ મુખ્ય મૂલ્યો.','छह मुख्य मूल्य.')}</h3>
-          <div className="values-points-grid">
-            {values.map((v, i) => (
-              <div key={v[0]} className="value-point">
-                <span className="value-point-num">0{i + 1}</span>
-                <span className="value-point-name">{lang === 'mix' ? v[0] : w(v)}</span>
-              </div>
-            ))}
-          </div>
-        </article>
+      {/* 1. VISION & MISSION IN 1 SECTION */}
+      <div className="section-head-simple">
+        <h2>{h('Our Vision and Mission','અમારું વિઝન અને મિશન','हमारा विज़न और मिशन')}</h2>
       </div>
+      <div className="vm-single-box">
+        <span className="eyebrow">OUR VISION & MISSION</span>
+        <h3>{h('A fuller life, for everyone.','સૌ માટે સમૃદ્ધ જીવન.','सबके लिए समृद्ध जीवन.')}</h3>
+        <p className="vm-single-text">
+          {t(
+            'Our vision and mission is to make room for what truly matters—bringing health, meaningful connections, sports, hobbies, personal growth and shared celebrations together on a single community platform, so everyone has the opportunity to live fully, grow continuously, and celebrate life beyond routine.',
+            'ઝુનૂનનું વિઝન અને મિશન દરેક વ્યક્તિને પોતાના વ્યસ્ત જીવનમાંથી મહત્વની બાબતો માટે સમય કાઢી સ્વાસ્થ્ય, સામાજિક સંબંધો, સ્પોર્ટ્સ, શોખ, વ્યક્તિગત વિકાસ અને ઉજવણીને એક મંચ પર સાથે જોડવાનું છે — જ્યાં સફળતા માત્ર કરિયર પૂરતી સીમિત ન રહેતાં, દરેક વ્યક્તિને જોડાવા, શીખવા, આગળ વધવા અને જીવનને સુંદર રીતે અનુભવવાની તક મળે.',
+            'ज़ुनून का विज़न और मिशन हर व्यक्ति को अपनी व्यस्त दिनचर्या से ज़रूरी बातों के लिए समय निकालकर सेहत, सामाजिक रिश्तों, खेल, शौक, व्यक्तिगत विकास और उत्सव को एक साझा मंच पर जोड़ना है — ताकि सफलता केवल करियर तक सीमित न रहे, बल्कि हर किसी को जुड़ने, सीखने, आगे बढ़ने और एक संपूर्ण जीवन जीने का अवसर मिले.'
+          )}
+        </p>
+      </div>
+
+      <section className="values-gallery" id="values" aria-labelledby="values-heading">
+        <div className="values-gallery-heading">
+          <span className="eyebrow">OUR VALUES</span>
+          <h3 id="values-heading">{h('Six guiding principles.','છ મુખ્ય મૂલ્યો.','छह मुख्य मूल्य.')}</h3>
+        </div>
+        <div className="values-image-grid">
+          {values.map((v, i) => (
+            <figure key={v[0]} className="value-image-card">
+              <Image src={`/images/value-0${i+1}-${v[0].toLowerCase()}.webp`} alt={`AI-generated scene representing ${v[0].toLowerCase()}`} fill sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" />
+              <figcaption><span className="value-image-number">0{i+1}</span><span className="value-image-title">{lang==='mix'?v[0]:w(v)}</span></figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
 
       <div className="life-model">
         <strong>{h('Five life zones. One shared celebration.','પાંચ લાઇફ ઝોન. સાથે મળીને ઉજવણી.','पाँच लाइफ ज़ोन. साथ मिलकर उत्सव.')}</strong>
