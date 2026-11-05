@@ -8,3 +8,12 @@ Zunoon Club*/
 "Zunoon Club "/
 
 
+
+.env*
+!.env.example
+.dev.vars*
+.sites-runtime/
+.wrangler/
+.vinext/
+dist/
+outputs/
