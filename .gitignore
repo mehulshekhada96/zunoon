@@ -9,11 +9,11 @@ Zunoon Club*/
 
 
 
+# Local credentials, recovery copy, and generated runtime files
 .env*
-!.env.example
 .dev.vars*
+outputs/
 .sites-runtime/
 .wrangler/
 .vinext/
 dist/
-outputs/

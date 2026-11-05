@@ -2,14 +2,12 @@
 import {useEffect,useRef,useState} from 'react';
 import Image from 'next/image';
 import {ArrowUpRight,ArrowRight,Menu,X,Heart,Trophy,Handshake,TrendingUp,Palette,Sparkles,Check,Plus,Phone,Instagram,ChevronLeft,ChevronRight,Languages} from 'lucide-react';
-import {clubs,photos as originalPhotos,text,Lang,Words} from '@/lib/content';
+import {clubs,photos,text,Lang,Words} from '@/lib/content';
 import {Purpose,Benefits,Founder,Journey,Questions,Testimonials,WhoCanJoinSection} from '@/components/story-sections';
 import {activityCatalogue} from '@/lib/activities';
 import {membershipHighlights} from '@/lib/details';
 import {trackEvent} from '@/lib/analytics';
 
-import {useMedia} from '@/lib/use-media';
-const photoUrl=(src:string)=>src.startsWith('https://')?src:`/images/${src}.webp`;
 const icons=[Heart,Trophy,Handshake,TrendingUp,Palette,Sparkles];
 const wa='https://wa.me/919712112110';
 
@@ -21,8 +19,6 @@ const languages: { code: Lang; label: string }[] = [
 ];
 
 export default function Home(){
-  const media=useMedia();
-  const photos=[...originalPhotos.map(p=>({...p,alt:''})),...media.gallery.map(p=>({src:p.url,category:'Community',label:[p.title,p.title,p.title] as Words,alt:p.alt}))];
   const [lang,setLang]=useState<Lang>('mix');
   const [langOpen,setLangOpen]=useState(false);
   const [menu,setMenu]=useState(false);
@@ -391,7 +387,7 @@ export default function Home(){
                   }}
                   aria-label={text(p.label,lang)}
                 >
-                  <Image src={photoUrl(p.src)} fill sizes="(max-width:600px) 100vw, 33vw" alt={p.alt||text(p.label,lang)}/>
+                  <Image src={`/images/${p.src}.webp`} fill sizes="(max-width:600px) 100vw, 33vw" alt={text(p.label,lang)}/>
                   <span>{text(p.label,lang)}<ArrowUpRight size={20}/></span>
                 </button>
               ))}
@@ -588,7 +584,7 @@ export default function Home(){
         {photo!==null&&(
           <>
             <div className="lightbox">
-              <Image src={photoUrl(photos[photo].src)} fill sizes="90vw" alt={photos[photo].alt||text(photos[photo].label,lang)}/>
+              <Image src={`/images/${photos[photo].src}.webp`} fill sizes="90vw" alt={text(photos[photo].label,lang)}/>
             </div>
             <div className="lightbox-footer">
               <p>{text(photos[photo].label,lang)}</p>

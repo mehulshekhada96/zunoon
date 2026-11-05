@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import {useMedia} from '@/lib/use-media';
 import {Lang,Words,text} from '@/lib/content';
 import {benefits,values,valuesDetail,journey,faqs,questionsWhy,testimonials,whoCanJoin} from '@/lib/details';
 import {Heart,Handshake,Trophy,TrendingUp,Palette,Sparkles,BookOpen,Users,Plus,ArrowUpRight,Quote,Compass} from 'lucide-react';
@@ -23,7 +22,6 @@ function copy(lang:Lang){
 }
 
 export function Purpose({lang}:{lang:Lang}){
-  const media=useMedia();
   const {t,h,w}=copy(lang);
   return (
     <section className="purpose wrap" id="purpose">
@@ -51,7 +49,7 @@ export function Purpose({lang}:{lang:Lang}){
         <div className="values-image-grid">
           {values.map((v, i) => (
             <figure key={v[0]} className="value-image-card">
-              <Image src={media.values[v[0].toLowerCase()]?.url||`/images/value-0${i+1}-${v[0].toLowerCase()}.webp`} alt={media.values[v[0].toLowerCase()]?.alt||`AI-generated scene representing ${v[0].toLowerCase()}`} fill sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" />
+              <Image src={`/images/value-0${i+1}-${v[0].toLowerCase()}.webp`} alt={`AI-generated scene representing ${v[0].toLowerCase()}`} fill sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" />
               <figcaption><span className="value-image-number">0{i+1}</span><span className="value-image-title">{lang==='mix'?v[0]:w(v)}</span></figcaption>
             </figure>
           ))}
