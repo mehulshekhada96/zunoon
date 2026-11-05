@@ -1,9 +1,10 @@
 import Image from 'next/image';
+import {useMedia} from '@/lib/use-media';
+import {defaultValuesMedia, defaultWhyMedia, defaultFounderMedia, whySlots, communitySlots, defaultCommunityMedia} from '@/lib/media';
 import {Lang,Words,text} from '@/lib/content';
-import {benefits,values,valuesDetail,journey,faqs,questionsWhy,testimonials,whoCanJoin} from '@/lib/details';
-import {Heart,Handshake,Trophy,TrendingUp,Palette,Sparkles,BookOpen,Users,Plus,ArrowUpRight,Quote,Compass} from 'lucide-react';
+import {values,valuesDetail,journey,faqs,questionsWhy,testimonials,whoCanJoin} from '@/lib/details';
+import {Heart,TrendingUp,Sparkles,BookOpen,Users,Plus,ArrowUpRight,Quote,Compass} from 'lucide-react';
 
-const benefitIcons=[Heart,Users,Trophy,TrendingUp,BookOpen,Palette,Handshake,Sparkles];
 const valueIconsMap = {
   users: Users,
   compass: Compass,
@@ -22,6 +23,7 @@ function copy(lang:Lang){
 }
 
 export function Purpose({lang}:{lang:Lang}){
+  const media=useMedia();
   const {t,h,w}=copy(lang);
   return (
     <section className="purpose wrap" id="purpose">
@@ -41,64 +43,73 @@ export function Purpose({lang}:{lang:Lang}){
         </p>
       </div>
 
-      <section className="values-gallery" id="values" aria-labelledby="values-heading">
-        <div className="values-gallery-heading">
-          <span className="eyebrow">OUR VALUES</span>
-          <h3 id="values-heading">{h('Six guiding principles.','છ મુખ્ય મૂલ્યો.','छह मुख्य मूल्य.')}</h3>
-        </div>
+      <div className="vm-single-box values-box" id="values" aria-labelledby="values-heading">
+        <span className="eyebrow">OUR VALUES</span>
+        <h3 id="values-heading">{h('Six guiding principles.','છ મુખ્ય મૂલ્યો.','छह मुख्य मूल्य.')}</h3>
         <div className="values-image-grid">
-          {values.map((v, i) => (
-            <figure key={v[0]} className="value-image-card">
-              <Image src={`/images/value-0${i+1}-${v[0].toLowerCase()}.webp`} alt={`AI-generated scene representing ${v[0].toLowerCase()}`} fill sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw" />
-              <figcaption><span className="value-image-number">0{i+1}</span><span className="value-image-title">{lang==='mix'?v[0]:w(v)}</span></figcaption>
-            </figure>
-          ))}
+          {values.map(v => {
+            const key = v[0].toLowerCase();
+            const item = media.values[key] || defaultValuesMedia[key];
+            return (
+              <figure key={v[0]} className="value-image-card">
+                {item?.url && (
+                  <Image
+                    src={item.url}
+                    alt={item.alt || `${v[0]} value`}
+                    fill
+                    sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw"
+                  />
+                )}
+                <figcaption><span className="value-image-title">{lang==='mix'?v[0]:w(v)}</span></figcaption>
+              </figure>
+            );
+          })}
         </div>
-      </section>
+      </div>
     </section>
   );
 }
 
 export function Benefits({lang}:{lang:Lang}){
+  const media=useMedia();
   const {t,h,w}=copy(lang);
   return (
     <section className="benefits-section" id="why-join">
       <div className="wrap section">
         <div className="section-top">
           <div>
-            <span className="eyebrow">WHY ZUNOON</span>
-            <h2>{h('For every side','તમારા જીવનના','आपके जीवन के')}<br/><em>{h('of your life.','દરેક પાસા માટે.','हर पहलू के लिए.')}</em></h2>
+            <span className="eyebrow">WHY TO JOIN ZUNOON?</span>
+            <h2>{h('For every side of your life.','તમારા જીવનના દરેક પાસા માટે.','आपके जीवन के हर पहलू के लिए.')}</h2>
           </div>
-          <p>{t('Busy days can leave little room for health, friends and the things you love. Zunoon brings people and opportunities together, so you can make time for more.','કામ અને જવાબદારીઓમાં હેલ્થ, મિત્રો અને શોખ પાછળ રહી જાય છે? ઝુનૂન તમને લોકો અને તકો સાથે જોડે છે, જેથી જીવનના દરેક પાસાને સમય આપી શકો.','काम और ज़िम्मेदारियों में सेहत, दोस्त और शौक पीछे रह जाते हैं? ज़ुनून लोगों और अवसरों से जोड़ता है, ताकि जीवन के हर पहलू को समय दे सकें.')}</p>
         </div>
         <div className="why-questions">
           <span className="eyebrow questions-eyebrow">{h('DOES THIS SOUND FAMILIAR?','શું તમારી સાથે પણ આવું થાય છે?','क्या आपके साथ भी ऐसा होता है?')}</span>
           <div className="questions-grid">
-            {questionsWhy.map((item,idx)=>(
-              <div key={idx} className="question-card">
-                <span className="question-idx">0{idx+1} · {lang==='mix'?item.area[0]:w(item.area)}</span>
-                <p>{w(item.q)}</p>
-              </div>
-            ))}
-          </div>
-          <div className="solution-banner">
-            <strong>{h('THE ZUNOON SOLUTION','ઝુનૂન સમાધાન','ज़ुनून समाधान')}</strong>
-            <p>{t('Instead of searching for these in different scattered places, Zunoon brings health, fitness, connections, hobbies, growth and celebration together on a single structured community platform. One Community. Multiple Interests. Endless Experiences.','જીવનના આ તમામ પાસાઓને અલગ-અલગ જગ્યાએ શોધવાને બદલે, Zunoon તમને એક જ Community Platform પર જોડાવાની તક આપે છે. One Community. Multiple Interests. Endless Experiences.','जीवन के इन सभी पहलुओं को अलग-अलग तलाशने के बजाय, ज़ुनून आपको एक ही समुदाय में जोड़ने का अवसर देता है. एक समुदाय. अनेक रुचियाँ. अनगिनत अनुभव.')}</p>
+            {questionsWhy.map((item,idx)=>{
+              const slot = whySlots[idx];
+              const img = media.why?.[slot] || defaultWhyMedia[slot];
+              return (
+                <div key={idx} className="question-card">
+                  {img?.url && (
+                    <div className="question-image-wrap">
+                      <Image
+                        src={img.url}
+                        alt={img.alt || (lang==='mix'?item.area[0]:w(item.area))}
+                        fill
+                        sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw"
+                      />
+                      <div className="question-image-gradient" />
+                    </div>
+                  )}
+                  <div className="question-card-body">
+                    <span className="question-idx">{lang==='mix'?item.area[0]:w(item.area)}</span>
+                    <p>{w(item.q)}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
-        <div className="benefit-grid">
-          {benefits.map((b,i)=>{
-            const Icon=benefitIcons[i];
-            return (
-              <article key={b.title[0]}>
-                <Icon size={25} strokeWidth={1.4}/>
-                <h3>{lang==='mix'?b.title[0]:w(b.title)}</h3>
-                <p>{w(b.body)}</p>
-              </article>
-            );
-          })}
-        </div>
-        <p className="benefits-note">{t('Membership opens participation opportunities across the clubs. Activity schedules, eligibility and any additional charges are shared separately.','મેમ્બરશિપ વિવિધ ક્લબમાં ભાગ લેવાની તકો આપે છે. એક્ટિવિટીનો સમય, પાત્રતા અને વધારાના ચાર્જ અલગથી જણાવાય છે.','सदस्यता क्लब की गतिविधियों में भाग लेने के अवसर देती है. समय, पात्रता और अतिरिक्त शुल्क अलग से बताए जाते हैं.')}</p>
       </div>
     </section>
   );
@@ -106,23 +117,40 @@ export function Benefits({lang}:{lang:Lang}){
 
 export function WhoCanJoinSection({lang}:{lang:Lang}){
   const {t,h,w}=copy(lang);
+  const media=useMedia();
   return (
     <section className="wrap section who-section" id="community">
       <div className="section-top">
         <div>
           <span className="eyebrow">ZUNOON IS FOR EVERYONE</span>
-          <h2>{h('There is a place','અહીં સૌના માટે','यहाँ सबके लिए')}<br/><em>{h('for you here.','એક જગ્યા છે.','एक जगह है.')}</em></h2>
+          <h2>{h('There is a place ','અહીં સૌના માટે ','यहाँ सबके लिए ')}<em>{h('for you here.','એક જગ્યા છે.','एक जगह है.')}</em></h2>
         </div>
-        <p>{t('Zunoon is not limited to any single profession, business or age group. If you wish to connect, learn and enjoy new life experiences, you belong here.','ઝુનૂન કોઈ એક ઉંમર, વ્યવસાય કે ક્ષેત્ર પૂરતું સીમિત નથી. જીવનમાં કંઈક નવું શીખવાની, માણવાની અને આગળ વધવાની ઇચ્છા ધરાવતા દરેક માટે આ કમ્યુનિટી છે.','ज़ुनून किसी खास उम्र या पेशे तक सीमित नहीं है. नया सीखने, आनंद लेने और जीवन को गहराई से जीने की चाहत रखने वाले सभी का यहाँ स्वागत है.')}</p>
       </div>
       <div className="who-grid">
-        {whoCanJoin.map((item,idx)=>(
-          <div key={idx} className="who-card">
-            <span className="who-num">0{idx+1}</span>
-            <h3>{lang==='mix'?item.role[0]:w(item.role)}</h3>
-            <p>{w(item.description)}</p>
-          </div>
-        ))}
+        {whoCanJoin.map((item,idx)=>{
+          const slot = communitySlots[idx];
+          const img = media.community?.[slot] || defaultCommunityMedia[slot];
+          return (
+            <div key={idx} className="who-card">
+              {img?.url && (
+                <div className="who-image-wrap">
+                  <Image
+                    src={img.url}
+                    alt={img.alt || (lang==='mix'?item.role[0]:w(item.role))}
+                    fill
+                    sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 25vw"
+                    className="who-card-img"
+                  />
+                  <div className="who-image-gradient" />
+                </div>
+              )}
+              <div className="who-card-body">
+                <h3>{lang==='mix'?item.role[0]:w(item.role)}</h3>
+                <p>{w(item.description)}</p>
+              </div>
+            </div>
+          );
+        })}
       </div>
       <div className="who-banner">
         <p><strong>{h('Because life has no single definition.','જીવનની કોઈ એક વ્યાખ્યા નથી.','जीवन की कोई एक परिभाषा नहीं होती.')}</strong> {t('Everyone has the right to learn, enjoy, discover their passions and move forward in life.','દરેક વ્યક્તિને જીવનમાં કંઈક નવું શીખવાનો, માણવાનો અને પોતાની પસંદગીથી આગળ વધવાનો અધિકાર છે.','हर किसी को सीखने, आनंद लेने और जीवन के हर पहलू में आगे बढ़ने का अधिकार है.')}</p>
@@ -133,32 +161,49 @@ export function WhoCanJoinSection({lang}:{lang:Lang}){
 
 export function Founder({lang}:{lang:Lang}){
   const {t,h}=copy(lang);
+  const media=useMedia();
+  const founderImg = media.founder || defaultFounderMedia;
   return (
     <section className="founder-section wrap section" id="founder">
-      <div className="founder-profile">
-        <div>
-          <span className="eyebrow">{h('THE VISION BEHIND ZUNOON','ઝુનૂન પાછળનો વિચાર','ज़ुनून के पीछे की सोच')}</span>
-          <h2>Jainit Finaviya</h2>
-          <p className="founder-role">{h('Founder · Zunoon Club','સ્થાપક · ઝુનૂન ક્લબ','संस्थापक · ज़ुनून क्लब')}</p>
-        </div>
-        <div className="founder-year">
-          <span className="founder-year-num">2006</span>
-          <span className="founder-year-label">{h('Year the journey began','યાત્રા શરૂ થયાનું વર્ષ','यात्रा की शुरुआत का वर्ष')}</span>
-        </div>
-        <div className="founder-badge-motto">
-          <span>{h('One Community · Infinite Experiences','એક કમ્યુનિટી · અનંત અનુભવો','एक समुदाय · अनगिनत अनुभव')}</span>
-        </div>
-      </div>
-      <div className="founder-story">
+      <div className="founder-header">
         <span className="eyebrow">{h('MEET OUR FOUNDER','અમારા સ્થાપક','हमारे संस्थापक')}</span>
-        <h3>{h('Growth beyond achievement.','સફળતાથી આગળનો વિકાસ.','उपलब्धियों से आगे का विकास.')}</h3>
-        <p>{t('Jainit Finaviya began the Zunoon journey in 2006 with a vision of a community where people can grow across different areas of life. His outlook brings health, relationships, knowledge, creativity, contribution and happiness into the same conversation.','વર્ષ 2006થી ઝુનૂનની યાત્રા શરૂ કરનાર જૈનિત ફિનાવિયાનો વિચાર એવી કમ્યુનિટી બનાવવાનો છે જ્યાં લોકો જીવનના વિવિધ ક્ષેત્રોમાં વિકસી શકે. તેમની દૃષ્ટિમાં હેલ્થ, સંબંધો, જ્ઞાન, સર્જનાત્મકતા, સમાજ સેવા અને ખુશીનો સમાવેશ થાય છે.','2006 में ज़ुनून की यात्रा शुरू करने वाले जैनित फिनाविया की दृष्टि ऐसा समुदाय बनाने की है जहाँ लोग जीवन के विभिन्न क्षेत्रों में विकसित हों. इसमें सेहत, रिश्ते, ज्ञान, रचनात्मकता, समाज सेवा और खुशी शामिल हैं.')}</p>
-        <blockquote>
-          <span className="eyebrow">{h('FOUNDER’S MESSAGE','સ્થાપકનો સંદેશ','संस्थापक का संदेश')}</span>
-          <p>{t('“I believe true success in life cannot be measured only by money or professional achievement. A healthy body, peaceful mind, strong relationships, continuous learning and beautiful experiences are important parts of success too. Zunoon is my effort to bring all of these together in one community.”','“મારું માનવું છે કે જીવનની સાચી સફળતા માત્ર પૈસા કે Professional Achievementથી માપી શકાતી નથી. એક Healthy Body, Peaceful Mind, Strong Relationships, Continuous Learning અને Beautiful Experiences પણ જીવનની સફળતાના મહત્વપૂર્ણ ભાગ છે. Zunoon એ આ તમામ બાબતોને એક Communityમાં જોડવાનો મારો પ્રયાસ છે.”','“मेरा मानना है कि जीवन की सच्ची सफलता केवल पैसे या पेशेवर उपलब्धियों से नहीं मापी जा सकती. स्वस्थ शरीर, शांत मन, मजबूत रिश्ते, निरंतर सीखना और सुंदर अनुभव भी सफलता के महत्वपूर्ण हिस्से हैं. ज़ुनून इन सबको एक समुदाय में जोड़ने का मेरा प्रयास है.”')}</p>
-          <cite>— Jainit Finaviya</cite>
-        </blockquote>
-        <p className="founder-note">{t('Connect, learn, grow and celebrate life together.','ચાલો, સાથે જોડાઈએ, સાથે શીખીએ, સાથે વિકાસ કરીએ અને જીવનની દરેક પળને ઉજવીએ.','आइए साथ जुड़ें, सीखें, बढ़ें और जीवन के हर पल का जश्न मनाएँ.')}</p>
+        <h2>{h('Growth beyond achievement.','સફળતાથી આગળનો વિકાસ.','उपलब्धियों से आगे का विकास.')}</h2>
+      </div>
+      <div className="founder-grid">
+        <div className="founder-profile">
+          <div className="founder-photo-container">
+            <Image
+              src={founderImg.url}
+              alt={founderImg.alt || 'Jainit Finaviya — Founder'}
+              fill
+              sizes="(max-width: 768px) 240px, 260px"
+              className="founder-photo-img"
+            />
+            <div className="founder-photo-gradient" />
+            <div className="founder-photo-overlay-info">
+              <span className="founder-photo-name">Jainit Finaviya</span>
+              <span className="founder-photo-tag">{h('Founder · Zunoon Club','સ્થાપક · ઝુનૂન ક્લબ','संस्थापक · ज़ुनून क्लब')}</span>
+            </div>
+          </div>
+        </div>
+        <div className="founder-story">
+          <p className="founder-lead-text">{t('Jainit Finaviya began the Zunoon journey in 2006 with a vision of a community where people can grow across different areas of life. His outlook brings health, relationships, knowledge, creativity, contribution and happiness into the same conversation.','વર્ષ 2006થી ઝુનૂનની યાત્રા શરૂ કરનાર જૈનિત ફિનાવિયાનો વિચાર એવી કમ્યુનિટી બનાવવાનો છે જ્યાં લોકો જીવનના વિવિધ ક્ષેત્રોમાં વિકસી શકે. તેમની દૃષ્ટિમાં હેલ્થ, સંબંધો, જ્ઞાન, સર્જનાત્મકતા, સમાજ સેવા અને ખુશીનો સમાવેશ થાય છે.','2006 में ज़ुनून की यात्रा शुरू करने वाले जैनित फिनाविया की दृष्टि ऐसा समुदाय बनाने की है जहाँ लोग जीवन के विभिन्न क्षेत्रों में विकसित हों. इसमें सेहत, रिश्ते, ज्ञान, रचनात्मकता, समाज सेवा और खुशी शामिल हैं.')}</p>
+          <blockquote>
+            <span className="eyebrow">{h('FOUNDER’S MESSAGE','સ્થાપકનો સંદેશ','संस्थापक का संदेश')}</span>
+            <p>{t('“I believe true success in life cannot be measured only by money or professional achievement. A healthy body, peaceful mind, strong relationships, continuous learning and beautiful experiences are important parts of success too. Zunoon is my effort to bring all of these together in one community.”','“મારું માનવું છે કે જીવનની સાચી સફળતા માત્ર પૈસા કે Professional Achievementથી માપી શકાતી નથી. એક Healthy Body, Peaceful Mind, Strong Relationships, Continuous Learning અને Beautiful Experiences પણ જીવનની સફળતાના મહત્વપૂર્ણ ભાગ છે. Zunoon એ આ તમામ બાબતોને એક Communityમાં જોડવાનો મારો પ્રયાસ છે.”','“मेरा मानना है कि जीवन की सच्ची सफलता केवल पैसे या पेशेवर उपलब्धियों से नहीं मापी जा सकती. स्वस्थ शरीर, शांत मन, मजबूत रिश्ते, निरंतर सीखना और सुंदर अनुभव भी सफलता के महत्वपूर्ण हिस्से हैं. ज़ुनून इन सबको एक समुदाय में जोड़ने का मेरा प्रयास है.”')}</p>
+            <cite>— Jainit Finaviya</cite>
+          </blockquote>
+          <p className="founder-note">{t('Connect, learn, grow and celebrate life together.','ચાલો, સાથે જોડાઈએ, સાથે શીખીએ, સાથે વિકાસ કરીએ અને જીવનની દરેક પળને ઉજવીએ.','आइए साथ जुड़ें, सीखें, बढ़ें और जीवन के हर पल का जश्न मनाएँ.')}</p>
+          <div className="founder-meta-row">
+            <div className="founder-year">
+              <span className="founder-year-num">2006</span>
+              <span className="founder-year-label">{h('Year the journey began','યાત્રા શરૂ થયાનું વર્ષ','यात्रा की शुरुआत का वर्ष')}</span>
+            </div>
+            <div className="founder-badge-motto">
+              <span>{h('One Community · Infinite Experiences','એક કમ્યુનિટી · અનંત અનુભવો','एक समुदाय · अनगिनत अनुभव')}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -170,10 +215,9 @@ export function Testimonials({lang}:{lang:Lang}){
     <section className="testimonials-section wrap section" id="testimonials">
       <div className="section-top">
         <div>
-          <span className="eyebrow">04 / MEMBER EXPERIENCES</span>
-          <h2>{h('Don’t just hear about it.','વાતોથી આગળ વધીને,','सिर्फ बातों में नहीं.')}<br/><em>{h('Experience Zunoon.','અનુભવ કરો ઝુનૂન.','अनुभव करें ज़ुनून.')}</em></h2>
+          <span className="eyebrow">MEMBER EXPERIENCES</span>
+          <h2>{h('Don’t just hear about it. ','વાતોથી આગળ વધીને, ','सिर्फ बातों में नहीं. ')}<em>{h('Experience Zunoon.','અનુભવ કરો ઝુનૂન.','अनुभव करें ज़ुनून.')}</em></h2>
         </div>
-        <p>{t('Reflections from community members across health, sports, growth, hobbies and celebrations.','હેલ્થ, ગ્રોથ, સ્પોર્ટ્સ, હોબી અને સેલિબ્રેશન સાથે જોડાયેલા સભ્યોના વાસ્તવિક અનુભવો.','स्वास्थ्य, विकास, खेल, शौक और उत्सव से जुड़े सदस्यों के अनुभव.')}</p>
       </div>
       <div className="testimonials-grid">
         {testimonials.map((item,idx)=>(
@@ -202,9 +246,8 @@ export function Journey({lang}:{lang:Lang}){
       <div className="section-top">
         <div>
           <span className="eyebrow">HOW ZUNOON WORKS</span>
-          <h2>{h('Your next chapter,','તમારી નવી શરૂઆત,','आपकी नई शुरुआत,')}<br/><em>{h('one step at a time.','એક એક પગલે.','एक-एक कदम से.')}</em></h2>
+          <h2>{h('Your next chapter, ','તમારી નવી શરૂઆત, ','आपकी नई शुरुआत, ')}<em>{h('one step at a time.','એક એક પગલે.','एक-एक कदम से.')}</em></h2>
         </div>
-        <p>{t('Become an active part of a community built around shared interests.','સમાન રુચિઓ ધરાવતી કમ્યુનિટીનો સક્રિય ભાગ બનો.','साझा रुचियों वाले समुदाय का सक्रिय हिस्सा बनें.')}</p>
       </div>
       <ol className="journey-grid">
         {journey.map((s,i)=>(
@@ -225,7 +268,7 @@ export function Questions({lang}:{lang:Lang}){
     <section className="wrap section faq" id="faq">
       <div>
         <span className="eyebrow">GOOD TO KNOW</span>
-        <h2>{h('A few questions,','થોડા પ્રશ્નો,','कुछ सवाल,')}<br/><em>{h('before you join.','જોડાતા પહેલાં.','जुड़ने से पहले.')}</em></h2>
+        <h2>{h('A few questions, ','થોડા પ્રશ્નો, ','कुछ सवाल, ')}<em>{h('before you join.','જોડાતા પહેલાં.','जुड़ने से पहले.')}</em></h2>
         <a className="text-link faq-contact" href="https://wa.me/919712112110" target="_blank" rel="noopener noreferrer">
           {h('Ask us on WhatsApp','WhatsApp પર પૂછો','WhatsApp पर पूछें')}<ArrowUpRight size={18}/>
         </a>

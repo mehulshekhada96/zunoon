@@ -1,155 +1,123 @@
-// Complete activity catalogue from the supplied Zunoon Club document.
+// Complete activity catalogue matching exact Zunoon Club specifications.
 export const activityCatalogue: string[][][] = [
+  // 0: Health Club
   [
     [
       "Morning Walking",
       "Fast Walking",
       "Warm-up & Body Movement",
       "Stretching & Yoga",
-      "Pranayam & Meditation",
-      "Sunrise Meetup",
-      "Early Morning Meetup",
-      "6 AM Challenge",
-      "Morning Motivation Session",
-      "Weekend Nature Walk"
+      "Pranayam & Meditation"
     ],
     [
       "Group Workout",
       "Aerobics",
       "Functional Exercise",
       "Fitness Challenges",
-      "Outdoor Workout",
-      "Group Exercise Sessions",
-      "Fitness Awareness Sessions"
+      "Outdoor Workout"
     ],
     [
       "Healthy Diet Awareness",
       "Nutrition Sessions",
       "Healthy Food Activities",
       "Diet Planning",
-      "Healthy Cooking Activities",
-      "Healthy Breakfast Meet",
-      "Food Awareness Sessions",
-      "Nutrition Expert Sessions"
+      "Healthy Cooking Activities"
     ],
     [
-      "Healthy Lifestyle Sessions",
+      "Healthy Lifestyle",
       "Sleep Awareness",
       "Health Check-up Activities",
       "Stress Management",
-      "Wellness Workshops",
-      "Self-Care Sessions",
-      "Lifestyle Management",
-      "Personal Wellness Challenges"
+      "Wellness Workshops"
     ],
     [
       "Meditation",
       "Breathing Exercises",
       "Gratitude Practice",
       "Visualization",
-      "Mind Relaxation",
-      "Pranayama",
-      "Mindfulness Practice",
-      "Relaxation Sessions"
+      "Mind Relaxation"
     ]
   ],
+
+  // 1: Sports Club
   [
     [
       "Friendly Cricket Matches",
       "Box Cricket",
       "Cricket Tournaments",
       "Team Challenges",
-      "Cricket Events",
-      "Weekend Cricket",
-      "Member Cricket Matches"
+      "Cricket Events"
     ],
     [
       "Chess",
       "Carrom",
       "Table Tennis",
       "Foosball",
-      "Board Games",
-      "Indoor Tournaments",
-      "Puzzle Games"
+      "Board Games"
     ],
     [
       "Football",
       "Volleyball",
       "Badminton",
       "Kabaddi",
-      "Tug of War",
-      "Group Sports",
-      "Outdoor Competitions"
+      "Tug of War"
     ],
     [
       "Team Competitions",
       "Individual Games",
       "Family Sports",
       "Fun Sports",
-      "Sports Competition",
-      "Awards & Recognition",
-      "Kids Games",
-      "Team Challenges"
+      "Awards & Recognition"
     ],
     [
       "Trekking",
       "Cycling",
       "Hiking",
       "Camping",
-      "Adventure Challenges",
-      "Nature Trails",
-      "Outdoor Trips",
-      "Group Adventure Activities"
+      "Adventure Challenges"
     ]
   ],
+
+  // 2: Social Club
   [
     [
       "Food Donation",
       "Clothes Donation",
       "Educational Material",
       "Blood Donation Camps",
-      "Emergency Support",
-      "Festival Donation Drives",
-      "Educational Support Drives"
+      "Emergency Support"
     ],
     [
       "Volunteer Drives",
       "Community Service",
       "Social Awareness Campaigns",
       "Community Projects",
-      "Volunteer Activities",
-      "Public Awareness Programs",
-      "Group Service Activities"
+      "Volunteer Activities"
     ],
     [
       "Tree Plantation",
       "Cleanliness Drives",
       "Water Conservation",
       "Plastic-Free Activities",
-      "Nature Awareness",
-      "Recycling Activities",
-      "Green Campaigns",
-      "Nature Walks"
+      "Nature Awareness"
     ],
     [
       "Needy Family Support",
       "Student Support",
       "Senior Citizen Support",
       "Emergency Assistance",
-      "Community Help",
-      "Educational Assistance",
-      "Family Support Initiatives"
+      "Community Help"
     ],
     [
       "Social Support Network",
       "Education Support",
       "Medical Support Initiatives",
       "Women & Child Support",
-      "Member-to-Member Support",
-      "Community Support Initiatives",
-      "Awareness Programs"
+      "Member-to-Member Support"
     ]
   ],
+
+  // 3: Growth Club
   [
     [
       "Business Strategy",
@@ -157,29 +125,21 @@ export const activityCatalogue: string[][][] = [
       "Sales",
       "Finance",
       "Leadership",
-      "Entrepreneurship",
-      "Business Planning",
-      "Business Development Workshops"
+      "Entrepreneurship"
     ],
     [
       "Parenting Sessions",
       "Child Communication",
       "Education Awareness",
       "Career Guidance",
-      "Personality Development",
-      "Creative Activities",
-      "Leadership Activities",
-      "Parent-Child Sessions"
+      "Personality Development"
     ],
     [
       "Business Mentoring",
       "Career Mentoring",
       "Leadership Mentoring",
       "One-to-One Guidance",
-      "Expert Mentorship",
-      "Experience Sharing",
-      "Knowledge Sessions",
-      "Mentor Meetups"
+      "Expert Mentorship"
     ],
     [
       "Communication Skills",
@@ -187,9 +147,7 @@ export const activityCatalogue: string[][][] = [
       "Digital Skills",
       "Leadership Skills",
       "Financial Literacy",
-      "Technology & AI Skills",
-      "Personality Development",
-      "Professional Skills Workshops"
+      "Technology & AI Skills"
     ],
     [
       "Goal Setting",
@@ -197,20 +155,18 @@ export const activityCatalogue: string[][][] = [
       "Confidence Building",
       "Emotional Intelligence",
       "Habit Building",
-      "Leadership Development",
-      "Self Improvement",
-      "Motivation Sessions"
+      "Leadership Development"
     ]
   ],
+
+  // 4: Hobby Club
   [
     [
       "Team Games",
       "Funny Challenges",
       "Movie Day",
       "Fun Competitions",
-      "Ice-Breaker Activities",
-      "Group Challenges",
-      "Entertainment Games"
+      "Ice-Breaker Activities"
     ],
     [
       "Photography",
@@ -218,9 +174,7 @@ export const activityCatalogue: string[][][] = [
       "Public Speaking",
       "Art Skills",
       "Music Skills",
-      "Digital Skills",
-      "Creative Learning",
-      "Skill Development Workshops"
+      "Digital Skills"
     ],
     [
       "Singing",
@@ -228,49 +182,40 @@ export const activityCatalogue: string[][][] = [
       "Writing",
       "Reading",
       "Acting",
-      "Gardening",
-      "Creative Expression",
-      "Passion Meetups"
+      "Gardening"
     ],
     [
       "Music Sessions",
       "Karaoke",
       "Game Nights",
       "Talent Shows",
-      "Fun Sessions",
-      "Antakshari",
-      "Open Mic",
-      "Musical Activities"
+      "Fun Sessions"
     ],
     [
       "Painting",
       "Drawing",
       "DIY Activities",
       "Handmade Products",
-      "Creative Workshops",
-      "Art & Craft Sessions",
-      "Handmade Creations"
+      "Creative Workshops"
     ]
   ],
+
+  // 5: Celebration Club
   [
     [
-      "Diwali Celebration",
-      "Navratri Celebration",
-      "Holi Celebration",
-      "Uttarayan Celebration",
-      "Janmashtami Celebration",
-      "Cultural Festivals",
-      "Festival Get-Togethers",
-      "Traditional Celebrations"
+      "Diwali",
+      "Navratri",
+      "Holi",
+      "Uttarayan",
+      "Janmashtami",
+      "Cultural Festivals"
     ],
     [
       "Business Achievement",
       "Professional Achievement",
       "Personal Achievement",
       "Awards & Recognition",
-      "Member Success Stories",
-      "Milestone Celebrations",
-      "Achievement Appreciation"
+      "Member Success Stories"
     ],
     [
       "New Beginning",
@@ -278,26 +223,21 @@ export const activityCatalogue: string[][][] = [
       "New Home",
       "Marriage",
       "Family Milestones",
-      "Special Life Moments",
-      "New Journey Celebration"
+      "Special Life Moments"
     ],
     [
       "Member Birthday",
       "Family Birthday",
       "Birthday Surprise",
       "Group Birthday Celebration",
-      "Birthday Recognition",
-      "Birthday Get-Togethers",
-      "Special Birthday Moments"
+      "Birthday Recognition"
     ],
     [
       "Personal Milestones",
       "Anniversary",
       "Success Celebration",
       "Special Memories",
-      "Member Appreciation",
-      "Personal Achievements",
-      "Special Moments"
+      "Member Appreciation"
     ]
   ]
 ];

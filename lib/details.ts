@@ -51,16 +51,6 @@ export const questionsWhy: {area: Words; q: Words}[] = [
   }
 ];
 
-export const benefits:{title:Words;body:Words}[]=[
- {title:['Healthy lifestyle','સ્વસ્થ જીવનશૈલી','स्वस्थ जीवनशैली'],body:['Make room for walking, fitness, nutrition and a calmer mind.','વોકિંગ, ફિટનેસ, પોષણ અને મનની શાંતિ માટે સમય કાઢો.','वॉकिंग, फिटनेस, पोषण और मन की शांति के लिए समय निकालें.']},
- {title:['Meaningful connections','અર્થપૂર્ણ સંબંધો','अर्थपूर्ण रिश्ते'],body:['Meet people beyond your everyday circle and build lasting friendships.','રોજિંદા વર્તુળથી આગળ નવા લોકોને મળો અને મિત્રતા વિકસાવો.','अपने रोज़मर्रा के दायरे से बाहर लोगों से मिलें और दोस्ती बढ़ाएँ.']},
- {title:['Sports & fun','રમતો અને આનંદ','खेल और आनंद'],body:['Find company for games, outdoor adventures and friendly competition.','રમતો, આઉટડોર એડવેન્ચર અને ફ્રેન્ડલી કોમ્પિટિશન માટે સાથી મેળવો.','खेलों, आउटडोर एडवेंचर और मैत्रीपूर्ण प्रतियोगिता के लिए साथी पाएँ.']},
- {title:['Personal growth','વ્યક્તિગત વિકાસ','व्यक्तिगत विकास'],body:['Develop confidence, useful skills and habits through shared learning.','સાથે શીખીને આત્મવિશ્વાસ, ઉપયોગી સ્કિલ્સ અને સારી ટેવો વિકસાવો.','साथ सीखकर आत्मविश्वास, उपयोगी कौशल और अच्छी आदतें विकसित करें.']},
- {title:['Professional learning','પ્રોફેશનલ લર્નિંગ','पेशेवर सीख'],body:['Explore business seminars, mentoring and professional development.','બિઝનેસ સેમિનાર, મેન્ટરિંગ અને પ્રોફેશનલ ડેવલપમેન્ટમાં જોડાઓ.','बिज़नेस सेमिनार, मेंटरिंग और पेशेवर विकास से जुड़ें.']},
- {title:['Creativity & passion','સર્જનાત્મકતા અને શોખ','रचनात्मकता और शौक'],body:['Give your talent a place through music, art, cooking and creative workshops.','સંગીત, આર્ટ, કુકિંગ અને ક્રિએટિવ વર્કશોપ દ્વારા તમારી ટેલેન્ટને તક આપો.','संगीत, कला, कुकिंग और क्रिएटिव वर्कशॉप में अपने हुनर को मौका दें.']},
- {title:['Social contribution','સમાજમાં યોગદાન','समाज में योगदान'],body:['Turn your wish to help into donation, volunteering and nature care.','મદદ કરવાની ઇચ્છાને દાન, સેવા અને પ્રકૃતિની સંભાળ દ્વારા સાકાર કરો.','मदद की इच्छा को दान, सेवा और प्रकृति की देखभाल से साकार करें.']},
- {title:['Celebrations & memories','ઉજવણી અને યાદો','उत्सव और यादें'],body:['Share festivals, birthdays, achievements and meaningful life moments.','તહેવારો, જન્મદિવસ, સફળતા અને જીવનની ખાસ પળો સાથે માણો.','त्योहार, जन्मदिन, उपलब्धियाँ और जीवन के खास पल साथ मनाएँ.']}
-];
 export const values:Words[]=[['Connect','જોડાઓ','जुड़ें'],['Experience','અનુભવો','अनुभव करें'],['Learn','શીખો','सीखें'],['Grow','વિકસો','बढ़ें'],['Contribute','યોગદાન આપો','योगदान दें'],['Celebrate','ઉજવો','जश्न मनाएँ']];
 
 export interface ValueCardItem {

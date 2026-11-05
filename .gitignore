@@ -17,3 +17,5 @@ outputs/
 .wrangler/
 .vinext/
 dist/
+
+!.env.example

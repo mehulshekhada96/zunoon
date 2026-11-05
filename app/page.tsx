@@ -1,13 +1,16 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import Image from 'next/image';
-import {ArrowUpRight,ArrowRight,Menu,X,Heart,Trophy,Handshake,TrendingUp,Palette,Sparkles,Check,Plus,Phone,Instagram,ChevronLeft,ChevronRight,Languages} from 'lucide-react';
-import {clubs,photos,text,Lang,Words} from '@/lib/content';
+import {ArrowUpRight,ArrowRight,Menu,X,Heart,Trophy,Handshake,TrendingUp,Palette,Sparkles,Check,Plus,Phone,Instagram,ChevronLeft,ChevronRight,ChevronDown,Languages} from 'lucide-react';
+import {clubs,photos as originalPhotos,text,Lang,Words} from '@/lib/content';
 import {Purpose,Benefits,Founder,Journey,Questions,Testimonials,WhoCanJoinSection} from '@/components/story-sections';
 import {activityCatalogue} from '@/lib/activities';
 import {membershipHighlights} from '@/lib/details';
 import {trackEvent} from '@/lib/analytics';
 
+import {useMedia} from '@/lib/use-media';
+import {clubSlots, defaultClubsMedia} from '@/lib/media';
+const photoUrl=(src:string)=>src.startsWith('https://')?src:`/images/${src}.webp`;
 const icons=[Heart,Trophy,Handshake,TrendingUp,Palette,Sparkles];
 const wa='https://wa.me/919712112110';
 
@@ -19,20 +22,91 @@ const languages: { code: Lang; label: string }[] = [
 ];
 
 export default function Home(){
+  const media=useMedia();
+  const allPhotos = media.gallery.length > 0
+    ? media.gallery.map(p => ({
+        id: p.id,
+        src: p.url,
+        category: p.category || 'Community',
+        alt: p.alt || ''
+      }))
+    : originalPhotos.map((p, idx) => ({
+        id: `orig-${idx}`,
+        src: photoUrl(p.src),
+        category: p.category,
+        alt: ''
+      }));
+
+  const defaultSections = ['Donation', 'Volunteering', 'Music', 'Outdoors', 'Celebration', 'Community'];
+  const activeSections = [
+    'All',
+    ...Array.from(
+      new Set([
+        ...(media.gallerySections && media.gallerySections.length > 0
+          ? media.gallerySections
+          : defaultSections),
+        ...allPhotos.map(p => p.category)
+      ])
+    )
+  ];
+
   const [lang,setLang]=useState<Lang>('mix');
   const [langOpen,setLangOpen]=useState(false);
   const [menu,setMenu]=useState(false);
   const [club,setClub]=useState(0);
+  const [openActivity,setOpenActivity]=useState<number>(0);
   const [filter,setFilter]=useState('All');
   const [photo,setPhoto]=useState<number|null>(null);
   const dialog=useRef<HTMLDialogElement>(null);
   const langDropdownRef=useRef<HTMLDivElement>(null);
   const opener=useRef<HTMLElement|null>(null);
 
+  const touchStartX=useRef<number|null>(null);
+  const touchEndX=useRef<number|null>(null);
+
+  const filteredPhotos = filter === 'All' ? allPhotos : allPhotos.filter(p => p.category === filter);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchEndX.current = null;
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = () => {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+    const deltaX = touchStartX.current - touchEndX.current;
+    if (deltaX > 45) {
+      setPhoto(prev => (prev === null ? null : (prev + 1) % filteredPhotos.length));
+    } else if (deltaX < -45) {
+      setPhoto(prev => (prev === null ? null : (prev + filteredPhotos.length - 1) % filteredPhotos.length));
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
   const t=(en:string,gu:string,hi:string)=>text([en,gu,hi],lang);
   const heading=(en:string,gu:string,hi:string)=>lang==='mix'?en:t(en,gu,hi);
   const c=clubs[club];
   const Icon=icons[club];
+
+  useEffect(()=>{
+    if(photo===null)return;
+    function onKey(e:KeyboardEvent){
+      if(e.key==='ArrowRight'||e.key==='ArrowDown'){
+        e.preventDefault();
+        setPhoto(prev=>(prev===null?null:(prev+1)%filteredPhotos.length));
+      }else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){
+        e.preventDefault();
+        setPhoto(prev=>(prev===null?null:(prev+filteredPhotos.length-1)%filteredPhotos.length));
+      }else if(e.key==='Escape'){
+        e.preventDefault();
+        setPhoto(null);
+      }
+    }
+    window.addEventListener('keydown',onKey);
+    return()=>window.removeEventListener('keydown',onKey);
+  },[photo,filteredPhotos.length]);
 
   useEffect(()=>{
     const saved=localStorage.getItem('zunoon-language');
@@ -83,7 +157,7 @@ export default function Home(){
     [heading('Club','ક્લબ','क्लब'),'clubs'],
     [heading('Experiences','અનુભવો','अनुभव'),'testimonials'],
     [heading('Community','કમ્યુનિટી','समुदाय'),'community'],
-    [heading('Gallery','ગેલેરી','गैलरी'),'gallery'],
+    [heading('Life at Zunoon','ઝુનૂનમાં જીવન','ज़ुनून में जीवन'),'gallery'],
     [heading('Contact us','સંપર્ક કરો','संपर्क करें'),'contact']
   ];
 
@@ -235,6 +309,9 @@ export default function Home(){
           </div>
         </section>
 
+        {/* MEET OUR FOUNDER (Directly below Our Story) */}
+        <Founder lang={lang}/>
+
         {/* SECTION 03 & 04: VISION, MISSION, VALUES & WHY ZUNOON (WITH 6 QUESTIONS) */}
         <Purpose lang={lang}/>
         <Benefits lang={lang}/>
@@ -244,13 +321,12 @@ export default function Home(){
           <div className="wrap section">
             <div className="section-top">
               <div>
-                <span className="eyebrow">02 / SIX WAYS TO FEEL MORE ALIVE</span>
+                <span className="eyebrow">OUR CLUBS</span>
                 <h2>
-                  {heading('Follow your curiosity.','તમારી રુચિથી શરૂઆત કરો.','अपनी रुचि से शुरुआत करें.')}<br/>
+                  {heading('Follow your curiosity. ','તમારી રુચિથી શરૂઆત કરો. ','अपनी रुचि से शुरुआत करें. ')}
                   <em>{heading('Find your people.','તમારા લોકો સાથે જોડાઓ.','अपने लोगों से जुड़ें.')}</em>
                 </h2>
               </div>
-              <p>{t('One membership connects you to a whole world of interests. Where will you begin?','એક કમ્યુનિટી, અનેક રુચિઓ. તમારા મનપસંદ ક્લબથી શરૂઆત કરો.','एक समुदाय, अनेक रुचियाँ. अपने पसंदीदा क्लब से शुरुआत करें.')}</p>
             </div>
 
             <div className="club-tabs" role="tablist" aria-label="Explore clubs">
@@ -267,6 +343,7 @@ export default function Home(){
                     className={club===i?'active':''}
                     onClick={() => {
                       setClub(i);
+                      setOpenActivity(0);
                       trackEvent({ action: 'view_club_tab', category: 'Clubs', label: c.name });
                     }}
                     onKeyDown={e=>{
@@ -274,6 +351,7 @@ export default function Home(){
                       e.preventDefault();
                       const n=e.key==='Home'?0:e.key==='End'?5:(i+(e.key==='ArrowRight'?1:5))%6;
                       setClub(n);
+                      setOpenActivity(0);
                       document.getElementById(`club-tab-${n}`)?.focus();
                     }}
                   >
@@ -284,54 +362,88 @@ export default function Home(){
               })}
             </div>
 
-            <div id="club-content" role="tabpanel" aria-labelledby={`club-tab-${club}`} className="club-content" style={{background:c.color}}>
+            <div id="club-content" role="tabpanel" aria-labelledby={`club-tab-${club}`} className="club-content" style={{'--club-bg': c.color} as React.CSSProperties}>
+              {/* Left Column: Intro, Photo & Motto */}
               <div className="club-intro">
-                {(club===1||club===2||club===5)&&(
-                  <figure className="club-scene">
-                    <Image
-                      src={club===1?'/images/sports-illustration.webp':club===2?'/images/volunteering.webp':'/images/celebration-bhajan.webp'}
-                      width={1200}
-                      height={700}
-                      sizes="(max-width:800px) 100vw, 45vw"
-                      alt={club===1?'Illustration of a friendly cricket game and badminton in a park':club===2?'Zunoon volunteers preparing donated clothes for distribution':'Zunoon members enjoying live music, tabla and bhajan during celebration'}
-                    />
-                    <figcaption>
-                      {club===1?t('Cricket, games & team spirit · Activity illustration','ક્રિકેટ, રમતો અને ટીમ સ્પિરિટ · પ્રવૃત્તિનું ચિત્ર','क्रिकेट, खेल और टीम भावना · गतिविधि का चित्रण'):club===2?t('Care becomes action.','સેવાની ભાવનાથી કાર્ય તરફ.','सेवा की भावना से काम तक.'):t('Bhajans, music & celebration of life · Community gathering','ભજન, સંગીત અને ઉત્સવની પળો · કમ્યુનિટી મેળાવડો','भजन, संगीत और उत्सव के पल · सामुदायिक सभा')}
-                    </figcaption>
-                  </figure>
+                <div className="club-badge-row">
+                  <span className="club-eyebrow-pill">{c.emoji} ZUNOON {c.name.toUpperCase()} CLUB {c.emoji}</span>
+                </div>
+                <h3 className="club-title">{text(c.tag,lang)}</h3>
+                <p className="club-desc">{text(c.description,lang)}</p>
+
+                {(() => {
+                  const clubSlot = clubSlots[club];
+                  const clubImg = media.clubs?.[clubSlot] || defaultClubsMedia[clubSlot];
+                  return clubImg?.url ? (
+                    <div className="club-photo-frame">
+                      <Image
+                        src={clubImg.url}
+                        width={1200}
+                        height={675}
+                        sizes="(max-width:800px) 100vw, 45vw"
+                        alt={clubImg.alt || `Zunoon ${c.name} Club`}
+                        className="club-photo-img"
+                      />
+                    </div>
+                  ) : null;
+                })()}
+
+                {c.motto && (
+                  <div className="club-quote-card">
+                    <p className="club-motto-text"><strong>{c.motto}</strong></p>
+                    {c.callToAction && <p className="club-cta-text"><em>{c.callToAction}</em></p>}
+                  </div>
                 )}
-                <div className="club-large-icon"><Icon size={60} strokeWidth={1}/></div>
-                <span className="eyebrow">ZUNOON {c.name.toUpperCase()} CLUB</span>
-                <h3>{text(c.tag,lang)}</h3>
-                <p>{text(c.description,lang)}</p>
+
                 <a
-                  className="text-link"
+                  className="button club-action-btn"
                   target="_blank"
                   rel="noopener noreferrer"
                   href={`${wa}?text=${encodeURIComponent(`Hello! I would like to explore the Zunoon ${c.name} Club activities.`)}`}
                   onClick={() => trackEvent({ action: 'whatsapp_lead', category: 'Lead', label: `Club ${c.name} WhatsApp Enquiry` })}
                 >
-                  {heading('Explore with us','વધુ જાણો','और जानें')}<ArrowUpRight size={18}/>
+                  <span>{heading(`Explore ${c.name} Club`,`${c.local[1]} વિશે વધુ જાણો`,`${c.local[2]} के बारे में जानें`)}</span>
+                  <ArrowUpRight size={18}/>
                 </a>
               </div>
 
-              <div className="activity-list">
-                {c.categories.map((cat,i)=>(
-                  <details key={`${club}-${i}`}>
-                    <summary>
-                      <span>0{i+1}</span>
-                      {text(cat,lang)}
-                      <Plus size={18}/>
-                    </summary>
-                    <p>{text(c.examples[i],lang)}</p>
-                    <ul className="activity-catalogue">
-                      {activityCatalogue[club][i].map(activity=>(
-                        <li key={activity} lang="en">{activity}</li>
-                      ))}
-                    </ul>
-                  </details>
-                ))}
-                <small>{t('Ask the team about current activities, schedules and registration.','હાલની એક્ટિવિટીઝ, સમય અને રજિસ્ટ્રેશન માટે ટીમનો સંપર્ક કરો.','वर्तमान गतिविधियों, समय और रजिस्ट्रेशन के लिए टीम से संपर्क करें.')}</small>
+              {/* Right Column: 5 Main Activities */}
+              <div className="activity-column">
+                <div className="activities-header">
+                  <h4 className="activities-heading-text">{c.activitiesHeading}</h4>
+                  <span className="activities-sub-count">{t('5 Categories · All Included','૫ કેટેગરીઝ · તમામ સામેલ','5 श्रेणियाँ · सब शामिल')}</span>
+                </div>
+
+                <div className="activity-accordion">
+                  {c.categories.map((cat, i) => {
+                    const isOpen = openActivity === i;
+                    return (
+                      <div key={`${club}-${i}`} className={`activity-card ${isOpen ? 'active' : ''}`}>
+                        <button
+                          type="button"
+                          className="activity-card-header"
+                          aria-expanded={isOpen}
+                          onClick={() => setOpenActivity(isOpen ? -1 : i)}
+                        >
+                          <span className="activity-card-title">{text(cat, lang)}</span>
+                          <ChevronDown size={19} className={`activity-chevron ${isOpen ? 'open' : ''}`} />
+                        </button>
+                        {isOpen && (
+                          <div className="activity-card-body">
+                            <div className="activity-chips-grid">
+                              {activityCatalogue[club][i].map(activity => (
+                                <span key={activity} className="activity-chip" lang="en">
+                                  <span className="chip-dot" />
+                                  {activity}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
@@ -340,25 +452,21 @@ export default function Home(){
         {/* SECTION 06: WHO CAN JOIN (8 PERSONAS) */}
         <WhoCanJoinSection lang={lang}/>
 
-        {/* SECTION 07: MEET OUR FOUNDER */}
-        <Founder lang={lang}/>
-
         {/* SECTION 08: LIFE AT ZUNOON (GALLERY) */}
         <section className="gallery-section" id="gallery">
           <div className="wrap section">
             <div className="section-top">
               <div>
-                <span className="eyebrow">03 / LIFE AT ZUNOON</span>
+                <span className="eyebrow">LIFE AT ZUNOON</span>
                 <h2>
-                  {heading('Less scrolling.','સ્ક્રીનથી થોડું દૂર.','स्क्रीन से थोड़ा दूर.')}<br/>
+                  {heading('Less scrolling. ','સ્ક્રીનથી થોડું દૂર. ','स्क्रीन से थोड़ा दूर. ')}
                   <em>{heading('More living.','જીવનની વધુ નજીક.','ज़िंदगी के और करीब.')}</em>
                 </h2>
               </div>
-              <p>{t('A glimpse of the people, passions and shared moments that bring us together.','સેવા, દાન, સંગીત, મિત્રતા અને ઉજવણીની યાદગાર પળોની એક ઝલક.','सेवा, दान, संगीत, दोस्ती और उत्सव के यादगार पलों की एक झलक.')}</p>
             </div>
 
             <div className="gallery-filters">
-              {['All','Donation','Volunteering','Music','Outdoors','Celebration','Community'].map((f,i)=>(
+              {activeSections.map(f => (
                 <button
                   key={f}
                   aria-pressed={filter===f}
@@ -367,28 +475,23 @@ export default function Home(){
                     trackEvent({ action: 'filter_gallery', category: 'Gallery', label: f });
                   }}
                 >
-                  {heading(
-                    ['All moments','Donation','Volunteering','Music','Outdoors','Celebration','Community'][i],
-                    ['બધી પળો','દાન','સેવા','સંગીત','પ્રકૃતિ','ઉજવણી','કમ્યુનિટી'][i],
-                    ['सभी पल','दान','सेवा','संगीत','प्रकृति','उत्सव','समुदाय'][i]
-                  )}
+                  {f === 'All' ? heading('All moments','બધી પળો','सभी पल') : f}
                 </button>
               ))}
             </div>
 
             <div className="gallery-grid">
-              {photos.map((p,i)=>({...p,i})).filter(p=>filter==='All'||p.category===filter).map(p=>(
+              {filteredPhotos.map((p,idx)=>(
                 <button
                   className="gallery-photo"
-                  key={p.src}
+                  key={p.id}
                   onClick={() => {
-                    setPhoto(p.i);
+                    setPhoto(idx);
                     trackEvent({ action: 'view_gallery_photo', category: 'Gallery', label: p.src });
                   }}
-                  aria-label={text(p.label,lang)}
+                  aria-label={`View photo ${idx+1}`}
                 >
-                  <Image src={`/images/${p.src}.webp`} fill sizes="(max-width:600px) 100vw, 33vw" alt={text(p.label,lang)}/>
-                  <span>{text(p.label,lang)}<ArrowUpRight size={20}/></span>
+                  <Image src={p.src} fill sizes="(max-width:600px) 100vw, 33vw" alt={p.alt||'Life at Zunoon'}/>
                 </button>
               ))}
             </div>
@@ -405,9 +508,9 @@ export default function Home(){
         <section className="membership-section" id="membership">
           <div className="wrap section membership-layout">
             <div>
-              <span className="eyebrow">05 / MAKE ROOM FOR MORE</span>
+              <span className="eyebrow">MEMBERSHIP</span>
               <h2>
-                {heading('A little commitment.','એક નાનકડું પગલું.','एक छोटा सा कदम.')}<br/>
+                {heading('A little commitment. ','એક નાનકડું પગલું. ','एक छोटा सा कदम. ')}
                 <em>{heading('A whole new circle.','સંબંધોની નવી દુનિયા.','रिश्तों की नई दुनिया.')}</em>
               </h2>
               <p>{t('Your membership is an invitation to explore the sides of life you want to make more time for.','તમારા રસ પ્રમાણે વિવિધ ક્લબની એક્ટિવિટીઝમાં જોડાઓ. નવા લોકો, નવા અનુભવો અને નવી ખુશીઓ મેળવો.','अपनी रुचि के अनुसार अलग-अलग क्लब की गतिविधियों से जुड़ें. नए लोग, नए अनुभव और नई खुशियाँ पाएँ.')}</p>
@@ -576,25 +679,29 @@ export default function Home(){
       {/* LIGHTBOX DIALOG */}
       <dialog
         ref={dialog}
-        aria-label={photo===null?'Photograph':text(photos[photo].label,lang)}
+        aria-label="Photograph viewer"
         onCancel={e=>{e.preventDefault();setPhoto(null)}}
         onClick={e=>{if(e.target===e.currentTarget)setPhoto(null)}}
       >
         <button className="close-dialog" aria-label="Close photograph" onClick={()=>setPhoto(null)}><X/></button>
-        {photo!==null&&(
-          <>
+        {photo!==null && filteredPhotos[photo] && (
+          <div
+            className="lightbox-touch-area"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             <div className="lightbox">
-              <Image src={`/images/${photos[photo].src}.webp`} fill sizes="90vw" alt={text(photos[photo].label,lang)}/>
+              <Image src={filteredPhotos[photo].src} fill sizes="90vw" alt={filteredPhotos[photo].alt||'Life at Zunoon'} priority/>
             </div>
             <div className="lightbox-footer">
-              <p>{text(photos[photo].label,lang)}</p>
-              <div>
-                <button aria-label="Previous photograph" onClick={()=>setPhoto((photo+photos.length-1)%photos.length)}><ChevronLeft/></button>
-                <span>{photo+1} / {photos.length}</span>
-                <button aria-label="Next photograph" onClick={()=>setPhoto((photo+1)%photos.length)}><ChevronRight/></button>
+              <div className="lightbox-nav-row">
+                <button aria-label="Previous photograph" onClick={()=>setPhoto((photo+filteredPhotos.length-1)%filteredPhotos.length)}><ChevronLeft/></button>
+                <span>{photo+1} / {filteredPhotos.length}</span>
+                <button aria-label="Next photograph" onClick={()=>setPhoto((photo+1)%filteredPhotos.length)}><ChevronRight/></button>
               </div>
             </div>
-          </>
+          </div>
         )}
       </dialog>
     </>

@@ -1,0 +1,5 @@
+import {MongoClient} from 'mongodb';import {readFileSync} from 'node:fs';
+const path=process.argv[2];if(!path)throw new Error('Supply the exported media JSON path');if(!process.env.MONGODB_URI)throw new Error('Set MONGODB_URI first');
+const data=JSON.parse(readFileSync(path,'utf8'));if(!Array.isArray(data.assets)||!Array.isArray(data.assignments))throw new Error('Invalid export');
+const client=new MongoClient(process.env.MONGODB_URI,{serverSelectionTimeoutMS:10000});
+try{await client.connect();const db=client.db(process.env.MONGODB_DB||'zunoon_club');for(const a of data.assets){if(!a.id||!a.url?.startsWith('https://res.cloudinary.com/'))throw new Error('Invalid asset');await db.collection('media_assets').updateOne({id:a.id},{$setOnInsert:{...a,createdBy:'migration'}},{upsert:true})}for(const a of data.assignments){if(!data.assets.some(i=>i.id===a.assetId))throw new Error('Missing assigned asset');await db.collection('media_assignments').updateOne({slot:a.slot},{$setOnInsert:a},{upsert:true})}console.log(`Imported ${data.assets.length} image records and ${data.assignments.length} assignments`)}finally{await client.close()}
