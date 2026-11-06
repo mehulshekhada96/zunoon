@@ -1,0 +1,3 @@
+import {recordFor,reconcile,publicRecord,paymentError,paymentDb} from '@/lib/server/payments';
+import {sameOrigin} from '@/lib/server/request-origin';import {HttpError} from '@/lib/server/media';
+export async function POST(request:Request){try{if(!sameOrigin(request))throw new HttpError(403,'Invalid origin.');const b=await request.json();const r=await recordFor(b.reference);if(b.closed)await (await paymentDb()).records.updateOne({_id:r._id},{$set:{checkoutClosedAt:new Date().toISOString()}});return Response.json(publicRecord(await reconcile(r)),{headers:{'Cache-Control':'no-store'}})}catch(e){return paymentError(e)}}

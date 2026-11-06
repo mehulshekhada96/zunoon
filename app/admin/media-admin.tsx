@@ -19,9 +19,11 @@ import {
   Plus,
   Quote,
   Star,
-  Edit3
+  Edit3,
+  Phone
 } from 'lucide-react';
 import {MemberReview, defaultMemberReviews} from '@/lib/testimonials';
+import {defaultContactSettings, type ContactSettings} from '@/lib/contact';
 import {
   MediaAsset,
   mediaSections,
@@ -98,7 +100,10 @@ async function api(url: string, options?: RequestInit) {
 export type SectionType = 'values' | 'why' | 'founder' | 'clubs' | 'community';
 
 export default function MediaAdmin({name}: {name: string}) {
-  const [activeTab, setActiveTab] = useState<'values' | 'why' | 'founder' | 'clubs' | 'community' | 'life-at-zunoon' | 'member-experiences' | 'library'>('values');
+  const [activeTab, setActiveTab] = useState<'values' | 'why' | 'founder' | 'clubs' | 'community' | 'life-at-zunoon' | 'member-experiences' | 'library' | 'contact'>('values');
+  const [contactForm, setContactForm] = useState<ContactSettings>(defaultContactSettings);
+  const [contactSaving, setContactSaving] = useState(false);
+  const [contactSavedNotice, setContactSavedNotice] = useState('');
   const [assets, setAssets] = useState<MediaAsset[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [configured, setConfigured] = useState(false);
@@ -182,6 +187,41 @@ export default function MediaAdmin({name}: {name: string}) {
     } catch {}
   }
 
+  async function refreshContact() {
+    try {
+      const res = await fetch('/api/admin/contact/', {cache: 'no-store'});
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.whatsappNumber) {
+          setContactForm(data);
+        }
+      }
+    } catch {}
+  }
+
+  async function handleSaveContact(e: React.FormEvent) {
+    e.preventDefault();
+    setContactSaving(true);
+    setContactSavedNotice('');
+    setError('');
+    try {
+      const res = await fetch('/api/admin/contact/', {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(contactForm)
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error || 'Failed to save contact settings');
+      setContactForm(d.contact);
+      setContactSavedNotice('Contact & WhatsApp settings updated successfully!');
+      setTimeout(() => setContactSavedNotice(''), 4000);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setContactSaving(false);
+    }
+  }
+
   async function refresh() {
     const data = await api('/api/admin/media');
     setAssets(data.assets);
@@ -189,6 +229,7 @@ export default function MediaAdmin({name}: {name: string}) {
     setConfigured(data.configured);
     await refreshSections();
     await refreshReviews();
+    await refreshContact();
   }
 
   async function handleAddGallerySection(e: React.FormEvent) {
@@ -697,6 +738,8 @@ export default function MediaAdmin({name}: {name: string}) {
         </div>
 
         <nav className="admin-nav-tabs">
+          <a href="/admin/payments/" className="admin-nav-item">💳 Membership payments</a>
+
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'values' ? 'active' : ''}`}
@@ -775,6 +818,15 @@ export default function MediaAdmin({name}: {name: string}) {
             <ImageIcon size={18} />
             <span>Photo Library</span>
             <span className="nav-badge">{assets.length}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`admin-nav-item ${activeTab === 'contact' ? 'active' : ''}`}
+            onClick={() => setActiveTab('contact')}
+          >
+            <Phone size={18} />
+            <span>Contact &amp; WhatsApp</span>
           </button>
         </nav>
 
@@ -1918,6 +1970,171 @@ export default function MediaAdmin({name}: {name: string}) {
                       })}
                   </div>
                 )}
+              </section>
+            )}
+
+            {/* TAB: CONTACT & WHATSAPP SETTINGS */}
+            {activeTab === 'contact' && (
+              <section className="admin-tab-content">
+                <div className="admin-helper-card">
+                  <div className="helper-icon"><Phone size={24} /></div>
+                  <div className="helper-text">
+                    <strong>Dynamic WhatsApp &amp; Contact Details:</strong> Update the club's WhatsApp number, phone, Instagram, and address.
+                    <span className="helper-sub">
+                      When a member finishes payment on the website, they will automatically be redirected to send their membership confirmation details to this WhatsApp number. All website buttons, links, and footer details update immediately.
+                    </span>
+                  </div>
+                </div>
+
+                {contactSavedNotice && (
+                  <div className="admin-alert admin-alert-success" style={{margin: '16px 0', padding: '14px 18px', background: '#dcfce7', border: '1px solid #86efac', borderRadius: '10px', color: '#166534', fontWeight: 600}}>
+                    ✓ {contactSavedNotice}
+                  </div>
+                )}
+
+                <div className="admin-panel-card" style={{maxWidth: '820px', background: '#ffffff', border: '1px solid #e2e8e4', borderRadius: '14px', padding: '28px', marginTop: '16px'}}>
+                  <form onSubmit={handleSaveContact} style={{display: 'flex', flexDirection: 'column', gap: '22px'}}>
+                    {/* WhatsApp & Phone Group */}
+                    <div>
+                      <h3 style={{fontSize: '17px', fontWeight: 700, color: '#162a20', marginBottom: '6px'}}>WhatsApp &amp; Calling Numbers</h3>
+                      <p style={{fontSize: '13px', color: '#52665a', marginBottom: '16px'}}>This WhatsApp number receives lead enquiries and post-payment membership verification details.</p>
+                      
+                      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px'}}>
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                          WhatsApp Number (with country code, e.g. 919712112110)
+                          <input
+                            type="text"
+                            required
+                            value={contactForm.whatsappNumber}
+                            onChange={e => setContactForm(prev => ({...prev, whatsappNumber: e.target.value}))}
+                            placeholder="919712112110"
+                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                          />
+                          <small style={{fontSize: '11px', color: '#688272', fontWeight: 400}}>Only digits with country code. Used for wa.me redirect after payment.</small>
+                        </label>
+
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                          Display Phone (Shown on website)
+                          <input
+                            type="text"
+                            required
+                            value={contactForm.displayPhone}
+                            onChange={e => setContactForm(prev => ({...prev, displayPhone: e.target.value}))}
+                            placeholder="97 121 121 10"
+                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                          />
+                          <small style={{fontSize: '11px', color: '#688272', fontWeight: 400}}>Formatted text in the footer and help notes.</small>
+                        </label>
+                      </div>
+
+                      <div style={{marginTop: '14px'}}>
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                          Calling Link (tel: format, e.g. +919712112110)
+                          <input
+                            type="text"
+                            required
+                            value={contactForm.telNumber}
+                            onChange={e => setContactForm(prev => ({...prev, telNumber: e.target.value}))}
+                            placeholder="+919712112110"
+                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                          />
+                          <small style={{fontSize: '11px', color: '#688272', fontWeight: 400}}>Destination when users tap the phone call button.</small>
+                        </label>
+                      </div>
+                    </div>
+
+                    <hr style={{border: 'none', borderTop: '1px solid #e8ede9'}} />
+
+                    {/* Instagram Group */}
+                    <div>
+                      <h3 style={{fontSize: '17px', fontWeight: 700, color: '#162a20', marginBottom: '6px'}}>Instagram Social Profile</h3>
+                      <p style={{fontSize: '13px', color: '#52665a', marginBottom: '16px'}}>Displayed in the website footer.</p>
+                      
+                      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px'}}>
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                          Instagram Handle (e.g. @zunoon_club)
+                          <input
+                            type="text"
+                            required
+                            value={contactForm.instagramHandle}
+                            onChange={e => setContactForm(prev => ({...prev, instagramHandle: e.target.value}))}
+                            placeholder="@zunoon_club"
+                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                          />
+                        </label>
+
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                          Instagram URL
+                          <input
+                            type="url"
+                            required
+                            value={contactForm.instagramUrl}
+                            onChange={e => setContactForm(prev => ({...prev, instagramUrl: e.target.value}))}
+                            placeholder="https://www.instagram.com/zunoon_club/"
+                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <hr style={{border: 'none', borderTop: '1px solid #e8ede9'}} />
+
+                    {/* Address Group */}
+                    <div>
+                      <h3 style={{fontSize: '17px', fontWeight: 700, color: '#162a20', marginBottom: '6px'}}>Club Location &amp; Address</h3>
+                      <p style={{fontSize: '13px', color: '#52665a', marginBottom: '16px'}}>Appears in the footer for each supported language.</p>
+                      
+                      <div style={{display: 'flex', flexDirection: 'column', gap: '14px'}}>
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                          Address (English)
+                          <input
+                            type="text"
+                            required
+                            value={contactForm.addressEn}
+                            onChange={e => setContactForm(prev => ({...prev, addressEn: e.target.value}))}
+                            placeholder="Surat, Gujarat, India"
+                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                          />
+                        </label>
+
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                          Address (ગુજરાતી)
+                          <input
+                            type="text"
+                            required
+                            value={contactForm.addressGu}
+                            onChange={e => setContactForm(prev => ({...prev, addressGu: e.target.value}))}
+                            placeholder="સુરત, ગુજરાત, ભારત"
+                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                          />
+                        </label>
+
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                          Address (हिन्दी)
+                          <input
+                            type="text"
+                            required
+                            value={contactForm.addressHi}
+                            onChange={e => setContactForm(prev => ({...prev, addressHi: e.target.value}))}
+                            placeholder="सूरत, गुजरात, भारत"
+                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                          />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div style={{display: 'flex', justifyContent: 'flex-start', paddingTop: '10px'}}>
+                      <button
+                        type="submit"
+                        disabled={contactSaving}
+                        className="admin-login-btn"
+                        style={{padding: '13px 28px', fontSize: '14.5px', background: '#205c38', color: '#ffffff', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 700}}
+                      >
+                        {contactSaving ? 'Saving Changes…' : 'Save Contact Settings'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </section>
             )}
           </>

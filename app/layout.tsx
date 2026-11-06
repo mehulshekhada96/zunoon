@@ -104,12 +104,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="gu" className={`${sans.variable} ${gujarati.variable}`}>
+    <html lang="gu" className={`${sans.variable} ${gujarati.variable}`} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <StructuredData />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <GoogleAnalytics />
         {children}
       </body>

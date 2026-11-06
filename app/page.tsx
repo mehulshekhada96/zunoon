@@ -1,18 +1,20 @@
 'use client';
-import {useEffect,useRef,useState} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import {ArrowUpRight,ArrowRight,Menu,X,Heart,Trophy,Handshake,TrendingUp,Palette,Sparkles,Check,Plus,Phone,Instagram,ChevronLeft,ChevronRight,ChevronDown,Languages} from 'lucide-react';
-import {clubs,photos as originalPhotos,text,Lang,Words} from '@/lib/content';
-import {Purpose,Benefits,Founder,Journey,Questions,Testimonials,WhoCanJoinSection} from '@/components/story-sections';
-import {activityCatalogue} from '@/lib/activities';
-import {membershipHighlights} from '@/lib/details';
-import {trackEvent} from '@/lib/analytics';
+import { ArrowUpRight, ArrowRight, Menu, X, Heart, Trophy, Handshake, TrendingUp, Palette, Sparkles, Check, Plus, Phone, Instagram, MapPin, ChevronLeft, ChevronRight, ChevronDown, Languages } from 'lucide-react';
+import { WhatsAppIcon } from '@/components/icons';
+import { clubs, photos as originalPhotos, text, Lang, Words } from '@/lib/content';
+import { Purpose, Benefits, Founder, Journey, Questions, Testimonials, WhoCanJoinSection } from '@/components/story-sections';
+import { activityCatalogue } from '@/lib/activities';
+import { membershipHighlights } from '@/lib/details';
+import { trackEvent } from '@/lib/analytics';
 
-import {useMedia} from '@/lib/use-media';
-import {clubSlots, defaultClubsMedia} from '@/lib/media';
-const photoUrl=(src:string)=>src.startsWith('https://')?src:`/images/${src}.webp`;
-const icons=[Heart,Trophy,Handshake,TrendingUp,Palette,Sparkles];
-const wa='https://wa.me/919712112110';
+import { useMedia } from '@/lib/use-media';
+import { clubSlots, defaultClubsMedia } from '@/lib/media';
+const photoUrl = (src: string) => src.startsWith('https://') ? src : `/images/${src}.webp`;
+import { useMembershipFee } from '@/lib/use-membership';
+import { useContact } from '@/lib/use-contact';
+const icons = [Heart, Trophy, Handshake, TrendingUp, Palette, Sparkles];
 
 const languages: { code: Lang; label: string }[] = [
   { code: 'mix', label: 'EN + ગુ' },
@@ -21,21 +23,26 @@ const languages: { code: Lang; label: string }[] = [
   { code: 'hi', label: 'हिन्दी' },
 ];
 
-export default function Home(){
-  const media=useMedia();
+export default function Home() {
+  const contact = useContact();
+  const wa = `https://wa.me/${contact.whatsappNumber.replace(/\D/g, '') || '919712112110'}`;
+  const feePaise = useMembershipFee();
+  const feeRupees = feePaise / 100;
+  const feeLabel = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(feeRupees);
+  const media = useMedia();
   const allPhotos = media.gallery.length > 0
     ? media.gallery.map(p => ({
-        id: p.id,
-        src: p.url,
-        category: p.category || 'Community',
-        alt: p.alt || ''
-      }))
+      id: p.id,
+      src: p.url,
+      category: p.category || 'Community',
+      alt: p.alt || ''
+    }))
     : originalPhotos.map((p, idx) => ({
-        id: `orig-${idx}`,
-        src: photoUrl(p.src),
-        category: p.category,
-        alt: ''
-      }));
+      id: `orig-${idx}`,
+      src: photoUrl(p.src),
+      category: p.category,
+      alt: ''
+    }));
 
   const defaultSections = ['Donation', 'Volunteering', 'Music', 'Outdoors', 'Celebration', 'Community'];
   const activeSections = [
@@ -50,19 +57,19 @@ export default function Home(){
     )
   ];
 
-  const [lang,setLang]=useState<Lang>('mix');
-  const [langOpen,setLangOpen]=useState(false);
-  const [menu,setMenu]=useState(false);
-  const [club,setClub]=useState(0);
-  const [openActivity,setOpenActivity]=useState<number>(0);
-  const [filter,setFilter]=useState('All');
-  const [photo,setPhoto]=useState<number|null>(null);
-  const dialog=useRef<HTMLDialogElement>(null);
-  const langDropdownRef=useRef<HTMLDivElement>(null);
-  const opener=useRef<HTMLElement|null>(null);
+  const [lang, setLang] = useState<Lang>('mix');
+  const [langOpen, setLangOpen] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const [club, setClub] = useState(0);
+  const [openActivity, setOpenActivity] = useState<number>(0);
+  const [filter, setFilter] = useState('All');
+  const [photo, setPhoto] = useState<number | null>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const langDropdownRef = useRef<HTMLDivElement>(null);
+  const opener = useRef<HTMLElement | null>(null);
 
-  const touchStartX=useRef<number|null>(null);
-  const touchEndX=useRef<number|null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
 
   const filteredPhotos = filter === 'All' ? allPhotos : allPhotos.filter(p => p.category === filter);
 
@@ -85,38 +92,38 @@ export default function Home(){
     touchEndX.current = null;
   };
 
-  const t=(en:string,gu:string,hi:string)=>text([en,gu,hi],lang);
-  const heading=(en:string,gu:string,hi:string)=>lang==='mix'?en:t(en,gu,hi);
-  const c=clubs[club];
-  const Icon=icons[club];
+  const t = (en: string, gu: string, hi: string) => text([en, gu, hi], lang);
+  const heading = (en: string, gu: string, hi: string) => lang === 'mix' ? en : t(en, gu, hi);
+  const c = clubs[club];
+  const Icon = icons[club];
 
-  useEffect(()=>{
-    if(photo===null)return;
-    function onKey(e:KeyboardEvent){
-      if(e.key==='ArrowRight'||e.key==='ArrowDown'){
+  useEffect(() => {
+    if (photo === null) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         e.preventDefault();
-        setPhoto(prev=>(prev===null?null:(prev+1)%filteredPhotos.length));
-      }else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){
+        setPhoto(prev => (prev === null ? null : (prev + 1) % filteredPhotos.length));
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         e.preventDefault();
-        setPhoto(prev=>(prev===null?null:(prev+filteredPhotos.length-1)%filteredPhotos.length));
-      }else if(e.key==='Escape'){
+        setPhoto(prev => (prev === null ? null : (prev + filteredPhotos.length - 1) % filteredPhotos.length));
+      } else if (e.key === 'Escape') {
         e.preventDefault();
         setPhoto(null);
       }
     }
-    window.addEventListener('keydown',onKey);
-    return()=>window.removeEventListener('keydown',onKey);
-  },[photo,filteredPhotos.length]);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [photo, filteredPhotos.length]);
 
-  useEffect(()=>{
-    const saved=localStorage.getItem('zunoon-language');
-    if(['mix','en','gu','hi'].includes(saved||''))setLang(saved as Lang);
-  },[]);
+  useEffect(() => {
+    const saved = localStorage.getItem('zunoon-language');
+    if (['mix', 'en', 'gu', 'hi'].includes(saved || '')) setLang(saved as Lang);
+  }, []);
 
-  useEffect(()=>{
-    document.documentElement.lang=lang==='mix'?'gu':lang;
-    localStorage.setItem('zunoon-language',lang);
-  },[lang]);
+  useEffect(() => {
+    document.documentElement.lang = lang === 'mix' ? 'gu' : lang;
+    localStorage.setItem('zunoon-language', lang);
+  }, [lang]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent | TouchEvent) {
@@ -139,29 +146,29 @@ export default function Home(){
     };
   }, [langOpen]);
 
-  useEffect(()=>{
-    if(photo!==null){
-      opener.current=document.activeElement as HTMLElement;
+  useEffect(() => {
+    if (photo !== null) {
+      opener.current = document.activeElement as HTMLElement;
       dialog.current?.showModal();
-      document.body.style.overflow='hidden';
+      document.body.style.overflow = 'hidden';
     } else {
       dialog.current?.close();
-      document.body.style.overflow='';
+      document.body.style.overflow = '';
       opener.current?.focus();
     }
-    return()=>{document.body.style.overflow=''};
-  },[photo]);
+    return () => { document.body.style.overflow = '' };
+  }, [photo]);
 
-  const nav=[
-    [heading('Our story','અમારી વાત','हमारी कहानी'),'about'],
-    [heading('Club','ક્લબ','क्लब'),'clubs'],
-    [heading('Experiences','અનુભવો','अनुभव'),'testimonials'],
-    [heading('Community','કમ્યુનિટી','समुदाय'),'community'],
-    [heading('Life at Zunoon','ઝુનૂનમાં જીવન','ज़ुनून में जीवन'),'gallery'],
-    [heading('Contact us','સંપર્ક કરો','संपर्क करें'),'contact']
+  const nav = [
+    [heading('Our story', 'અમારી વાત', 'हमारी कहानी'), 'about'],
+    [heading('Club', 'ક્લબ', 'क्लब'), 'clubs'],
+    [heading('Experiences', 'અનુભવો', 'अनुभव'), 'testimonials'],
+    [heading('Community', 'કમ્યુનિટી', 'समुदाय'), 'community'],
+    [heading('Life at Zunoon', 'ઝુનૂનમાં જીવન', 'ज़ुनून में जीवन'), 'gallery'],
+    [heading('Contact us', 'સંપર્ક કરો', 'संपर्क करें'), 'contact']
   ];
 
-  const join=`${wa}?text=${encodeURIComponent('Hello Zunoon Club! I would like to know more about annual membership and activities.')}`;
+  const join = `${wa}?text=${encodeURIComponent('Hello Zunoon Club! I would like to know more about annual membership and activities.')}`;
 
   return (
     <>
@@ -169,10 +176,10 @@ export default function Home(){
 
       <header>
         <a href="#" className="brand" aria-label="Zunoon Club home">
-          <Image src="/images/logo.webp" alt="Zunoon — A Celebration of Life" width={225} height={75} priority/>
+          <Image src="/images/logo.webp" alt="Zunoon — A Celebration of Life" width={225} height={75} priority />
         </a>
-        <nav aria-label="Main navigation" id="main-nav" className={menu?'open':''}>
-          {nav.map(([title,id])=><a key={id} href={`#${id}`} onClick={()=>setMenu(false)}>{title}</a>)}
+        <nav aria-label="Main navigation" id="main-nav" className={menu ? 'open' : ''}>
+          {nav.map(([title, id]) => <a key={id} href={`#${id}`} onClick={() => setMenu(false)}>{title}</a>)}
         </nav>
         <div className="header-actions">
           <div className="lang-switcher-wrapper" ref={langDropdownRef}>
@@ -217,10 +224,10 @@ export default function Home(){
             href="#membership"
             onClick={() => trackEvent({ action: 'click_cta', category: 'Navigation', label: 'Header Get Membership Button' })}
           >
-            {heading('Get Membership','મેમ્બરશિપ મેળવો','सदस्यता लें')}<ArrowUpRight size={16}/>
+            {heading('Get Membership', 'મેમ્બરશિપ મેળવો', 'सदस्यता लें')}<ArrowUpRight size={16} />
           </a>
-          <button className="menu-toggle" onClick={()=>setMenu(!menu)} aria-expanded={menu} aria-controls="main-nav" aria-label={menu?'Close navigation':'Open navigation'}>
-            {menu?<X/>:<Menu/>}</button>
+          <button className="menu-toggle" onClick={() => setMenu(!menu)} aria-expanded={menu} aria-controls="main-nav" aria-label={menu ? 'Close navigation' : 'Open navigation'}>
+            {menu ? <X /> : <Menu />}</button>
         </div>
       </header>
 
@@ -229,15 +236,15 @@ export default function Home(){
         <section className="hero wrap">
           <div className="hero-copy">
             <div className="hero-badge-wrap">
-              <span className="hero-badge-item"><strong>5</strong> {t('Life Zones','લાઇફ ઝોન','लाइफ ज़ोन')}</span>
-              <span className="hero-badge-item"><strong>6</strong> {t('Clubs','ક્લબ','क्लब')}</span>
-              <span className="hero-badge-item"><strong>30</strong> {t('Categories','કેટેગરીઝ','श्रेणियाँ')}</span>
-              <span className="hero-badge-item"><strong>100+</strong> {t('Experiences','અનુભવો','अनुभव')}</span>
+              <span className="hero-badge-item"><strong>5</strong> {t('Life Zones', 'લાઇફ ઝોન', 'लाइफ ज़ोन')}</span>
+              <span className="hero-badge-item"><strong>6</strong> {t('Clubs', 'ક્લબ', 'क्लब')}</span>
+              <span className="hero-badge-item"><strong>30</strong> {t('Categories', 'કેટેગરીઝ', 'श्रेणियाँ')}</span>
+              <span className="hero-badge-item"><strong>100+</strong> {t('Experiences', 'અનુભવો', 'अनुभव')}</span>
             </div>
-            <div className="eyebrow"><span/> A CELEBRATION OF LIFE · HUMAN 360° COMMUNITY</div>
+            <div className="eyebrow"><span /> A CELEBRATION OF LIFE · HUMAN 360° COMMUNITY</div>
             <h1>
-              {heading('A Celebration of Life.','જીવનનો એક સુંદર ઉત્સવ.','जीवन का एक सुंदर उत्सव.')}<br/>
-              <em>{heading('Live Better Together.','સાથે મળીને સુંદર જીવો.','साथ मिलकर बेहतर जिएँ.')}</em>
+              {heading('A Celebration of Life.', 'જીવનનો એક સુંદર ઉત્સવ.', 'जीवन का एक सुंदर उत्सव.')}<br />
+              <em>{heading('Live Better Together.', 'સાથે મળીને સુંદર જીવો.', 'साथ मिलकर बेहतर जिएँ.')}</em>
             </h1>
             <p>
               {t(
@@ -250,31 +257,31 @@ export default function Home(){
               <a
                 className="button"
                 href="#membership"
-                onClick={() => trackEvent({ action: 'click_cta', category: 'Conversion', label: 'Hero Join Button', value: 2100 })}
+                onClick={() => trackEvent({ action: 'click_cta', category: 'Conversion', label: 'Hero Join Button', value: feeRupees })}
               >
-                {heading('Join Zunoon Now · ₹2,100','ઝુનૂન સાથે જોડાઓ · ₹2,100','ज़ुनून से जुड़ें · ₹2,100')}<ArrowUpRight size={18}/>
+                {heading(`Join Zunoon Now · ₹${feeLabel}`, `ઝુનૂન સાથે જોડાઓ · ₹${feeLabel}`, `ज़ुनून से जुड़ें · ₹${feeLabel}`)}<ArrowUpRight size={18} />
               </a>
               <a
                 className="text-link"
                 href="#clubs"
                 onClick={() => trackEvent({ action: 'click_navigation', category: 'Navigation', label: 'Hero Explore Clubs' })}
               >
-                {heading('Explore Our Clubs','અમારા ક્લબ્સ જુઓ','हमारे क्लब देखें')}<ArrowRight size={17}/>
+                {heading('Explore Our Clubs', 'અમારા ક્લબ્સ જુઓ', 'हमारे क्लब देखें')}<ArrowRight size={17} />
               </a>
             </div>
           </div>
           <div className="hero-art">
             <div className="hero-photo">
-              <Image src="/images/hero.webp" fill sizes="(max-width:800px) 100vw, 50vw" alt="Zunoon members sharing a moment together outdoors" priority/>
+              <Image src="/images/hero.webp" fill sizes="(max-width:800px) 100vw, 50vw" alt="Zunoon members sharing a moment together outdoors" priority />
               <span className="photo-label">THE BEST PART? THE PEOPLE.</span>
             </div>
             <div className="photo-inset">
-              <Image src="/images/music.webp" fill sizes="240px" alt="Members gathered for a music session"/>
+              <Image src="/images/music.webp" fill sizes="240px" alt="Members gathered for a music session" />
             </div>
             <div className="circle-note">
-              One community.<br/>
-              <strong>Countless<br/>possibilities.</strong>
-              <Sparkles size={22}/>
+              One community.<br />
+              <strong>Countless<br />possibilities.</strong>
+              <Sparkles size={22} />
             </div>
             <span className="art-star" aria-hidden="true">✳</span>
           </div>
@@ -283,7 +290,7 @@ export default function Home(){
         {/* SECTION 02: ABOUT ZUNOON */}
         <section className="wrap section about" id="about">
           <div>
-            <h2>{heading('Our Story','અમારી વાત','हमारी कहानी')}</h2>
+            <h2>{heading('Our Story', 'અમારી વાત', 'हमारी कहानी')}</h2>
             <div className="about-caption">HUMAN 360° GROWTH &amp; LIFE EXPERIENCE COMMUNITY</div>
           </div>
           <div className="about-copy">
@@ -302,19 +309,19 @@ export default function Home(){
               )}
             </p>
             <div className="about-stats">
-              <div><strong>06</strong><span>{heading('Connected clubs','મુખ્ય ક્લબ','मुख्य क्लब')}</span></div>
-              <div><strong>30</strong><span>{heading('Activity categories','એક્ટિવિટી કેટેગરી','गतिविधि श्रेणियाँ')}</span></div>
-              <div><strong>100+</strong><span>{heading('Life experiences','લાઇફ એક્સપિરિયન્સ','जीवन अनुभव')}</span></div>
+              <div><strong>06</strong><span>{heading('Connected clubs', 'મુખ્ય ક્લબ', 'मुख्य क्लब')}</span></div>
+              <div><strong>30</strong><span>{heading('Activity categories', 'એક્ટિવિટી કેટેગરી', 'गतिविधि श्रेणियाँ')}</span></div>
+              <div><strong>100+</strong><span>{heading('Life experiences', 'લાઇફ એક્સપિરિયન્સ', 'जीवन अनुभव')}</span></div>
             </div>
           </div>
         </section>
 
         {/* MEET OUR FOUNDER (Directly below Our Story) */}
-        <Founder lang={lang}/>
+        <Founder lang={lang} />
 
         {/* SECTION 03 & 04: VISION, MISSION, VALUES & WHY ZUNOON (WITH 6 QUESTIONS) */}
-        <Purpose lang={lang}/>
-        <Benefits lang={lang}/>
+        <Purpose lang={lang} />
+        <Benefits lang={lang} />
 
         {/* SECTION 07-12: SIX ACTIVITY CLUBS & 30 CATEGORIES */}
         <section className="clubs-section" id="clubs">
@@ -323,53 +330,53 @@ export default function Home(){
               <div>
                 <span className="eyebrow">OUR CLUBS</span>
                 <h2>
-                  {heading('Follow your curiosity. ','તમારી રુચિથી શરૂઆત કરો. ','अपनी रुचि से शुरुआत करें. ')}
-                  <em>{heading('Find your people.','તમારા લોકો સાથે જોડાઓ.','अपने लोगों से जुड़ें.')}</em>
+                  {heading('Follow your curiosity. ', 'તમારી રુચિથી શરૂઆત કરો. ', 'अपनी रुचि से शुरुआत करें. ')}
+                  <em>{heading('Find your people.', 'તમારા લોકો સાથે જોડાઓ.', 'अपने लोगों से जुड़ें.')}</em>
                 </h2>
               </div>
             </div>
 
             <div className="club-tabs" role="tablist" aria-label="Explore clubs">
-              {clubs.map((c,i)=>{
-                const I=icons[i];
+              {clubs.map((c, i) => {
+                const I = icons[i];
                 return (
                   <button
                     key={c.name}
                     id={`club-tab-${i}`}
                     role="tab"
-                    aria-selected={club===i}
+                    aria-selected={club === i}
                     aria-controls="club-content"
-                    tabIndex={club===i?0:-1}
-                    className={club===i?'active':''}
+                    tabIndex={club === i ? 0 : -1}
+                    className={club === i ? 'active' : ''}
                     onClick={() => {
                       setClub(i);
                       setOpenActivity(0);
                       trackEvent({ action: 'view_club_tab', category: 'Clubs', label: c.name });
                     }}
-                    onKeyDown={e=>{
-                      if(!['ArrowRight','ArrowLeft','Home','End'].includes(e.key))return;
+                    onKeyDown={e => {
+                      if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(e.key)) return;
                       e.preventDefault();
-                      const n=e.key==='Home'?0:e.key==='End'?5:(i+(e.key==='ArrowRight'?1:5))%6;
+                      const n = e.key === 'Home' ? 0 : e.key === 'End' ? 5 : (i + (e.key === 'ArrowRight' ? 1 : 5)) % 6;
                       setClub(n);
                       setOpenActivity(0);
                       document.getElementById(`club-tab-${n}`)?.focus();
                     }}
                   >
-                    <I size={22}/>
-                    <span>{heading(c.name,c.local[1].replace(' ક્લબ',''),c.local[2].replace(' क्लब',''))}</span>
+                    <I size={22} />
+                    <span>{heading(c.name, c.local[1].replace(' ક્લબ', ''), c.local[2].replace(' क्लब', ''))}</span>
                   </button>
                 );
               })}
             </div>
 
-            <div id="club-content" role="tabpanel" aria-labelledby={`club-tab-${club}`} className="club-content" style={{'--club-bg': c.color} as React.CSSProperties}>
+            <div id="club-content" role="tabpanel" aria-labelledby={`club-tab-${club}`} className="club-content" style={{ '--club-bg': c.color } as React.CSSProperties}>
               {/* Left Column: Intro, Photo & Motto */}
               <div className="club-intro">
                 <div className="club-badge-row">
                   <span className="club-eyebrow-pill">{c.emoji} ZUNOON {c.name.toUpperCase()} CLUB {c.emoji}</span>
                 </div>
-                <h3 className="club-title">{text(c.tag,lang)}</h3>
-                <p className="club-desc">{text(c.description,lang)}</p>
+                <h3 className="club-title">{text(c.tag, lang)}</h3>
+                <p className="club-desc">{text(c.description, lang)}</p>
 
                 {(() => {
                   const clubSlot = clubSlots[club];
@@ -402,8 +409,9 @@ export default function Home(){
                   href={`${wa}?text=${encodeURIComponent(`Hello! I would like to explore the Zunoon ${c.name} Club activities.`)}`}
                   onClick={() => trackEvent({ action: 'whatsapp_lead', category: 'Lead', label: `Club ${c.name} WhatsApp Enquiry` })}
                 >
-                  <span>{heading(`Explore ${c.name} Club`,`${c.local[1]} વિશે વધુ જાણો`,`${c.local[2]} के बारे में जानें`)}</span>
-                  <ArrowUpRight size={18}/>
+                  <WhatsAppIcon size={17} />
+                  <span>{heading(`Explore ${c.name} Club`, `${c.local[1]} વિશે વધુ જાણો`, `${c.local[2]} के बारे में जानें`)}</span>
+                  <ArrowUpRight size={18} />
                 </a>
               </div>
 
@@ -411,7 +419,7 @@ export default function Home(){
               <div className="activity-column">
                 <div className="activities-header">
                   <h4 className="activities-heading-text">{c.activitiesHeading}</h4>
-                  <span className="activities-sub-count">{t('5 Categories · All Included','૫ કેટેગરીઝ · તમામ સામેલ','5 श्रेणियाँ · सब शामिल')}</span>
+                  <span className="activities-sub-count">{t('5 Categories · All Included', '૫ કેટેગરીઝ · તમામ સામેલ', '5 श्रेणियाँ · सब शामिल')}</span>
                 </div>
 
                 <div className="activity-accordion">
@@ -450,7 +458,7 @@ export default function Home(){
         </section>
 
         {/* SECTION 06: WHO CAN JOIN (8 PERSONAS) */}
-        <WhoCanJoinSection lang={lang}/>
+        <WhoCanJoinSection lang={lang} />
 
         {/* SECTION 08: LIFE AT ZUNOON (GALLERY) */}
         <section className="gallery-section" id="gallery">
@@ -459,8 +467,8 @@ export default function Home(){
               <div>
                 <span className="eyebrow">LIFE AT ZUNOON</span>
                 <h2>
-                  {heading('Less scrolling. ','સ્ક્રીનથી થોડું દૂર. ','स्क्रीन से थोड़ा दूर. ')}
-                  <em>{heading('More living.','જીવનની વધુ નજીક.','ज़िंदगी के और करीब.')}</em>
+                  {heading('Less scrolling. ', 'સ્ક્રીનથી થોડું દૂર. ', 'स्क्रीन से थोड़ा दूर. ')}
+                  <em>{heading('More living.', 'જીવનની વધુ નજીક.', 'ज़िंदगी के और करीब.')}</em>
                 </h2>
               </div>
             </div>
@@ -469,19 +477,19 @@ export default function Home(){
               {activeSections.map(f => (
                 <button
                   key={f}
-                  aria-pressed={filter===f}
+                  aria-pressed={filter === f}
                   onClick={() => {
                     setFilter(f);
                     trackEvent({ action: 'filter_gallery', category: 'Gallery', label: f });
                   }}
                 >
-                  {f === 'All' ? heading('All moments','બધી પળો','सभी पल') : f}
+                  {f === 'All' ? heading('All moments', 'બધી પળો', 'सभी पल') : f}
                 </button>
               ))}
             </div>
 
             <div className="gallery-grid">
-              {filteredPhotos.map((p,idx)=>(
+              {filteredPhotos.map((p, idx) => (
                 <button
                   className="gallery-photo"
                   key={p.id}
@@ -489,9 +497,9 @@ export default function Home(){
                     setPhoto(idx);
                     trackEvent({ action: 'view_gallery_photo', category: 'Gallery', label: p.src });
                   }}
-                  aria-label={`View photo ${idx+1}`}
+                  aria-label={`View photo ${idx + 1}`}
                 >
-                  <Image src={p.src} fill sizes="(max-width:600px) 100vw, 33vw" alt={p.alt||'Life at Zunoon'}/>
+                  <Image src={p.src} fill sizes="(max-width:600px) 100vw, 33vw" alt={p.alt || 'Life at Zunoon'} />
                 </button>
               ))}
             </div>
@@ -499,10 +507,10 @@ export default function Home(){
         </section>
 
         {/* SECTION 09: MEMBER TESTIMONIALS (REAL VOICES) */}
-        <Testimonials lang={lang}/>
+        <Testimonials lang={lang} />
 
         {/* HOW ZUNOON WORKS */}
-        <Journey lang={lang}/>
+        <Journey lang={lang} />
 
         {/* SECTION 11: MEMBERSHIP DETAILS & 10 HIGHLIGHTS */}
         <section className="membership-section" id="membership">
@@ -510,20 +518,20 @@ export default function Home(){
             <div>
               <span className="eyebrow">MEMBERSHIP</span>
               <h2>
-                {heading('A little commitment. ','એક નાનકડું પગલું. ','एक छोटा सा कदम. ')}
-                <em>{heading('A whole new circle.','સંબંધોની નવી દુનિયા.','रिश्तों की नई दुनिया.')}</em>
+                {heading('A little commitment. ', 'એક નાનકડું પગલું. ', 'एक छोटा सा कदम. ')}
+                <em>{heading('A whole new circle.', 'સંબંધોની નવી દુનિયા.', 'रिश्तों की नई दुनिया.')}</em>
               </h2>
-              <p>{t('Your membership is an invitation to explore the sides of life you want to make more time for.','તમારા રસ પ્રમાણે વિવિધ ક્લબની એક્ટિવિટીઝમાં જોડાઓ. નવા લોકો, નવા અનુભવો અને નવી ખુશીઓ મેળવો.','अपनी रुचि के अनुसार अलग-अलग क्लब की गतिविधियों से जुड़ें. नए लोग, नए अनुभव और नई खुशियाँ पाएँ.')}</p>
+              <p>{t('Your membership is an invitation to explore the sides of life you want to make more time for.', 'તમારા રસ પ્રમાણે વિવિધ ક્લબની એક્ટિવિટીઝમાં જોડાઓ. નવા લોકો, નવા અનુભવો અને નવી ખુશીઓ મેળવો.', 'अपनी रुचि के अनुसार अलग-अलग क्लब की गतिविधियों से जुड़ें. नए लोग, नए अनुभव और नई खुशियाँ पाएँ.')}</p>
 
               <ol className="join-steps">
                 {[
-                  ['Say hello','સંપર્ક કરો','संपर्क करें'],
-                  ['Complete registration & membership payment','રજિસ્ટ્રેશન અને મેમ્બરશિપ ફી પૂર્ણ કરો','रजिस्ट्रेशन और सदस्यता शुल्क पूरा करें'],
-                  ['Choose your interests. Join the experiences.','તમારી રુચિ પસંદ કરો અને એક્ટિવિટીઝમાં જોડાઓ','अपनी रुचि चुनें और गतिविधियों से जुड़ें']
-                ].map((w,i)=>(
+                  ['Say hello', 'સંપર્ક કરો', 'संपर्क करें'],
+                  ['Complete registration & membership payment', 'રજિસ્ટ્રેશન અને મેમ્બરશિપ ફી પૂર્ણ કરો', 'रजिस्ट्रेशन और सदस्यता शुल्क पूरा करें'],
+                  ['Choose your interests. Join the experiences.', 'તમારી રુચિ પસંદ કરો અને એક્ટિવિટીઝમાં જોડાઓ', 'अपनी रुचि चुनें और गतिविधियों से जुड़ें']
+                ].map((w, i) => (
                   <li key={i}>
-                    <span>0{i+1}</span>
-                    {text(w as Words,lang)}
+                    <span>0{i + 1}</span>
+                    {text(w as Words, lang)}
                   </li>
                 ))}
               </ol>
@@ -532,36 +540,36 @@ export default function Home(){
             <div className="membership-card">
               <span className="eyebrow">ZUNOON CLUB ANNUAL MEMBERSHIP</span>
               <div className="price">
-                <s>₹4,999</s>
-                <strong>₹2,100<span> / {heading('year','વર્ષ','वर्ष')}</span></strong>
+
+                <strong>₹{feeLabel}<span> / {heading('year', 'વર્ષ', 'वर्ष')}</span></strong>
               </div>
-              <p>{t('One year validity. One community. Endless experiences.','વાર્ષિક માન્યતા: 1 વર્ષ. એક કમ્યુનિટી. અનંત અનુભવો.','एक वर्ष की मान्यता. एक समुदाय. अनगिनत अनुभव.')}</p>
-              
+              <p>{t('One year validity. One community. Endless experiences.', 'વાર્ષિક માન્યતા: 1 વર્ષ. એક કમ્યુનિટી. અનંત અનુભવો.', 'एक वर्ष की मान्यता. एक समुदाय. अनगिनत अनुभव.')}</p>
+
               <ul className="highlights-full">
-                {membershipHighlights.map((w)=>(
+                {membershipHighlights.map((w) => (
                   <li key={w[0]}>
-                    <Check size={16}/>
-                    {text(w,lang)}
+                    <Check size={16} />
+                    {text(w, lang)}
                   </li>
                 ))}
               </ul>
 
               <a
                 className="button"
-                href={join}
-                target="_blank"
+                href="/join/"
+
                 rel="noopener noreferrer"
-                onClick={() => trackEvent({ action: 'whatsapp_lead', category: 'Conversion', label: 'Membership Plan WhatsApp', value: 2100 })}
+                onClick={() => trackEvent({ action: 'begin_checkout', category: 'Conversion', label: 'Membership Payment', value: feeRupees })}
               >
-                {heading('Enquire & Join on WhatsApp','વોટ્સએપ દ્વારા જોડાઓ','व्हाट्सएप से जुड़ें')}<ArrowUpRight size={18}/>
+                {heading('Pay & Join Zunoon', 'પેમેન્ટ કરીને જોડાઓ', 'भुगतान करके जुड़ें')}<ArrowUpRight size={18} />
               </a>
 
               <div className="fee-note">
-                <strong>{t('Activity fees are separate.','એક્ટિવિટી ચાર્જ અલગ છે.','गतिविधि शुल्क अलग है.')}</strong>{' '}
+                <strong>{t('Activity fees are separate.', 'એક્ટિવિટી ચાર્જ અલગ છે.', 'गतिविधि शुल्क अलग है.')}</strong>{' '}
                 {t(
-                  '₹2,100 is the annual membership fee. It does not include all activity costs. Some sessions are free; workshops, tournaments, outdoor trips and special events carry separate charges announced in advance.',
-                  'નોંધ: ₹2,100/- વાર્ષિક મેમ્બરશિપ ફી છે. તમામ એક્ટિવિટીઝ અને ઇવેન્ટ્સનો ખર્ચ તેમાં સામેલ નથી. કેટલીક એક્ટિવિટીઝ ફ્રી હોઈ શકે છે; વર્કશોપ, ટુર્નામેન્ટ, ટ્રિપ અને ખાસ ઇવેન્ટ માટે અલગ ચાર્જ લાગુ થઈ શકે છે, જે અગાઉથી જણાવવામાં આવશે.',
-                  'नोट: ₹2,100/- वार्षिक सदस्यता शुल्क है. सभी गतिविधियों का खर्च इसमें शामिल नहीं है. कुछ सत्र मुफ्त हो सकते हैं; वर्कशॉप, ट्रिप और विशेष आयोजनों के शुल्क पहले बताए जाएँगे.'
+                  `₹${feeLabel} is the annual membership fee. It does not include all activity costs. Some sessions are free; workshops, tournaments, outdoor trips and special events carry separate charges announced in advance.`,
+                  `નોંધ: ₹${feeLabel}/- વાર્ષિક મેમ્બરશિપ ફી છે. તમામ એક્ટિવિટીઝ અને ઇવેન્ટ્સનો ખર્ચ તેમાં સામેલ નથી. કેટલીક એક્ટિવિટીઝ ફ્રી હોઈ શકે છે; વર્કશોપ, ટુર્નામેન્ટ, ટ્રિપ અને ખાસ ઇવેન્ટ માટે અલગ ચાર્જ લાગુ થઈ શકે છે, જે અગાઉથી જણાવવામાં આવશે.`,
+                  `नोट: ₹${feeLabel}/- वार्षिक सदस्यता शुल्क है. सभी गतिविधियों का खर्च इसमें शामिल नहीं है. कुछ सत्र मुफ्त हो सकते हैं; वर्कशॉप, ट्रिप और विशेष आयोजनों के शुल्क पहले बताए जाएँगे.`
                 )}
               </div>
             </div>
@@ -569,17 +577,17 @@ export default function Home(){
         </section>
 
         {/* SECTION 10: 15 FREQUENTLY ASKED QUESTIONS */}
-        <Questions lang={lang}/>
+        <Questions lang={lang} feeLabel={feeLabel} />
 
         {/* SECTION 12: FINAL CALL TO ACTION */}
         <section className="contact" id="contact">
           <div className="wrap">
             <span className="eyebrow">A CELEBRATION OF LIFE · ONE COMMUNITY · SIX CLUBS</span>
             <h2>
-              {heading('Life is better','જીવન સુંદર બને છે,','ज़िंदगी बेहतर बनती है,')}<br/>
-              <em>{heading('when we experience it together.','જ્યારે સાથે માણીએ છીએ.','जब साथ मिलकर जीते हैं.')}</em>
+              {heading('Life is better', 'જીવન સુંદર બને છે,', 'ज़िंदगी बेहतर बनती है,')}<br />
+              <em>{heading('when we experience it together.', 'જ્યારે સાથે માણીએ છીએ.', 'जब साथ मिलकर जीते हैं.')}</em>
             </h2>
-            <p style={{maxWidth:'650px',color:'#fbece5',fontSize:'15px',lineHeight:'1.85',margin:'15px 0 20px'}}>
+            <p style={{ maxWidth: '650px', color: '#fbece5', fontSize: '15px', lineHeight: '1.85', margin: '15px 0 20px' }}>
               {t(
                 'Life is not just about work and responsibilities. Health, happiness, friendship, learning, sports, hobbies and celebrations are just as vital. Join Zunoon today and bring new life experiences into your daily routine.',
                 'જીવનમાં માત્ર કામ અને જવાબદારીઓ જ નહીં, પરંતુ Health, Happiness, Friendship, Learning, Sports, Hobbies અને Celebrations પણ જરૂરી છે. Zunoon સાથે જોડાઓ અને જીવનના દરેક ક્ષેત્રમાં નવા Experiences મેળવવાની શરૂઆત કરો.',
@@ -587,37 +595,39 @@ export default function Home(){
               )}
             </p>
             <div className="contact-promises">
-              <span className="promise-tag">🧘 {t('Live Better','લાઇવ બેટર','बेहतर जिएँ')}</span>
-              <span className="promise-tag">🤝 {t('Connect Deeper','કનેક્ટ ડીપર','गहराई से जुड़ें')}</span>
-              <span className="promise-tag">🏆 {t('Play Together','પ્લે ટુગેધર','साथ खेलें')}</span>
-              <span className="promise-tag">🎨 {t('Discover Passion','ડિસ્કવર પેશન','शौक पहचानें')}</span>
-              <span className="promise-tag">🚀 {t('Grow Together','ગ્રો ટુગેધર','साथ बढ़ें')}</span>
-              <span className="promise-tag">🎊 {t('Celebrate Life','સેલિબ્રેટ લાઇફ','जीवन का जश्न')}</span>
+              <span className="promise-tag">🧘 {t('Live Better', 'લાઇવ બેટર', 'बेहतर जिएँ')}</span>
+              <span className="promise-tag">🤝 {t('Connect Deeper', 'કનેક્ટ ડીપર', 'गहराई से जुड़ें')}</span>
+              <span className="promise-tag">🏆 {t('Play Together', 'પ્લે ટુગેધર', 'साथ खेलें')}</span>
+              <span className="promise-tag">🎨 {t('Discover Passion', 'ડિસ્કવર પેશન', 'शौक पहचानें')}</span>
+              <span className="promise-tag">🚀 {t('Grow Together', 'ગ્રો ટુગેધર', 'साथ बढ़ें')}</span>
+              <span className="promise-tag">🎊 {t('Celebrate Life', 'સેલિબ્રેટ લાઇફ', 'जीवन का जश्न')}</span>
             </div>
             <div className="contact-actions">
               <a
                 className="button light"
                 href="#membership"
-                onClick={() => trackEvent({ action: 'click_cta', category: 'Conversion', label: 'Contact Join Button', value: 2100 })}
+                onClick={() => trackEvent({ action: 'click_cta', category: 'Conversion', label: 'Contact Join Button', value: feeRupees })}
               >
-                {heading('Join Zunoon Today · ₹2,100','આજે જ જોડાઓ · ₹2,100','आज ही जुड़ें · ₹2,100')}<ArrowUpRight size={18}/>
+                {heading(`Join Zunoon Today · ₹${feeLabel}`, `આજે જ જોડાઓ · ₹${feeLabel}`, `आज ही जुड़ें · ₹${feeLabel}`)}<ArrowUpRight size={18} />
               </a>
               <a
-                className="button"
-                style={{background:'#1f2e23',borderColor:'#3a5040'}}
+                className="button contact-wa-btn"
                 href={join}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => trackEvent({ action: 'whatsapp_lead', category: 'Conversion', label: 'Contact Section WhatsApp', value: 2100 })}
+                onClick={() => trackEvent({ action: 'whatsapp_lead', category: 'Conversion', label: 'Contact Section WhatsApp', value: feeRupees })}
               >
-                {heading('Chat on WhatsApp','વોટ્સએપ પર સંપર્ક કરો','व्हाट्सएप पर बात करें')}<ArrowUpRight size={18}/>
+                <WhatsAppIcon size={20} />
+                <span>{heading('Chat on WhatsApp', 'વોટ્સએપ પર સંપર્ક કરો', 'व्हाट्सएप पर बात करें')}</span>
+                <ArrowUpRight size={18} />
               </a>
               <a
                 className="call"
-                href="tel:+919712112110"
-                onClick={() => trackEvent({ action: 'phone_call_click', category: 'Lead', label: '+91 97121 12110' })}
+                href={`tel:${contact.telNumber}`}
+                onClick={() => trackEvent({ action: 'phone_call_click', category: 'Lead', label: contact.displayPhone })}
               >
-                <Phone size={17}/>97 121 121 10
+                <Phone size={18} />
+                <span>{contact.displayPhone}</span>
               </a>
             </div>
           </div>
@@ -629,37 +639,47 @@ export default function Home(){
       <footer className="wrap">
         <div className="footer-top">
           <div>
-            <a href="#"><Image src="/images/logo.webp" alt="Zunoon — A Celebration of Life" width={220} height={74}/></a>
+            <a href="#"><Image src="/images/logo.webp" alt="Zunoon — A Celebration of Life" width={220} height={74} /></a>
           </div>
           <div className="footer-contact">
-            <strong>{t('Zunoon Club Community','ઝુનૂન ક્લબ કમ્યુનિટી','ज़ुनून क्लब समुदाय')}</strong><br/>
-            <span>📍 {t('Surat, Gujarat, India','સુરત, ગુજરાત, ભારત','सूरत, गुजरात, भारत')}</span><br/>
-            <span>📞 / 💬 <a href="tel:+919712112110" style={{textDecoration:'underline'}}>97 121 121 10</a></span>
+            <strong className="footer-title">{t('Zunoon Club Community', 'ઝુનૂન ક્લબ કમ્યુનિટી', 'ज़ुनून क्लब समुदाय')}</strong>
+            <div className="footer-contact-item">
+              <MapPin size={17} className="footer-item-icon location-icon" aria-hidden="true" />
+              <span>{t(contact.addressEn, contact.addressGu, contact.addressHi)}</span>
+            </div>
+            <div className="footer-contact-item">
+              <Phone size={17} className="footer-item-icon phone-icon" aria-hidden="true" />
+              <a href={`tel:${contact.telNumber}`}>{contact.displayPhone}</a>
+            </div>
           </div>
-          <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
-            <a href="https://www.instagram.com/zunoon_club/" target="_blank" rel="noopener noreferrer" className="instagram">
-              <Instagram size={20}/>@zunoon_club<ArrowUpRight size={16}/>
+          <div className="footer-social-column">
+            <a href={contact.instagramUrl} target="_blank" rel="noopener noreferrer" className="footer-social-link instagram-link">
+              <Instagram size={19} className="social-icon instagram-brand-icon" aria-hidden="true" />
+              <span>{contact.instagramHandle}</span>
+              <ArrowUpRight size={16} />
             </a>
-            <a href={join} target="_blank" rel="noopener noreferrer" className="instagram" style={{color:'var(--ink)'}}>
-              💬 WhatsApp: 97 121 121 10<ArrowUpRight size={16}/>
+            <a href={join} target="_blank" rel="noopener noreferrer" className="footer-social-link whatsapp-link">
+              <WhatsAppIcon size={19} className="social-icon whatsapp-brand-icon" aria-hidden="true" />
+              <span>WhatsApp: {contact.displayPhone}</span>
+              <ArrowUpRight size={16} />
             </a>
           </div>
         </div>
 
         <div className="footer-extra">
-          <a href="#why-join">{heading("Why join","શા માટે જોડાવું","क्यों जुड़ें")}</a>
-          <a href="#clubs">{heading("Six clubs","છ ક્લબ","छह क्लब")}</a>
-          <a href="#community">{heading("Who can join","કોણ જોડાઈ શકે","कौन जुड़ सकता है")}</a>
-          <a href="#founder">{heading("Our founder","અમારા સ્થાપક","हमारे संस्थापक")}</a>
-          <a href="#testimonials">{heading("Member experiences","સભ્યોના અનુભવો","सदस्यों के अनुभव")}</a>
-          <a href="#how-it-works">{heading("How it works","કેવી રીતે જોડાવું","कैसे जुड़ें")}</a>
-          <a href="#faq">{heading("FAQs","પ્રશ્નો","सवाल")}</a>
-          <a href="#contact">{heading("Contact","સંપર્ક","संपर्क")}</a>
+          <a href="#why-join">{heading("Why join", "શા માટે જોડાવું", "क्यों जुड़ें")}</a>
+          <a href="#clubs">{heading("Six clubs", "છ ક્લબ", "छह क्लब")}</a>
+          <a href="#community">{heading("Who can join", "કોણ જોડાઈ શકે", "कौन जुड़ सकता है")}</a>
+          <a href="#founder">{heading("Our founder", "અમારા સ્થાપક", "हमारे संस्थापक")}</a>
+          <a href="#testimonials">{heading("Member experiences", "સભ્યોના અનુભવો", "सदस्यों के अनुभव")}</a>
+          <a href="#how-it-works">{heading("How it works", "કેવી રીતે જોડાવું", "कैसे जुड़ें")}</a>
+          <a href="#faq">{heading("FAQs", "પ્રશ્નો", "सवाल")}</a>
+          <a href="#contact">{heading("Contact", "સંપર્ક", "संपर्क")}</a>
         </div>
 
         <div className="footer-bottom">
           <span>Copyright © 2026 Zunoon Club. All Rights Reserved.</span>
-          <div>{nav.map(([title,id])=><a key={id} href={`#${id}`}>{title}</a>)}</div>
+          <div>{nav.map(([title, id]) => <a key={id} href={`#${id}`}>{title}</a>)}</div>
         </div>
       </footer>
 
@@ -667,24 +687,24 @@ export default function Home(){
       <a
         className="floating-join"
         href="#membership"
-        onClick={() => trackEvent({ action: 'click_cta', category: 'Conversion', label: 'Floating Join Button', value: 2100 })}
+        onClick={() => trackEvent({ action: 'click_cta', category: 'Conversion', label: 'Floating Join Button', value: feeRupees })}
       >
         <span>
-          {heading('Join Zunoon','ઝુનૂન સાથે જોડાઓ','ज़ुनून से जुड़ें')}
-          <small>₹2,100 / {heading('year','વર્ષ','वर्ष')}</small>
+          {heading('Join Zunoon', 'ઝુનૂન સાથે જોડાઓ', 'ज़ुनून से जुड़ें')}
+          <small>₹{feeLabel} / {heading('year', 'વર્ષ', 'वर्ष')}</small>
         </span>
-        <ArrowUpRight size={22}/>
+        <ArrowUpRight size={22} />
       </a>
 
       {/* LIGHTBOX DIALOG */}
       <dialog
         ref={dialog}
         aria-label="Photograph viewer"
-        onCancel={e=>{e.preventDefault();setPhoto(null)}}
-        onClick={e=>{if(e.target===e.currentTarget)setPhoto(null)}}
+        onCancel={e => { e.preventDefault(); setPhoto(null) }}
+        onClick={e => { if (e.target === e.currentTarget) setPhoto(null) }}
       >
-        <button className="close-dialog" aria-label="Close photograph" onClick={()=>setPhoto(null)}><X/></button>
-        {photo!==null && filteredPhotos[photo] && (
+        <button className="close-dialog" aria-label="Close photograph" onClick={() => setPhoto(null)}><X /></button>
+        {photo !== null && filteredPhotos[photo] && (
           <div
             className="lightbox-touch-area"
             onTouchStart={handleTouchStart}
@@ -692,13 +712,13 @@ export default function Home(){
             onTouchEnd={handleTouchEnd}
           >
             <div className="lightbox">
-              <Image src={filteredPhotos[photo].src} fill sizes="90vw" alt={filteredPhotos[photo].alt||'Life at Zunoon'} priority/>
+              <Image src={filteredPhotos[photo].src} fill sizes="90vw" alt={filteredPhotos[photo].alt || 'Life at Zunoon'} priority />
             </div>
             <div className="lightbox-footer">
               <div className="lightbox-nav-row">
-                <button aria-label="Previous photograph" onClick={()=>setPhoto((photo+filteredPhotos.length-1)%filteredPhotos.length)}><ChevronLeft/></button>
-                <span>{photo+1} / {filteredPhotos.length}</span>
-                <button aria-label="Next photograph" onClick={()=>setPhoto((photo+1)%filteredPhotos.length)}><ChevronRight/></button>
+                <button aria-label="Previous photograph" onClick={() => setPhoto((photo + filteredPhotos.length - 1) % filteredPhotos.length)}><ChevronLeft /></button>
+                <span>{photo + 1} / {filteredPhotos.length}</span>
+                <button aria-label="Next photograph" onClick={() => setPhoto((photo + 1) % filteredPhotos.length)}><ChevronRight /></button>
               </div>
             </div>
           </div>

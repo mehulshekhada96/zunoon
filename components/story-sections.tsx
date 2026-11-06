@@ -277,7 +277,7 @@ export function Journey({lang}:{lang:Lang}){
   );
 }
 
-export function Questions({lang}:{lang:Lang}){
+export function Questions({lang,feeLabel}:{lang:Lang;feeLabel:string}){
   const {h,w}=copy(lang);
   return (
     <section className="wrap section faq" id="faq">
@@ -295,7 +295,7 @@ export function Questions({lang}:{lang:Lang}){
               <span className="faq-question"><small>{String(i+1).padStart(2,'0')}</small>{w(f.q)}</span>
               <Plus size={18}/>
             </summary>
-            <p>{w(f.a)}</p>
+            <p>{w(f.a).replace("₹2,100",feeLabel)}</p>
           </details>
         ))}
       </div>

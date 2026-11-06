@@ -1,0 +1,22 @@
+import {createHash} from 'node:crypto';
+import {database} from './mongodb';
+import {HttpError} from './media';
+import {sameOrigin} from './request-origin';
+import {defaultMembership,type PaymentRecord,type MembershipSettings} from '@/lib/payments';
+import {paymentOutcome,type GatewayPayment} from './payment-rules';
+let indexes:Promise<unknown>|undefined;
+export async function paymentDb(){const db=await database();indexes??=Promise.all([db.collection('membership_payments').createIndex({orderId:1},{unique:true,sparse:true}),db.collection('membership_payments').createIndex({createdAt:-1}),db.collection('payment_limits').createIndex({expiresAt:1},{expireAfterSeconds:0})]).catch(e=>{indexes=undefined;throw e});await indexes;return {records:db.collection<PaymentRecord>('membership_payments'),settings:db.collection<MembershipSettings&{_id:string}>('membership_settings'),limits:db.collection<{_id:string;count:number;expiresAt:Date}>('payment_limits')};}
+export function ready(){return /^rzp_(test|live)_/.test(process.env.RAZORPAY_KEY_ID||'')&&!!process.env.RAZORPAY_KEY_SECRET&&!process.env.RAZORPAY_KEY_SECRET.includes('placeholder');}
+export const mode=()=>process.env.RAZORPAY_KEY_ID?.startsWith('rzp_live_')?'live' as const:'test' as const;
+export async function membership(){return await (await paymentDb()).settings.findOne({_id:'annual'})||defaultMembership;}
+export async function razorpay<T>(path:string,body?:unknown):Promise<T>{if(!ready())throw new HttpError(503,'Online payments are not configured yet.');const r=await fetch('https://api.razorpay.com/v1/'+path,{method:body?'POST':'GET',headers:{Authorization:'Basic '+Buffer.from(process.env.RAZORPAY_KEY_ID+':'+process.env.RAZORPAY_KEY_SECRET).toString('base64'),'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{}),cache:'no-store',signal:AbortSignal.timeout(15000)});if(!r.ok)throw new HttpError(502,'Razorpay could not confirm this request. Please check status before trying again.');return r.json() as Promise<T>;}
+export async function limit(request:Request){if(!sameOrigin(request))throw new HttpError(403,'Please submit from this website.');const ip=request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()||'local';const window=Math.floor(Date.now()/900000);const _id=createHash('sha256').update(`${ip}:${window}`).digest('hex');const record=await (await paymentDb()).limits.findOneAndUpdate({_id},{$inc:{count:1},$setOnInsert:{expiresAt:new Date((window+1)*900000)}},{upsert:true,returnDocument:'after'});if(!record||record.count>30)throw new HttpError(429,'Too many requests. Please try again in 15 minutes.');}
+export const validId=(id:unknown):id is string=>typeof id==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+export async function recordFor(id:unknown){if(!validId(id))throw new HttpError(400,'Invalid registration reference.');const record=await (await paymentDb()).records.findOne({_id:id});if(!record)throw new HttpError(404,'Registration not found.');return record;}
+export async function reconcile(record:PaymentRecord){if(!record.orderId)return record;const data=await razorpay<{items:GatewayPayment[]}>('orders/'+encodeURIComponent(record.orderId)+'/payments');const outcome=paymentOutcome(record.orderId,record.amount,data.items);const payment=outcome.payment;const now=new Date().toISOString();
+ const update:Partial<PaymentRecord>={status:outcome.status,updatedAt:now};
+ if(payment){update.paymentId=payment.id;update.method=payment.method||'';if(outcome.status==='SUCCESS'){update.paidAt=record.paidAt||now;update.failureReason='';update.refundAmount=payment.amount_refunded||0}else update.failureReason=outcome.status==='FAILED'?(payment.error_description||'Payment failed'):'';}
+ const db=await paymentDb();await db.records.updateOne({_id:record._id,...(outcome.status!=='SUCCESS'?{status:{$ne:'SUCCESS' as const}}:{})},{$set:update});return (await db.records.findOne({_id:record._id}))!;
+}
+export function publicRecord(r:PaymentRecord){return {reference:r._id,name:r.name,phone:r.phone,status:r.status,amount:r.amount,currency:r.currency,paymentId:r.paymentId,createdAt:r.createdAt,paidAt:r.paidAt,failureReason:r.failureReason,mode:r.mode};}
+export function paymentError(e:unknown){if(e instanceof HttpError)return Response.json({error:e.message},{status:e.status});console.error('Payment request failed');return Response.json({error:'Unable to process payment information. Please try again.'},{status:500});}
