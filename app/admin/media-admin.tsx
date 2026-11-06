@@ -16,8 +16,12 @@ import {
   Trash2,
   User,
   Camera,
-  Plus
+  Plus,
+  Quote,
+  Star,
+  Edit3
 } from 'lucide-react';
+import {MemberReview, defaultMemberReviews} from '@/lib/testimonials';
 import {
   MediaAsset,
   mediaSections,
@@ -94,7 +98,7 @@ async function api(url: string, options?: RequestInit) {
 export type SectionType = 'values' | 'why' | 'founder' | 'clubs' | 'community';
 
 export default function MediaAdmin({name}: {name: string}) {
-  const [activeTab, setActiveTab] = useState<'values' | 'why' | 'founder' | 'clubs' | 'community' | 'life-at-zunoon' | 'library'>('values');
+  const [activeTab, setActiveTab] = useState<'values' | 'why' | 'founder' | 'clubs' | 'community' | 'life-at-zunoon' | 'member-experiences' | 'library'>('values');
   const [assets, setAssets] = useState<MediaAsset[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [configured, setConfigured] = useState(false);
@@ -103,6 +107,19 @@ export default function MediaAdmin({name}: {name: string}) {
   const [updatingSlot, setUpdatingSlot] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+
+  // Member Experiences & Reviews State
+  const [reviews, setReviews] = useState<MemberReview[]>([]);
+  const [editingReview, setEditingReview] = useState<MemberReview | null>(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewForm, setReviewForm] = useState({
+    author: '',
+    role: '',
+    category: 'Health & Fitness',
+    title: '',
+    quote: '',
+    rating: 5
+  });
 
   // Life at Zunoon sections & multi-upload state
   const [gallerySections, setGallerySections] = useState<string[]>([
@@ -137,6 +154,18 @@ export default function MediaAdmin({name}: {name: string}) {
   const [libTitle, setLibTitle] = useState('');
   const libInput = useRef<HTMLInputElement>(null);
 
+  async function refreshReviews() {
+    try {
+      const res = await fetch('/api/admin/testimonials', {cache: 'no-store'});
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.testimonials && Array.isArray(data.testimonials)) {
+          setReviews(data.testimonials);
+        }
+      }
+    } catch {}
+  }
+
   async function refreshSections() {
     try {
       const res = await fetch('/api/admin/gallery-sections/', {cache: 'no-store'});
@@ -159,6 +188,7 @@ export default function MediaAdmin({name}: {name: string}) {
     setAssignments(data.assignments);
     setConfigured(data.configured);
     await refreshSections();
+    await refreshReviews();
   }
 
   async function handleAddGallerySection(e: React.FormEvent) {
@@ -241,6 +271,110 @@ export default function MediaAdmin({name}: {name: string}) {
     } finally {
       setBusy(false);
       setUploadProgress('');
+    }
+  }
+
+  function openNewReviewModal() {
+    setEditingReview(null);
+    setReviewForm({
+      author: '',
+      role: '',
+      category: 'Health & Fitness',
+      title: '',
+      quote: '',
+      rating: 5
+    });
+    setShowReviewModal(true);
+  }
+
+  function openEditReviewModal(r: MemberReview) {
+    setEditingReview(r);
+    setReviewForm({
+      author: r.author,
+      role: r.role || '',
+      category: r.category || 'Member Experience',
+      title: r.title || '',
+      quote: r.quote || '',
+      rating: r.rating || 5
+    });
+    setShowReviewModal(true);
+  }
+
+  async function handleSaveReview(e: React.FormEvent) {
+    e.preventDefault();
+    if (!reviewForm.author.trim()) {
+      setError('Member name is required.');
+      return;
+    }
+    if (!reviewForm.quote.trim()) {
+      setError('Member review / experience text is required.');
+      return;
+    }
+    setBusy(true);
+    setError('');
+    setMessage('');
+    try {
+      if (editingReview) {
+        const res = await fetch('/api/admin/testimonials', {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            id: editingReview.id,
+            author: reviewForm.author.trim(),
+            role: reviewForm.role.trim(),
+            category: reviewForm.category.trim(),
+            title: reviewForm.title.trim(),
+            quote: reviewForm.quote.trim(),
+            rating: Number(reviewForm.rating) || 5
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to update review');
+        setMessage(`✓ Updated member experience for "${reviewForm.author}".`);
+      } else {
+        const res = await fetch('/api/admin/testimonials', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            author: reviewForm.author.trim(),
+            role: reviewForm.role.trim(),
+            category: reviewForm.category.trim(),
+            title: reviewForm.title.trim(),
+            quote: reviewForm.quote.trim(),
+            rating: Number(reviewForm.rating) || 5
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to add review');
+        setMessage(`✓ Added member experience for "${reviewForm.author}".`);
+      }
+      setShowReviewModal(false);
+      setEditingReview(null);
+      await refreshReviews();
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleDeleteReview(id: string, author: string) {
+    if (!confirm(`Delete review from "${author}"?`)) return;
+    setBusy(true);
+    setError('');
+    setMessage('');
+    try {
+      const res = await fetch(`/api/admin/testimonials?id=${encodeURIComponent(id)}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete review');
+      setMessage(`✓ Deleted review from "${author}".`);
+      await refreshReviews();
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -609,7 +743,7 @@ export default function MediaAdmin({name}: {name: string}) {
             onClick={() => setActiveTab('community')}
           >
             <User size={18} />
-            <span>Zunoon For Everyone</span>
+            <span>Who Can Join Zunoon</span>
             <span className="nav-badge">8</span>
           </button>
 
@@ -621,6 +755,16 @@ export default function MediaAdmin({name}: {name: string}) {
             <Camera size={18} />
             <span>Life at Zunoon</span>
             <span className="nav-badge">{galleryAssetsCount}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`admin-nav-item ${activeTab === 'member-experiences' ? 'active' : ''}`}
+            onClick={() => setActiveTab('member-experiences')}
+          >
+            <Quote size={18} />
+            <span>Member Experiences</span>
+            <span className="nav-badge">{reviews.length}</span>
           </button>
 
           <button
@@ -669,8 +813,9 @@ export default function MediaAdmin({name}: {name: string}) {
               {activeTab === 'why' && 'Why To Join Zunoon Photos (16:9)'}
               {activeTab === 'founder' && 'Founder Portrait Photo (9:16)'}
               {activeTab === 'clubs' && 'Community Clubs Photos (16:10)'}
-              {activeTab === 'community' && 'Zunoon Is For Everyone Photos (16:10)'}
+              {activeTab === 'community' && 'Who Can Join Zunoon Photos (16:10)'}
               {activeTab === 'life-at-zunoon' && 'Life at Zunoon Photos & Sections'}
+              {activeTab === 'member-experiences' && 'Member Experiences & Reviews'}
               {activeTab === 'library' && 'Photo Library'}
             </h1>
           </div>
@@ -689,6 +834,8 @@ export default function MediaAdmin({name}: {name: string}) {
                   ? '/#community'
                   : activeTab === 'life-at-zunoon'
                   ? '/#gallery'
+                  : activeTab === 'member-experiences'
+                  ? '/#testimonials'
                   : '/'
               }
               target="_blank"
@@ -1112,8 +1259,8 @@ export default function MediaAdmin({name}: {name: string}) {
                 <div className="admin-helper-card">
                   <div className="helper-icon">💡</div>
                   <div className="helper-text">
-                    <strong>Zunoon is For Everyone Photos (8 Personas):</strong> Click <strong>"Upload New Photo"</strong> on any persona card to update its photo directly.
-                    <span className="helper-sub">Recommended ratio: <strong>16:10 or 16:9</strong> landscape (e.g. 1920×1200 or 1920×1080). Displayed on the homepage under "ZUNOON IS FOR EVERYONE".</span>
+                    <strong>Who Can Join Zunoon Photos (8 Personas):</strong> Click <strong>"Upload New Photo"</strong> on any persona card to update its photo directly.
+                    <span className="helper-sub">Recommended ratio: <strong>16:10 or 16:9</strong> landscape (e.g. 1920×1200 or 1920×1080). Displayed on the homepage under "WHO CAN JOIN ZUNOON".</span>
                   </div>
                 </div>
 
@@ -1383,6 +1530,203 @@ export default function MediaAdmin({name}: {name: string}) {
                     </div>
                   );
                 })()}
+              </section>
+            )}
+
+            {/* TAB: MEMBER EXPERIENCES & REVIEWS */}
+            {activeTab === 'member-experiences' && (
+              <section className="admin-tab-content">
+                <div className="admin-helper-card">
+                  <div className="helper-icon">💡</div>
+                  <div className="helper-text">
+                    <strong>Member Experiences & Reviews with Name:</strong> Add, edit, or delete member reviews and testimonials. All reviews added here appear live on the website in the <strong>"Member Experiences"</strong> section.
+                    <span className="helper-sub">You can specify Member Name, Member Role/Profile, Category, and the review text.</span>
+                  </div>
+                </div>
+
+                {/* Reviews Action Bar */}
+                <div className="reviews-admin-toolbar">
+                  <div className="reviews-toolbar-title">
+                    <h3>All Member Experiences</h3>
+                    <span className="count-badge">{reviews.length} reviews</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="admin-btn-primary"
+                    onClick={openNewReviewModal}
+                  >
+                    <Plus size={16} />
+                    <span>Add Member Experience</span>
+                  </button>
+                </div>
+
+                {/* Reviews Grid */}
+                <div className="admin-reviews-grid">
+                  {reviews.length === 0 ? (
+                    <div className="admin-empty-box">
+                      <p>No member experiences added yet. Click "+ Add Member Experience" to add the first one!</p>
+                    </div>
+                  ) : (
+                    reviews.map(rev => (
+                      <article key={rev.id} className="admin-review-card">
+                        <div className="admin-review-card-head">
+                          <span className="admin-review-cat">{rev.category}</span>
+                          <div className="admin-review-stars">
+                            {Array.from({length: rev.rating || 5}).map((_, i) => (
+                              <Star key={i} size={14} fill="#e59819" color="#e59819" />
+                            ))}
+                          </div>
+                        </div>
+
+                        <blockquote className="admin-review-quote">
+                          “{rev.quote.replace(/^[“"]|[”"]$/g, '')}”
+                        </blockquote>
+
+                        <div className="admin-review-card-foot">
+                          <div className="admin-review-author-info">
+                            <strong className="admin-review-name">{rev.author}</strong>
+                            {rev.role && <span className="admin-review-role">{rev.role}</span>}
+                            {!rev.role && rev.title && <span className="admin-review-role">{rev.title}</span>}
+                          </div>
+
+                          <div className="admin-review-actions">
+                            <button
+                              type="button"
+                              className="admin-review-btn-edit"
+                              onClick={() => openEditReviewModal(rev)}
+                              title="Edit Review"
+                            >
+                              <Edit3 size={15} />
+                              <span>Edit</span>
+                            </button>
+                            <button
+                              type="button"
+                              className="admin-review-btn-delete"
+                              onClick={() => void handleDeleteReview(rev.id, rev.author)}
+                              title="Delete Review"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </div>
+                        </div>
+                      </article>
+                    ))
+                  )}
+                </div>
+
+                {/* Add / Edit Review Modal */}
+                {showReviewModal && (
+                  <div className="admin-modal-backdrop" onClick={() => setShowReviewModal(false)}>
+                    <div className="admin-modal-box review-modal-box" onClick={e => e.stopPropagation()}>
+                      <div className="admin-modal-head">
+                        <h3>{editingReview ? 'Edit Member Experience' : 'Add New Member Experience'}</h3>
+                        <button
+                          type="button"
+                          className="admin-modal-close"
+                          onClick={() => setShowReviewModal(false)}
+                        >
+                          <X size={18} />
+                        </button>
+                      </div>
+
+                      <form onSubmit={handleSaveReview} className="admin-review-form">
+                        <div className="admin-form-group">
+                          <label>
+                            Member Name <span className="required">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. Ramesh Patel, Priya Shah"
+                            value={reviewForm.author}
+                            onChange={e => setReviewForm(prev => ({...prev, author: e.target.value}))}
+                          />
+                        </div>
+
+                        <div className="admin-form-row-2">
+                          <div className="admin-form-group">
+                            <label>Member Role / Tag</label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Entrepreneur, Homemaker, CA"
+                              value={reviewForm.role}
+                              onChange={e => setReviewForm(prev => ({...prev, role: e.target.value}))}
+                            />
+                          </div>
+
+                          <div className="admin-form-group">
+                            <label>Category</label>
+                            <select
+                              value={reviewForm.category}
+                              onChange={e => setReviewForm(prev => ({...prev, category: e.target.value}))}
+                            >
+                              <option value="Health & Fitness">Health & Fitness</option>
+                              <option value="Personal Growth">Personal Growth</option>
+                              <option value="Sports & Fun">Sports & Fun</option>
+                              <option value="Hobbies & Creativity">Hobbies & Creativity</option>
+                              <option value="Human Connection">Human Connection</option>
+                              <option value="Social Impact">Social Impact</option>
+                              <option value="Celebration">Celebration</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="admin-form-group">
+                          <label>Review Title / Headline (Optional)</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. A Community Beyond Routine"
+                            value={reviewForm.title}
+                            onChange={e => setReviewForm(prev => ({...prev, title: e.target.value}))}
+                          />
+                        </div>
+
+                        <div className="admin-form-group">
+                          <label>Rating</label>
+                          <select
+                            value={reviewForm.rating}
+                            onChange={e => setReviewForm(prev => ({...prev, rating: Number(e.target.value)}))}
+                          >
+                            <option value={5}>⭐⭐⭐⭐⭐ (5 Stars)</option>
+                            <option value={4}>⭐⭐⭐⭐ (4 Stars)</option>
+                            <option value={3}>⭐⭐⭐ (3 Stars)</option>
+                          </select>
+                        </div>
+
+                        <div className="admin-form-group">
+                          <label>
+                            Member Experience / Review Text <span className="required">*</span>
+                          </label>
+                          <textarea
+                            required
+                            rows={4}
+                            placeholder="Write the member's quote or experience here..."
+                            value={reviewForm.quote}
+                            onChange={e => setReviewForm(prev => ({...prev, quote: e.target.value}))}
+                          />
+                        </div>
+
+                        <div className="admin-modal-actions">
+                          <button
+                            type="button"
+                            className="admin-btn-secondary"
+                            onClick={() => setShowReviewModal(false)}
+                            disabled={busy}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="admin-btn-primary"
+                            disabled={busy || !reviewForm.author.trim() || !reviewForm.quote.trim()}
+                          >
+                            {busy ? 'Saving…' : editingReview ? 'Update Review' : 'Save & Publish Review'}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
               </section>
             )}
 

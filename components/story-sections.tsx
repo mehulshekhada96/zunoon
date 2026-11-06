@@ -1,8 +1,11 @@
+'use client';
+import {useEffect, useState} from 'react';
 import Image from 'next/image';
 import {useMedia} from '@/lib/use-media';
 import {defaultValuesMedia, defaultWhyMedia, defaultFounderMedia, whySlots, communitySlots, defaultCommunityMedia} from '@/lib/media';
 import {Lang,Words,text} from '@/lib/content';
 import {values,valuesDetail,journey,faqs,questionsWhy,testimonials,whoCanJoin} from '@/lib/details';
+import {MemberReview, defaultMemberReviews} from '@/lib/testimonials';
 import {Heart,TrendingUp,Sparkles,BookOpen,Users,Plus,ArrowUpRight,Quote,Compass} from 'lucide-react';
 
 const valueIconsMap = {
@@ -122,8 +125,8 @@ export function WhoCanJoinSection({lang}:{lang:Lang}){
     <section className="wrap section who-section" id="community">
       <div className="section-top">
         <div>
-          <span className="eyebrow">ZUNOON IS FOR EVERYONE</span>
-          <h2>{h('There is a place ','અહીં સૌના માટે ','यहाँ सबके लिए ')}<em>{h('for you here.','એક જગ્યા છે.','एक जगह है.')}</em></h2>
+          <span className="eyebrow">WHO CAN JOIN ZUNOON</span>
+          <h2>{h('There is a place ','અહીં સૌના માટે ','यहाँ सबके लिए ')}<em>{h('for you here.','એક જગ્યા છે.','एक जगह છે.')}</em></h2>
         </div>
       </div>
       <div className="who-grid">
@@ -151,9 +154,6 @@ export function WhoCanJoinSection({lang}:{lang:Lang}){
             </div>
           );
         })}
-      </div>
-      <div className="who-banner">
-        <p><strong>{h('Because life has no single definition.','જીવનની કોઈ એક વ્યાખ્યા નથી.','जीवन की कोई एक परिभाषा नहीं होती.')}</strong> {t('Everyone has the right to learn, enjoy, discover their passions and move forward in life.','દરેક વ્યક્તિને જીવનમાં કંઈક નવું શીખવાનો, માણવાનો અને પોતાની પસંદગીથી આગળ વધવાનો અધિકાર છે.','हर किसी को सीखने, आनंद लेने और जीवन के हर पहलू में आगे बढ़ने का अधिकार है.')}</p>
       </div>
     </section>
   );
@@ -210,7 +210,22 @@ export function Founder({lang}:{lang:Lang}){
 }
 
 export function Testimonials({lang}:{lang:Lang}){
-  const {t,h,w}=copy(lang);
+  const {h}=copy(lang);
+  const [reviews, setReviews] = useState<MemberReview[]>(defaultMemberReviews);
+
+  useEffect(() => {
+    let active = true;
+    fetch('/api/testimonials')
+      .then(res => res.json())
+      .then(data => {
+        if (active && data?.testimonials && data.testimonials.length > 0) {
+          setReviews(data.testimonials);
+        }
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
+
   return (
     <section className="testimonials-section wrap section" id="testimonials">
       <div className="section-top">
@@ -220,21 +235,21 @@ export function Testimonials({lang}:{lang:Lang}){
         </div>
       </div>
       <div className="testimonials-grid">
-        {testimonials.map((item,idx)=>(
-          <article key={idx} className="testimonial-card">
+        {reviews.map((item)=>(
+          <article key={item.id} className="testimonial-card">
             <div className="card-top">
-              <span className="testimonial-cat">{lang==='mix'?item.category[0]:w(item.category)}</span>
+              <span className="testimonial-cat">{item.category}</span>
               <Quote size={20} className="quote-icon"/>
             </div>
-            <blockquote>{w(item.quote)}</blockquote>
+            <blockquote>“{item.quote.replace(/^[“"]|[”"]$/g, '')}”</blockquote>
             <div className="testimonial-footer">
-              <strong>{lang==='mix'?item.title[0]:w(item.title)}</strong>
-              <span>{item.author}</span>
+              <strong className="testimonial-author-name">{item.author}</strong>
+              {item.role && <span className="testimonial-author-role">{item.role}</span>}
+              {!item.role && item.title && <span className="testimonial-author-role">{item.title}</span>}
             </div>
           </article>
         ))}
       </div>
-      <p className="testimonials-note">{t('* Experiences shared from members participating across Zunoon clubs. Member reviews and photos updated periodically with consent.','* ઝુનૂન ક્લબના વિવિધ પાસાઓ વિશે સભ્યોના અનુભવોની ઝલક. વાસ્તવિક મેમ્બર સમીક્ષા અને વિગતો સમયાંતરે અપડેટ કરવામાં આવે છે.','* विभिन्न क्लब गतिविधियों से जुड़े सदस्यों के वास्तविक अनुभवों का संकलन.')}</p>
     </section>
   );
 }

@@ -1,5 +1,6 @@
 import {MongoClient} from 'mongodb';
 import type {MediaAsset} from '@/lib/media';
+import type {MemberReview} from '@/lib/testimonials';
 let connection:Promise<MongoClient>|undefined;
 export async function database(){
  const uri=process.env.MONGODB_URI;if(!uri)throw new Error('MongoDB is not configured');
@@ -11,5 +12,6 @@ export async function collections(){const db=await database();return {
  assignments:db.collection<{slot:string;assetId:string;updatedAt:string}>('media_assignments'),
  gallerySections:db.collection<{name:string;createdAt:string}>('gallery_sections'),
  sessions:db.collection<{tokenHash:string;email:string;expiresAt:Date}>('admin_sessions'),
- attempts:db.collection<{key:string;count:number;expiresAt:Date}>('login_attempts')
+ attempts:db.collection<{key:string;count:number;expiresAt:Date}>('login_attempts'),
+ testimonials:db.collection<MemberReview>('testimonials')
 };}
