@@ -136,7 +136,7 @@ export const defaultCommunityMedia: Record<string, {url: string; alt: string}> =
 };
 
 export const defaultFounderMedia: {url: string; alt: string} = {
-  url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1080&h=1920&q=80',
+  url: 'https://res.cloudinary.com/snzzqy9i/image/upload/v1793883354/zunoon/founder/e38338ed-4655-44aa-84ee-79c07e3fd1dc.jpg',
   alt: 'Jainit Finaviya — Founder, Zunoon Club'
 };
 

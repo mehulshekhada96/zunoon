@@ -346,7 +346,7 @@ export default function JoinForm() {
                   maxLength={100}
                   value={name}
                   disabled={busy}
-                  placeholder="e.g. Mehul Shekhada"
+                  placeholder="Enter your full name"
                   onChange={e => setName(e.target.value)}
                 />
               </label>

@@ -178,6 +178,7 @@ export function Founder({lang}:{lang:Lang}){
               fill
               sizes="(max-width: 768px) 240px, 260px"
               className="founder-photo-img"
+              priority
             />
             <div className="founder-photo-gradient" />
             <div className="founder-photo-overlay-info">

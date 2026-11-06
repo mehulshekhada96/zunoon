@@ -3,6 +3,39 @@ export async function GET(request:Request){try{await protect(request);const p=ne
  const dateField=p.get('dateField')==='paidAt'?'paidAt':'createdAt';try{const range=dateRange(p.get('from'),p.get('to'));if(Object.keys(range).length)filter[dateField]=range}catch{throw new HttpError(400,'Choose a valid date range.');}
  const q=(p.get('q')||'').trim().slice(0,100);if(q){const re={$regex:q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),$options:'i'};filter.$or=[{name:re},{email:re},{phone:re},{orderId:re},{paymentId:re}];}
  const page=Math.max(1,Math.min(100000,Math.floor(Number(p.get('page')))||1));const db=await paymentDb();const [total,rows,summary]=await Promise.all([db.records.countDocuments(filter),db.records.find(filter).sort({createdAt:-1}).skip((page-1)*25).limit(25).toArray(),db.records.aggregate([{$match:filter},{$group:{_id:'$status',count:{$sum:1},amount:{$sum:'$amount'}}}]).toArray()]);
+ if(p.get('export')==='excel'||p.get('export')==='xlsx'){
+   if(total>10000)throw new HttpError(400,'Narrow filters to 10,000 records or fewer before exporting.');
+   const all=await db.records.find(filter).sort({createdAt:-1}).toArray();
+   const {default:writeExcelFile}=await import('write-excel-file/node');
+   const sheetData=[
+     [
+       {value:'Member Name',fontWeight:'bold'},
+       {value:'Mobile Number',fontWeight:'bold'},
+       {value:'Amount (₹)',fontWeight:'bold'},
+       {value:'Status',fontWeight:'bold'},
+       {value:'Payment ID',fontWeight:'bold'},
+       {value:'Order ID',fontWeight:'bold'},
+       {value:'Payment Method',fontWeight:'bold'},
+       {value:'Registration Date (IST)',fontWeight:'bold'},
+       {value:'Payment Date (IST)',fontWeight:'bold'},
+       {value:'Failure Reason',fontWeight:'bold'}
+     ],
+     ...all.map(r=>[
+       r.name||'—',
+       r.phone||'—',
+       r.amount?r.amount/100:0,
+       r.status||'—',
+       r.paymentId||'—',
+       r.orderId||'—',
+       r.method||'—',
+       r.createdAt?new Date(r.createdAt).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}):'—',
+       r.paidAt?new Date(r.paidAt).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}):'—',
+       r.failureReason||'—'
+     ])
+   ];
+   const buffer=await writeExcelFile(sheetData as any).toBuffer();
+   return new Response(new Uint8Array(buffer),{headers:{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="zunoon-memberships.xlsx"','Cache-Control':'no-store'}});
+ }
  if(p.get('export')==='csv'){if(total>10000)throw new HttpError(400,'Narrow filters to 10,000 records or fewer before exporting.');const all=await db.records.find(filter).sort({createdAt:-1}).toArray();const keys=['name','phone','email','status','mode','amount','currency','orderId','paymentId','method','createdAt','paidAt','checkoutClosedAt','failureReason'] as const;const escape=(v:unknown)=>'"'+String(v??'').replace(/^[=+@\-\t\r]/,"'$&").replace(/"/g,'""')+'"';const csv=[keys.map(k=>k==='amount'?'amountINR':k).join(','),...all.map(r=>keys.map(k=>escape(k==='amount'?r.amount/100:r[k])).join(','))].join('\r\n');return new Response('\uFEFF'+csv,{headers:{'Content-Type':'text/csv; charset=utf-8','Content-Disposition':'attachment; filename="zunoon-payments.csv"','Cache-Control':'no-store'}})}
  return Response.json({rows,total,page,pages:Math.ceil(total/25),summary},{headers:{'Cache-Control':'no-store'}});
  }catch(e){return paymentError(e)}}
