@@ -12,7 +12,7 @@
 }
 
 .skeleton-image-wrapper.is-loading {
-  background: #e6ece4;
+  background: #e9ecef;
 }
 
 .skeleton-image-wrapper.is-loaded {
@@ -27,11 +27,11 @@
   height: 100%;
   background: linear-gradient(
     90deg,
-    #e2e9e0 0%,
-    #eef3ed 35%,
-    #f7faf6 50%,
-    #eef3ed 65%,
-    #e2e9e0 100%
+    #dee2e6 0%,
+    #e9ecef 35%,
+    #f8f9fa 50%,
+    #e9ecef 65%,
+    #dee2e6 100%
   );
   background-size: 250% 100%;
   animation: skeletonPulseWave 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;

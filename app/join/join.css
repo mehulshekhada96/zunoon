@@ -15,7 +15,7 @@
   margin: 0 auto 24px;
   font-size: 27px;
   font-weight: 800;
-  color: #162a20;
+  color: #22252a;
   text-decoration: none;
 }
 
@@ -43,14 +43,14 @@
   font-size: 11px;
   letter-spacing: 2px;
   font-weight: 700;
-  color: #205c38;
+  color: #22252a;
 }
 
 .join-card h1 {
   font-size: clamp(30px, 5.5vw, 44px);
   line-height: 1.15;
   margin: 14px 0 10px;
-  color: #162a20;
+  color: #22252a;
   letter-spacing: -0.02em;
 }
 
@@ -58,7 +58,7 @@
   font-size: 38px;
   font-weight: 700;
   margin: 22px 0 16px;
-  color: #162a20;
+  color: #22252a;
 }
 
 .join-price small {
@@ -89,13 +89,13 @@
   font: inherit;
   font-size: 14.5px;
   background: #ffffff;
-  color: #162a20;
+  color: #22252a;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .join-card input:focus {
   outline: none;
-  border-color: #205c38;
+  border-color: #22252a;
   box-shadow: 0 0 0 3px rgba(32, 92, 56, 0.12);
 }
 
@@ -103,7 +103,7 @@
   padding: 14px 20px;
   border: 0;
   border-radius: 10px;
-  background: #205c38;
+  background: #22252a;
   color: #ffffff;
   font: inherit;
   font-size: 15px;
@@ -165,7 +165,7 @@
   display: block;
   font-size: 14px;
   margin-bottom: 4px;
-  color: #162a20;
+  color: #22252a;
 }
 
 .join-notice-box p {
@@ -194,7 +194,7 @@
   padding: 8px 14px;
   font-size: 12.5px;
   font-weight: 600;
-  color: #205c38;
+  color: #22252a;
   cursor: pointer;
   margin-bottom: 8px;
   transition: all 0.2s;
@@ -202,7 +202,7 @@
 
 .join-recovery button:hover:not(:disabled) {
   background: #eaf3ec;
-  border-color: #205c38;
+  border-color: #22252a;
 }
 
 /* SUCCESS RECEIPT BOX MATCHING WEBSITE THEME */
@@ -239,7 +239,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.12em;
-  color: #205c38;
+  color: #22252a;
   background: #eaf3ec;
   padding: 5px 14px;
   border-radius: 999px;
@@ -250,7 +250,7 @@
 .join-success-title {
   font-family: var(--font-serif, Georgia, serif);
   font-size: clamp(26px, 4.5vw, 32px);
-  color: #162a20;
+  color: #22252a;
   margin: 0 0 6px;
   font-weight: 700;
   letter-spacing: -0.015em;
@@ -313,13 +313,13 @@
 }
 
 .receipt-val {
-  color: #162a20;
+  color: #22252a;
   font-weight: 600;
   text-align: right;
 }
 
 .receipt-amount {
-  color: #205c38;
+  color: #22252a;
   font-size: 16px;
   font-weight: 700;
 }
@@ -383,8 +383,8 @@
 
 .join-reset-btn:hover {
   background: #f4f6f1;
-  border-color: #205c38;
-  color: #162a20;
+  border-color: #22252a;
+  color: #22252a;
 }
 
 .join-back-wrap {
@@ -400,7 +400,7 @@
 }
 
 .join-back-link:hover {
-  color: #162a20;
+  color: #22252a;
   text-decoration: underline;
 }
 

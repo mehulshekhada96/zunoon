@@ -330,7 +330,7 @@ export default function JoinForm() {
                   Check payment status
                 </button>
                 <p style={{display: 'flex', alignItems: 'center', gap: '6px', margin: '4px 0 0'}}>
-                  <Phone size={13} style={{color: '#205c38'}} />
+                  <Phone size={13} style={{color: '#22252a'}} />
                   <span>Contact <a href={`tel:${contact.telNumber}`}>{contact.displayPhone}</a> with this reference if you need help.</span>
                 </p>
               </div>

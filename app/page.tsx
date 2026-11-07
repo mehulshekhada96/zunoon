@@ -155,8 +155,8 @@ export default function Home() {
   }, [photo]);
 
   const nav = [
-    [heading('Our story', 'અમારી વાત', 'हमारी कहानी'), 'about'],
     [heading('Club', 'ક્લબ', 'क्लब'), 'clubs'],
+    [heading('Our story', 'અમારી વાત', 'हमारी कहानी'), 'about'],
     [heading('Experiences', 'અનુભવો', 'अनुभव'), 'testimonials'],
     [heading('Community', 'કમ્યુનિટી', 'समुदाय'), 'community'],
     [heading('Life at Zunoon', 'ઝુનૂનમાં જીવન', 'ज़ुनून में जीवन'), 'gallery'],
@@ -231,55 +231,9 @@ export default function Home() {
         {/* SECTION 01: 16:9 HERO CAROUSEL BANNER (AUTO & MANUAL SWIPE) */}
         <HeroCarousel />
 
-        {/* SECTION 02: ABOUT ZUNOON */}
-        <section className="wrap section about" id="about">
-          <div>
-            <h2>{heading('Our Story', 'અમારી વાત', 'हमारी कहानी')}</h2>
-            <div className="about-caption">HUMAN 360° GROWTH &amp; LIFE EXPERIENCE COMMUNITY</div>
-          </div>
-          <div className="about-copy">
-            <p className="lead">
-              {t(
-                'A healthier you. A wider circle. A little more joy in the everyday.',
-                'હેલ્થ, સંબંધો, શોખ, વિકાસ અને ખુશીઓ — જીવનના દરેક પાસાને સાથે જોડતી કમ્યુનિટી.',
-                'सेहत, रिश्ते, शौक, विकास और खुशियाँ — जीवन के हर पहलू को जोड़ता एक समुदाय.'
-              )}
-            </p>
-            <p>
-              {t(
-                'Zunoon brings people together to move, play, learn, create, contribute and celebrate. Because success is also about how well you live, the people you share it with and the experiences you make time for.',
-                'ઝુનૂન એક એવી કમ્યુનિટી છે જ્યાં વ્યક્તિના જીવનના વિવિધ પાસાઓને એકસાથે જોડવાનો પ્રયાસ કરવામાં આવે છે. જીવન માત્ર પૈસા કમાવવા કે સફળતા પૂરતું નથી, પરંતુ સ્વસ્થ રહેવા, કંઈક નવું શીખવા, ટેલેન્ટ ઓળખવા અને સાથે મળીને સુંદર પળો ઉજવવા માટે છે.',
-                'ज़ुनून ऐसा समुदाय है जहाँ स्वस्थ रहने, नया सीखने, अपना हुनर पहचानने, समाज में योगदान देने और खूबसूरत पल साथ मनाने के अवसर मिलते हैं.'
-              )}
-            </p>
-            <div className="about-stats">
-              <div><strong>06</strong><span>{heading('Connected clubs', 'મુખ્ય ક્લબ', 'मुख्य क्लब')}</span></div>
-              <div><strong>30</strong><span>{heading('Activity categories', 'એક્ટિવિટી કેટેગરી', 'गतिविधि श्रेणियाँ')}</span></div>
-              <div><strong>100+</strong><span>{heading('Life experiences', 'લાઇફ એક્સપિરિયન્સ', 'जीवन अनुभव')}</span></div>
-            </div>
-          </div>
-        </section>
-
-        {/* MEET OUR FOUNDER (Directly below Our Story) */}
-        <Founder lang={lang} />
-
-        {/* SECTION 03 & 04: VISION, MISSION, VALUES & WHY ZUNOON (WITH 6 QUESTIONS) */}
-        <Purpose lang={lang} />
-        <Benefits lang={lang} />
-
-        {/* SECTION 07-12: SIX ACTIVITY CLUBS & 30 CATEGORIES */}
+        {/* SECTION 02: SIX ACTIVITY CLUBS & 30 CATEGORIES */}
         <section className="clubs-section" id="clubs">
           <div className="wrap section">
-            <div className="section-top">
-              <div>
-                <span className="eyebrow">OUR CLUBS</span>
-                <h2>
-                  {heading('Follow your curiosity. ', 'તમારી રુચિથી શરૂઆત કરો. ', 'अपनी रुचि से शुरुआत करें. ')}
-                  <em>{heading('Find your people.', 'તમારા લોકો સાથે જોડાઓ.', 'अपने लोगों से जुड़ें.')}</em>
-                </h2>
-              </div>
-            </div>
-
             <div className="club-tabs" role="tablist" aria-label="Explore clubs">
               {clubs.map((c, i) => {
                 const I = icons[i];
@@ -307,7 +261,7 @@ export default function Home() {
                     }}
                   >
                     <I size={22} />
-                    <span>{heading(c.name, c.local[1].replace(' ક્લબ', ''), c.local[2].replace(' क्लब', ''))}</span>
+                    <span>{heading(c.local[0], c.local[1], c.local[2])}</span>
                   </button>
                 );
               })}
@@ -388,6 +342,42 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* SECTION 03: ABOUT ZUNOON */}
+        <section className="wrap section about" id="about">
+          <div>
+            <h2>{heading('Our Story', 'અમારી વાત', 'हमारी कहानी')}</h2>
+            <div className="about-caption">HUMAN 360° GROWTH &amp; LIFE EXPERIENCE COMMUNITY</div>
+          </div>
+          <div className="about-copy">
+            <p className="lead">
+              {t(
+                'A healthier you. A wider circle. A little more joy in the everyday.',
+                'હેલ્થ, સંબંધો, શોખ, વિકાસ અને ખુશીઓ — જીવનના દરેક પાસાને સાથે જોડતી કમ્યુનિટી.',
+                'सेहत, रिश्ते, शौक, विकास और खुशियाँ — जीवन के हर पहलू को जोड़ता एक समुदाय.'
+              )}
+            </p>
+            <p>
+              {t(
+                'Zunoon brings people together to move, play, learn, create, contribute and celebrate. Because success is also about how well you live, the people you share it with and the experiences you make time for.',
+                'ઝુનૂન એક એવી કમ્યુનિટી છે જ્યાં વ્યક્તિના જીવનના વિવિધ પાસાઓને એકસાથે જોડવાનો પ્રયાસ કરવામાં આવે છે. જીવન માત્ર પૈસા કમાવવા કે સફળતા પૂરતું નથી, પરંતુ સ્વસ્થ રહેવા, કંઈક નવું શીખવા, ટેલેન્ટ ઓળખવા અને સાથે મળીને સુંદર પળો ઉજવવા માટે છે.',
+                'ज़ुनून ऐसा समुदाय है जहाँ स्वस्थ रहने, नया सीखने, अपना हुनर पहचानने, समाज में योगदान देने और खूबसूरत पल साथ मनाने के अवसर मिलते हैं.'
+              )}
+            </p>
+            <div className="about-stats">
+              <div><strong>06</strong><span>{heading('Connected clubs', 'મુખ્ય ક્લબ', 'मुख्य क्लब')}</span></div>
+              <div><strong>30</strong><span>{heading('Activity categories', 'એક્ટિવિટી કેટેગરી', 'गतिविधि श्रेणियाँ')}</span></div>
+              <div><strong>100+</strong><span>{heading('Life experiences', 'લાઇફ એક્સપિરિયન્સ', 'जीवन अनुभव')}</span></div>
+            </div>
+          </div>
+        </section>
+
+        {/* MEET OUR FOUNDER (Directly below Our Story) */}
+        <Founder lang={lang} />
+
+        {/* SECTION 04 & 05: VISION, MISSION, VALUES & WHY ZUNOON (WITH 6 QUESTIONS) */}
+        <Purpose lang={lang} />
+        <Benefits lang={lang} />
 
         {/* SECTION 06: WHO CAN JOIN (8 PERSONAS) */}
         <WhoCanJoinSection lang={lang} />

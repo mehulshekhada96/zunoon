@@ -6,7 +6,7 @@
   max-width: 1480px;
   margin: 0 auto;
   padding: 24px 32px 64px;
-  color: #1e3325;
+  color: #22252a;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   box-sizing: border-box;
 }
@@ -25,10 +25,10 @@
   justify-content: space-between;
   padding: 14px 20px;
   background: #ffffff;
-  border: 1px solid #dce2d6;
+  border: 1px solid #dee2e6;
   border-radius: 14px;
   margin-bottom: 28px;
-  box-shadow: 0 2px 8px rgba(30, 51, 37, 0.04);
+  box-shadow: 0 2px 8px rgba(24, 28, 33, 0.04);
 }
 
 .pay-topbar-left {
@@ -42,19 +42,19 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #244b38;
+  color: #22252a;
   text-decoration: none;
   font-weight: 600;
   padding: 6px 12px;
   border-radius: 8px;
-  background: #f0f5ee;
-  border: 1px solid #d5e0d1;
+  background: #f1f3f5;
+  border: 1px solid #dee2e6;
   transition: all 0.2s ease;
 }
 
 .pay-topbar-back:hover {
-  background: #e2ecde;
-  color: #163625;
+  background: #e9ecef;
+  color: #16181b;
 }
 
 .pay-topbar-divider {
@@ -63,7 +63,7 @@
 }
 
 .pay-topbar-crumb {
-  color: #495e50;
+  color: #5c636a;
   font-weight: 600;
 }
 
@@ -77,21 +77,21 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #3b5042;
+  color: #5c636a;
   text-decoration: none;
   font-size: 13px;
   font-weight: 500;
   padding: 6px 12px;
   border-radius: 8px;
   background: #faf8f4;
-  border: 1px solid #dce2d6;
+  border: 1px solid #dee2e6;
   transition: all 0.2s ease;
 }
 
 .pay-topbar-link:hover {
-  background: #edf3ea;
-  color: #1e3325;
-  border-color: #c4d4c0;
+  background: #f1f3f5;
+  color: #22252a;
+  border-color: #dee2e6;
 }
 
 /* --------------------------------------------------------------------------
@@ -110,14 +110,14 @@
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(28px, 3.2vw, 38px);
   font-weight: 700;
-  color: #1e3325;
+  color: #22252a;
   margin: 0 0 8px;
   letter-spacing: -0.02em;
 }
 
 .pay-hero-text p {
   font-size: 15px;
-  color: #55695c;
+  color: #5c636a;
   margin: 0;
   line-height: 1.5;
 }
@@ -127,12 +127,12 @@
   align-items: center;
   gap: 8px;
   padding: 6px 14px;
-  background: #edf3ea;
-  border: 1px solid #d0ded1;
+  background: #f1f3f5;
+  border: 1px solid #dee2e6;
   border-radius: 20px;
   font-size: 12.5px;
   font-weight: 600;
-  color: #244b38;
+  color: #22252a;
 }
 
 .pay-live-dot {
@@ -198,9 +198,9 @@
    -------------------------------------------------------------------------- */
 .pay-card {
   background: #ffffff;
-  border: 1px solid #dce2d6;
+  border: 1px solid #dee2e6;
   border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(18, 32, 23, 0.04);
+  box-shadow: 0 4px 16px rgba(24, 28, 33, 0.04);
   margin-bottom: 24px;
   overflow: hidden;
 }
@@ -210,7 +210,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px;
-  border-bottom: 1px solid #edf1ea;
+  border-bottom: 1px solid #dee2e6;
   background: #fbfbf9;
   flex-wrap: wrap;
   gap: 14px;
@@ -226,7 +226,7 @@
   font-family: Georgia, "Times New Roman", serif;
   font-size: 18px;
   font-weight: 700;
-  color: #1e3325;
+  color: #22252a;
   margin: 0 0 3px;
 }
 
@@ -237,7 +237,7 @@
 }
 
 .pay-icon-accent {
-  color: #244b38;
+  color: #22252a;
 }
 
 /* --------------------------------------------------------------------------
@@ -308,24 +308,24 @@
   display: flex;
   align-items: center;
   background: #ffffff;
-  border: 1.5px solid #c9d6ce;
+  border: 1.5px solid #dee2e6;
   border-radius: 10px;
   overflow: hidden;
   transition: all 0.2s ease;
 }
 
 .pay-input-prefix-wrap:focus-within {
-  border-color: #244b38;
-  box-shadow: 0 0 0 3px rgba(36, 75, 56, 0.12);
+  border-color: #22252a;
+  box-shadow: 0 0 0 3px rgba(34, 37, 42, 0.12);
 }
 
 .pay-input-prefix {
   padding: 10px 14px;
   font-size: 15px;
   font-weight: 700;
-  color: #4a5c51;
-  background: #f4f7f2;
-  border-right: 1.5px solid #c9d6ce;
+  color: #5c636a;
+  background: #f8f9fa;
+  border-right: 1.5px solid #dee2e6;
 }
 
 .pay-fee-input {
@@ -334,7 +334,7 @@
   padding: 10px 14px !important;
   font-size: 15px !important;
   font-weight: 700 !important;
-  color: #1e3325 !important;
+  color: #22252a !important;
   width: 110px !important;
   background: transparent !important;
 }
@@ -345,21 +345,21 @@
   gap: 12px;
   padding: 10px 16px;
   background: #fbfbf9;
-  border: 1.5px solid #dce2d6;
+  border: 1.5px solid #dee2e6;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .pay-checkbox-card:hover {
-  background: #f3f7f1;
-  border-color: #c2d1bd;
+  background: #f1f3f5;
+  border-color: #dee2e6;
 }
 
 .pay-checkbox-card input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: #244b38;
+  accent-color: #22252a;
   cursor: pointer;
   margin: 0;
 }
@@ -371,12 +371,12 @@
 
 .pay-checkbox-text strong {
   font-size: 13.5px;
-  color: #1e3325;
+  color: #22252a;
 }
 
 .pay-checkbox-text small {
   font-size: 11.5px;
-  color: #6a7c70;
+  color: #5c636a;
 }
 
 .pay-btn-primary {
@@ -385,7 +385,7 @@
   justify-content: center;
   gap: 8px;
   padding: 11px 22px;
-  background: #244b38;
+  background: #22252a;
   color: #ffffff;
   font-size: 13.5px;
   font-weight: 600;
@@ -397,7 +397,7 @@
 }
 
 .pay-btn-primary:hover:not(:disabled) {
-  background: #193627;
+  background: #16181b;
   transform: translateY(-1px);
 }
 
@@ -418,10 +418,10 @@
 
 .pay-kpi-card {
   background: #ffffff;
-  border: 1px solid #dce2d6;
+  border: 1px solid #dee2e6;
   border-radius: 16px;
   padding: 22px 24px;
-  box-shadow: 0 4px 16px rgba(18, 32, 23, 0.04);
+  box-shadow: 0 4px 16px rgba(24, 28, 33, 0.04);
   position: relative;
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -429,7 +429,7 @@
 
 .pay-kpi-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(18, 32, 23, 0.08);
+  box-shadow: 0 8px 24px rgba(24, 28, 33, 0.08);
 }
 
 .pay-kpi-card::before {
@@ -464,7 +464,7 @@
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.06em;
-  color: #63766a;
+  color: #5c636a;
 }
 
 .pay-kpi-icon-wrap {
@@ -494,7 +494,7 @@
 .pay-kpi-number {
   font-size: 34px;
   font-weight: 800;
-  color: #1e3325;
+  color: #22252a;
   line-height: 1.1;
   margin-bottom: 8px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -505,11 +505,11 @@
   align-items: baseline;
   gap: 6px;
   font-size: 13.5px;
-  color: #55695c;
+  color: #5c636a;
 }
 
 .pay-kpi-meta strong {
-  color: #1e3325;
+  color: #22252a;
   font-weight: 700;
 }
 
@@ -519,7 +519,7 @@
 .pay-filter-bar {
   padding: 20px 24px;
   background: #fafaf8;
-  border-bottom: 1px solid #edf1ea;
+  border-bottom: 1px solid #dee2e6;
 }
 
 .pay-filter-row-top {
@@ -549,18 +549,18 @@
   width: 100%;
   padding: 10px 36px 10px 40px !important;
   background: #ffffff !important;
-  border: 1.5px solid #c9d6ce !important;
+  border: 1.5px solid #dee2e6 !important;
   border-radius: 10px !important;
   font-size: 14px !important;
-  color: #1e3325 !important;
+  color: #22252a !important;
   outline: none;
   box-sizing: border-box;
   transition: all 0.2s ease;
 }
 
 .pay-search-input:focus {
-  border-color: #244b38 !important;
-  box-shadow: 0 0 0 3px rgba(36, 75, 56, 0.12) !important;
+  border-color: #22252a !important;
+  box-shadow: 0 0 0 3px rgba(34, 37, 42, 0.12) !important;
 }
 
 .pay-search-clear {
@@ -599,16 +599,16 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #55695c;
+  color: #5c636a;
 }
 
 .pay-control-item select,
 .pay-control-item input[type="date"] {
   padding: 8.5px 12px !important;
-  border: 1.5px solid #c9d6ce !important;
+  border: 1.5px solid #dee2e6 !important;
   border-radius: 8px !important;
   font-size: 13.5px !important;
-  color: #1e3325 !important;
+  color: #22252a !important;
   background: #ffffff !important;
   outline: none;
   height: 38px;
@@ -618,8 +618,8 @@
 
 .pay-control-item select:focus,
 .pay-control-item input[type="date"]:focus {
-  border-color: #244b38 !important;
-  box-shadow: 0 0 0 3px rgba(36, 75, 56, 0.12) !important;
+  border-color: #22252a !important;
+  box-shadow: 0 0 0 3px rgba(34, 37, 42, 0.12) !important;
 }
 
 .pay-filter-buttons {
@@ -634,11 +634,11 @@
   gap: 6px;
   padding: 8.5px 14px;
   background: #ffffff;
-  border: 1.5px solid #c9d6ce;
+  border: 1.5px solid #dee2e6;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: #244b38;
+  color: #22252a;
   cursor: pointer;
   height: 38px;
   box-sizing: border-box;
@@ -677,7 +677,7 @@
   align-items: center;
   padding: 16px 24px;
   background: #ffffff;
-  border-bottom: 1px solid #edf1ea;
+  border-bottom: 1px solid #dee2e6;
   flex-wrap: wrap;
   gap: 14px;
 }
@@ -693,7 +693,7 @@
 
 .pay-filtered-tag {
   background: #edf4eb;
-  color: #244b38;
+  color: #22252a;
   border: 1px solid #cce0d2;
   border-radius: 12px;
   padding: 2px 8px;
@@ -823,7 +823,7 @@
   padding: 8px 14px;
   background: #ffffff;
   color: #445447;
-  border: 1px solid #c9d6ce;
+  border: 1px solid #dee2e6;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
@@ -833,7 +833,7 @@
 
 .pay-btn-clear-selection:hover {
   background: #f1f4ed;
-  color: #1e3325;
+  color: #22252a;
 }
 
 /* --------------------------------------------------------------------------
@@ -855,7 +855,7 @@
 .pay-table th {
   padding: 14px 16px;
   background: #f8faf6;
-  color: #55695c;
+  color: #5c636a;
   font-size: 11.5px;
   font-weight: 700;
   text-transform: uppercase;
@@ -866,7 +866,7 @@
 
 .pay-table td {
   padding: 16px 16px;
-  border-bottom: 1px solid #edf1ea;
+  border-bottom: 1px solid #dee2e6;
   vertical-align: middle;
   color: #2b3d32;
 }
@@ -884,7 +884,7 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #244b38;
+  accent-color: #22252a;
   margin: 0;
   vertical-align: middle;
 }
@@ -899,14 +899,14 @@
 .pay-member-name {
   font-size: 14px;
   font-weight: 700;
-  color: #1e3325;
+  color: #22252a;
 }
 
 .pay-member-contact {
   display: flex;
   flex-direction: column;
   font-size: 12px;
-  color: #63766a;
+  color: #5c636a;
 }
 
 .pay-member-contact span {
@@ -919,7 +919,7 @@
 .pay-amount-badge {
   font-size: 15px;
   font-weight: 700;
-  color: #1e3325;
+  color: #22252a;
 }
 
 /* Status Column */
@@ -965,7 +965,7 @@
 .pay-date-cell {
   font-size: 12.5px;
   line-height: 1.45;
-  color: #3b5042;
+  color: #5c636a;
 }
 
 .pay-date-cell small {
@@ -1005,8 +1005,8 @@
   font-size: 12px;
   font-weight: 600;
   background: #ffffff;
-  color: #244b38;
-  border: 1.5px solid #c9d6ce;
+  color: #22252a;
+  border: 1.5px solid #dee2e6;
   border-radius: 6px;
   cursor: pointer;
   white-space: nowrap;
@@ -1015,7 +1015,7 @@
 
 .btn-reconcile:hover:not(:disabled) {
   background: #f1f5ee;
-  border-color: #244b38;
+  border-color: #22252a;
 }
 
 .btn-reconcile:disabled {
@@ -1061,8 +1061,8 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: #edf3ea;
-  color: #244b38;
+  background: #f1f3f5;
+  color: #22252a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1074,13 +1074,13 @@
   font-family: Georgia, "Times New Roman", serif;
   font-size: 20px;
   font-weight: 700;
-  color: #1e3325;
+  color: #22252a;
   margin: 0 0 8px;
 }
 
 .pay-empty-state p {
   font-size: 14px;
-  color: #63766a;
+  color: #5c636a;
   max-width: 440px;
   line-height: 1.5;
   margin: 0 0 20px;
@@ -1100,7 +1100,7 @@
   align-items: center;
   padding: 16px 24px;
   background: #ffffff;
-  border-top: 1px solid #edf1ea;
+  border-top: 1px solid #dee2e6;
   flex-wrap: wrap;
   gap: 12px;
 }
@@ -1122,31 +1122,31 @@
   gap: 6px;
   padding: 8px 16px;
   background: #ffffff;
-  border: 1.5px solid #c9d6ce;
+  border: 1.5px solid #dee2e6;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: #244b38;
+  color: #22252a;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .pay-btn-page:hover:not(:disabled) {
   background: #f1f5ee;
-  border-color: #244b38;
+  border-color: #22252a;
 }
 
 .pay-btn-page:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-  border-color: #dce2d6;
+  border-color: #dee2e6;
   color: #8fa093;
 }
 
 .pay-page-count {
   font-size: 13px;
   font-weight: 600;
-  color: #1e3325;
+  color: #22252a;
   padding: 0 4px;
 }
 

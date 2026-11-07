@@ -20,7 +20,7 @@ const gujarati = Baloo_Bhai_2({
 });
 
 export const viewport: Viewport = {
-  themeColor: '#26392d',
+  themeColor: '#22252a',
   width: 'device-width',
   initialScale: 1,
 };

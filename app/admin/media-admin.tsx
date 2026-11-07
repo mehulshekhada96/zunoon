@@ -24,7 +24,8 @@ import {
   Phone,
   ChevronUp,
   ChevronDown,
-  CreditCard
+  CreditCard,
+  Menu
 } from 'lucide-react';
 import type { HeroSlide } from '@/lib/hero-slides';
 import HeroCarousel from '@/components/hero-carousel';
@@ -119,8 +120,23 @@ export type AdminTab =
   | 'contact'
   | 'library';
 
+const tabLabels: Record<AdminTab, string> = {
+  'hero-carousel': 'Hero Carousel (16:9)',
+  'clubs': 'Community Clubs',
+  'founder': 'Founder Photo',
+  'values': 'Values Section',
+  'why': 'Why Join Questions',
+  'community': 'Who Can Join Zunoon',
+  'life-at-zunoon': 'Life at Zunoon',
+  'member-experiences': 'Member Experiences',
+  'payments': 'Membership Payments',
+  'contact': 'Contact & WhatsApp',
+  'library': 'Photo Library'
+};
+
 export default function MediaAdmin({ name, initialTab }: { name?: string; initialTab?: string }) {
   const { confirm: confirmAction, DialogComponent } = useConfirmDialog();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const validTabs: AdminTab[] = [
     'hero-carousel',
@@ -155,9 +171,11 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
 
   const handleTabChange = (tab: AdminTab) => {
     setActiveTab(tab);
+    setMobileMenuOpen(false);
     if (typeof window !== 'undefined') {
       const url = tab === 'hero-carousel' ? '/admin/' : `/admin/?tab=${tab}`;
       window.history.replaceState(null, '', url);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
@@ -923,15 +941,37 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
       )}
 
       {/* Sidebar */}
-      <aside className="admin-sidebar">
+      <aside className={`admin-sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}>
         <div className="admin-brand-wrap">
-          <a href="/" className="admin-brand">
-            Zunoon
-            <span>ADMIN STUDIO</span>
-          </a>
+          <div className="admin-brand-row">
+            <a href="/" className="admin-brand">
+              Zunoon
+              <span>ADMIN STUDIO</span>
+            </a>
+            <div className="admin-mobile-header-actions">
+              <a href="/" target="_blank" rel="noopener noreferrer" className="admin-mobile-site-btn" title="Open Live Website" aria-label="Open Live Website">
+                <ExternalLink size={16} />
+              </a>
+              <button
+                type="button"
+                className="admin-mobile-toggle-btn"
+                onClick={() => setMobileMenuOpen(prev => !prev)}
+                aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={mobileMenuOpen}
+              >
+                {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+                <span>{mobileMenuOpen ? 'Close' : 'Menu'}</span>
+              </button>
+            </div>
+          </div>
+          <div className="admin-mobile-active-pill" onClick={() => setMobileMenuOpen(prev => !prev)}>
+            <span className="admin-mobile-active-label">Active:</span>
+            <strong>{tabLabels[activeTab] || activeTab}</strong>
+            <span className="admin-mobile-active-tap">{mobileMenuOpen ? '▲ Close' : '▼ Switch'}</span>
+          </div>
         </div>
 
-        <nav className="admin-nav-tabs">
+        <nav className={`admin-nav-tabs ${mobileMenuOpen ? 'open' : ''}`}>
           {/* 1. Hero Carousel (16:9) - Homepage Top */}
           <button
             type="button"
@@ -943,7 +983,18 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
             <span className="nav-badge">{heroSlides.length}</span>
           </button>
 
-          {/* 2. Founder Photo - Under Our Story */}
+          {/* 2. Community Clubs - 6 Clubs */}
+          <button
+            type="button"
+            className={`admin-nav-item ${activeTab === 'clubs' ? 'active' : ''}`}
+            onClick={() => handleTabChange('clubs')}
+          >
+            <Sparkles size={18} />
+            <span>Community Clubs</span>
+            <span className="nav-badge">6</span>
+          </button>
+
+          {/* 3. Founder Photo - Under Our Story */}
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'founder' ? 'active' : ''}`}
@@ -954,7 +1005,7 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
             <span className="nav-badge">1</span>
           </button>
 
-          {/* 3. Values Section - Vision, Mission & 6 Principles */}
+          {/* 4. Values Section - Vision, Mission & 6 Principles */}
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'values' ? 'active' : ''}`}
@@ -965,7 +1016,7 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
             <span className="nav-badge">6</span>
           </button>
 
-          {/* 4. Why Join Questions - 6 Questions */}
+          {/* 5. Why Join Questions - 6 Questions */}
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'why' ? 'active' : ''}`}
@@ -973,17 +1024,6 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
           >
             <HelpCircle size={18} />
             <span>Why Join Questions</span>
-            <span className="nav-badge">6</span>
-          </button>
-
-          {/* 5. Community Clubs - 6 Clubs */}
-          <button
-            type="button"
-            className={`admin-nav-item ${activeTab === 'clubs' ? 'active' : ''}`}
-            onClick={() => handleTabChange('clubs')}
-          >
-            <Sparkles size={18} />
-            <span>Community Clubs</span>
             <span className="nav-badge">6</span>
           </button>
 
@@ -1052,7 +1092,7 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
           </button>
         </nav>
 
-        <div className="admin-sidebar-footer">
+        <div className={`admin-sidebar-footer ${mobileMenuOpen ? 'open' : ''}`}>
           <a
             href="/"
             target="_blank"
@@ -1308,7 +1348,7 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
 
                   {heroSlides.length === 0 ? (
                     <div className="admin-empty-box" style={{ background: '#ffffff', borderRadius: '12px', border: '1.5px dashed #cbd5e1', padding: '36px' }}>
-                      <p style={{ margin: '0 0 8px', fontWeight: 600, color: '#1e3325' }}>No custom slides uploaded yet</p>
+                      <p style={{ margin: '0 0 8px', fontWeight: 600, color: '#22252a' }}>No custom slides uploaded yet</p>
                       <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>
                         The homepage currently shows default high-resolution 16:9 slides. Upload your own 16:9 photos above to customize the carousel!
                       </p>
@@ -2445,11 +2485,11 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
                   <form onSubmit={handleSaveContact} style={{display: 'flex', flexDirection: 'column', gap: '22px'}}>
                     {/* WhatsApp & Phone Group */}
                     <div>
-                      <h3 style={{fontSize: '17px', fontWeight: 700, color: '#162a20', marginBottom: '6px'}}>WhatsApp &amp; Calling Numbers</h3>
-                      <p style={{fontSize: '13px', color: '#52665a', marginBottom: '16px'}}>This WhatsApp number receives lead enquiries and post-payment membership verification details.</p>
+                      <h3 style={{fontSize: '17px', fontWeight: 700, color: '#22252a', marginBottom: '6px'}}>WhatsApp &amp; Calling Numbers</h3>
+                      <p style={{fontSize: '13px', color: '#5c636a', marginBottom: '16px'}}>This WhatsApp number receives lead enquiries and post-payment membership verification details.</p>
                       
                       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px'}}>
-                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#22252a'}}>
                           WhatsApp Number (with country code, e.g. 919712112110)
                           <input
                             type="text"
@@ -2457,12 +2497,12 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
                             value={contactForm.whatsappNumber}
                             onChange={e => setContactForm(prev => ({...prev, whatsappNumber: e.target.value}))}
                             placeholder="919712112110"
-                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                            style={{padding: '11px 14px', border: '1px solid #dee2e6', borderRadius: '8px', fontSize: '14px'}}
                           />
-                          <small style={{fontSize: '11px', color: '#688272', fontWeight: 400}}>Only digits with country code. Used for wa.me redirect after payment.</small>
+                          <small style={{fontSize: '11px', color: '#6c757d', fontWeight: 400}}>Only digits with country code. Used for wa.me redirect after payment.</small>
                         </label>
 
-                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#22252a'}}>
                           Display Phone (Shown on website)
                           <input
                             type="text"
@@ -2470,14 +2510,14 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
                             value={contactForm.displayPhone}
                             onChange={e => setContactForm(prev => ({...prev, displayPhone: e.target.value}))}
                             placeholder="97 121 121 10"
-                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                            style={{padding: '11px 14px', border: '1px solid #dee2e6', borderRadius: '8px', fontSize: '14px'}}
                           />
-                          <small style={{fontSize: '11px', color: '#688272', fontWeight: 400}}>Formatted text in the footer and help notes.</small>
+                          <small style={{fontSize: '11px', color: '#6c757d', fontWeight: 400}}>Formatted text in the footer and help notes.</small>
                         </label>
                       </div>
 
                       <div style={{marginTop: '14px'}}>
-                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#22252a'}}>
                           Calling Link (tel: format, e.g. +919712112110)
                           <input
                             type="text"
@@ -2485,22 +2525,22 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
                             value={contactForm.telNumber}
                             onChange={e => setContactForm(prev => ({...prev, telNumber: e.target.value}))}
                             placeholder="+919712112110"
-                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                            style={{padding: '11px 14px', border: '1px solid #dee2e6', borderRadius: '8px', fontSize: '14px'}}
                           />
-                          <small style={{fontSize: '11px', color: '#688272', fontWeight: 400}}>Destination when users tap the phone call button.</small>
+                          <small style={{fontSize: '11px', color: '#6c757d', fontWeight: 400}}>Destination when users tap the phone call button.</small>
                         </label>
                       </div>
                     </div>
 
-                    <hr style={{border: 'none', borderTop: '1px solid #e8ede9'}} />
+                    <hr style={{border: 'none', borderTop: '1px solid #dee2e6'}} />
 
                     {/* Instagram Group */}
                     <div>
-                      <h3 style={{fontSize: '17px', fontWeight: 700, color: '#162a20', marginBottom: '6px'}}>Instagram Social Profile</h3>
-                      <p style={{fontSize: '13px', color: '#52665a', marginBottom: '16px'}}>Displayed in the website footer.</p>
+                      <h3 style={{fontSize: '17px', fontWeight: 700, color: '#22252a', marginBottom: '6px'}}>Instagram Social Profile</h3>
+                      <p style={{fontSize: '13px', color: '#5c636a', marginBottom: '16px'}}>Displayed in the website footer.</p>
                       
                       <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px'}}>
-                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#22252a'}}>
                           Instagram Handle (e.g. @zunoon_club)
                           <input
                             type="text"
@@ -2508,11 +2548,11 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
                             value={contactForm.instagramHandle}
                             onChange={e => setContactForm(prev => ({...prev, instagramHandle: e.target.value}))}
                             placeholder="@zunoon_club"
-                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                            style={{padding: '11px 14px', border: '1px solid #dee2e6', borderRadius: '8px', fontSize: '14px'}}
                           />
                         </label>
 
-                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#22252a'}}>
                           Instagram URL
                           <input
                             type="url"
@@ -2520,21 +2560,21 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
                             value={contactForm.instagramUrl}
                             onChange={e => setContactForm(prev => ({...prev, instagramUrl: e.target.value}))}
                             placeholder="https://www.instagram.com/zunoon_club/"
-                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                            style={{padding: '11px 14px', border: '1px solid #dee2e6', borderRadius: '8px', fontSize: '14px'}}
                           />
                         </label>
                       </div>
                     </div>
 
-                    <hr style={{border: 'none', borderTop: '1px solid #e8ede9'}} />
+                    <hr style={{border: 'none', borderTop: '1px solid #dee2e6'}} />
 
                     {/* Address Group */}
                     <div>
-                      <h3 style={{fontSize: '17px', fontWeight: 700, color: '#162a20', marginBottom: '6px'}}>Club Location &amp; Address</h3>
-                      <p style={{fontSize: '13px', color: '#52665a', marginBottom: '16px'}}>Appears in the footer for each supported language.</p>
+                      <h3 style={{fontSize: '17px', fontWeight: 700, color: '#22252a', marginBottom: '6px'}}>Club Location &amp; Address</h3>
+                      <p style={{fontSize: '13px', color: '#5c636a', marginBottom: '16px'}}>Appears in the footer for each supported language.</p>
                       
                       <div style={{display: 'flex', flexDirection: 'column', gap: '14px'}}>
-                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#22252a'}}>
                           Address (English)
                           <input
                             type="text"
@@ -2542,11 +2582,11 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
                             value={contactForm.addressEn}
                             onChange={e => setContactForm(prev => ({...prev, addressEn: e.target.value}))}
                             placeholder="Surat, Gujarat, India"
-                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                            style={{padding: '11px 14px', border: '1px solid #dee2e6', borderRadius: '8px', fontSize: '14px'}}
                           />
                         </label>
 
-                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#22252a'}}>
                           Address (ગુજરાતી)
                           <input
                             type="text"
@@ -2554,11 +2594,11 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
                             value={contactForm.addressGu}
                             onChange={e => setContactForm(prev => ({...prev, addressGu: e.target.value}))}
                             placeholder="સુરત, ગુજરાત, ભારત"
-                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                            style={{padding: '11px 14px', border: '1px solid #dee2e6', borderRadius: '8px', fontSize: '14px'}}
                           />
                         </label>
 
-                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#263d2f'}}>
+                        <label style={{display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', fontWeight: 600, color: '#22252a'}}>
                           Address (हिन्दी)
                           <input
                             type="text"
@@ -2566,7 +2606,7 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
                             value={contactForm.addressHi}
                             onChange={e => setContactForm(prev => ({...prev, addressHi: e.target.value}))}
                             placeholder="सूरत, गुजरात, भारत"
-                            style={{padding: '11px 14px', border: '1px solid #c9d6ce', borderRadius: '8px', fontSize: '14px'}}
+                            style={{padding: '11px 14px', border: '1px solid #dee2e6', borderRadius: '8px', fontSize: '14px'}}
                           />
                         </label>
                       </div>
@@ -2577,7 +2617,7 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
                         type="submit"
                         disabled={contactSaving}
                         className="admin-login-btn"
-                        style={{padding: '13px 28px', fontSize: '14.5px', background: '#205c38', color: '#ffffff', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 700}}
+                        style={{padding: '13px 28px', fontSize: '14.5px', background: '#22252a', color: '#ffffff', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 700}}
                       >
                         {contactSaving ? 'Saving Changes…' : 'Save Contact Settings'}
                       </button>

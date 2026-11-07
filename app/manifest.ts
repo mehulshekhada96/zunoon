@@ -9,8 +9,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Human 360° Growth & Life Experience Community in Surat. One Community • Six Clubs • Endless Experiences.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#faf8f4',
-    theme_color: '#26392d',
+    background_color: '#f8f9fa',
+    theme_color: '#22252a',
     icons: [
       {
         src: '/icon.png',
