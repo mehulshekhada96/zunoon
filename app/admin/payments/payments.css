@@ -1169,35 +1169,124 @@
    Responsive Design
    -------------------------------------------------------------------------- */
 @media (max-width: 900px) {
-  .pay-kpi-grid {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
   .payments-admin {
-    padding: 16px 16px 40px;
+    padding: 14px 12px 40px;
+  }
+  .pay-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .pay-kpi-card {
+    padding: 14px 12px;
+    border-radius: 12px;
+  }
+  .pay-kpi-number {
+    font-size: 22px;
+  }
+  .pay-kpi-label {
+    font-size: 10px;
+  }
+  .pay-kpi-meta {
+    font-size: 11px;
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start;
   }
 }
 
 @media (max-width: 600px) {
   .pay-topbar {
     flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+  .pay-topbar-left {
+    justify-content: space-between;
+  }
+  .pay-card-header {
+    padding: 14px;
+    flex-direction: column;
     align-items: flex-start;
     gap: 10px;
+  }
+  .pay-card-body {
+    padding: 14px;
+  }
+  .pay-settings-fields {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .pay-filter-bar {
+    padding: 14px;
+  }
+  .pay-filter-row-top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .pay-search-box {
+    min-width: 0 !important;
+    width: 100%;
   }
   .pay-filter-row-controls {
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
+  }
+  .pay-control-item {
+    width: 100%;
   }
   .pay-control-item select,
-  .pay-control-item input[type="date"] {
+  .pay-control-item input[type="date"],
+  .pay-search-input,
+  .pay-fee-input {
     width: 100%;
+    font-size: 16px !important;
+    box-sizing: border-box;
   }
   .pay-settings-form {
     flex-direction: column;
     align-items: stretch;
+    gap: 14px;
+  }
+  .pay-btn-primary {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+  }
+  .pay-filter-buttons {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+  .pay-filter-buttons button {
+    flex: 1;
+    min-height: 42px;
+    justify-content: center;
   }
   .pay-table-toolbar {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+  .pay-table-wrap {
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+  }
+  .pay-table th,
+  .pay-table td {
+    padding: 10px 12px;
+    font-size: 12.5px;
+  }
+  .pay-modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 18px 18px 0 0 !important;
+    max-height: 90vh !important;
+    margin-top: auto !important;
   }
 }

@@ -1,5 +1,7 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
+import Image from 'next/image';
+import { BRAND_LOGO_URL } from '@/lib/brand';
 import { useConfirmDialog } from '@/components/theme-dialog';
 import {
   Upload,
@@ -178,6 +180,60 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      if (mobileMenuOpen) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
+    return () => {
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = '';
+      }
+    };
+  }, [mobileMenuOpen]);
+
+  // Swipe from left edge to open menu drawer on mobile, and swipe left to close
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    let startX = 0;
+    let startY = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+      const diffX = endX - startX;
+      const diffY = Math.abs(endY - startY);
+
+      if (diffY < 60) {
+        // Swipe right from left edge (startX < 40px) to open
+        if (startX < 40 && diffX > 45) {
+          setMobileMenuOpen(true);
+        }
+        // Swipe left to close when drawer is open
+        if (mobileMenuOpen && diffX < -50) {
+          setMobileMenuOpen(false);
+        }
+      }
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [mobileMenuOpen]);
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
   const [heroUploading, setHeroUploading] = useState(false);
   const [heroSlideFile, setHeroSlideFile] = useState<File | null>(null);
@@ -940,7 +996,50 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
         </div>
       )}
 
-      {/* Sidebar */}
+      {/* Mobile Top Header (Exact Website Style with Logo & Burger Menu) */}
+      <header className="admin-mobile-header">
+        <a href="/admin/" className="admin-mobile-brand" aria-label="Zunoon Admin Home">
+          <Image
+            src={BRAND_LOGO_URL}
+            alt="Zunoon — A Celebration of Life"
+            width={135}
+            height={45}
+            priority
+          />
+          <span className="admin-brand-tag">ADMIN</span>
+        </a>
+
+        <div className="admin-mobile-header-actions">
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="admin-mobile-site-btn"
+            title="Open Live Website"
+            aria-label="Open Live Website"
+          >
+            <ExternalLink size={16} />
+          </a>
+          <button
+            type="button"
+            className="admin-menu-toggle"
+            onClick={() => setMobileMenuOpen(prev => !prev)}
+            aria-expanded={mobileMenuOpen}
+            aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation from left'}
+          >
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
+      </header>
+
+      {/* Backdrop for Mobile Drawer */}
+      <div
+        className={`admin-mobile-backdrop ${mobileMenuOpen ? 'active' : ''}`}
+        onClick={() => setMobileMenuOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* Sidebar (Desktop) / Left Side Navigation Drawer (Mobile) */}
       <aside className={`admin-sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}>
         <div className="admin-brand-wrap">
           <div className="admin-brand-row">
@@ -948,30 +1047,22 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
               Zunoon
               <span>ADMIN STUDIO</span>
             </a>
-            <div className="admin-mobile-header-actions">
-              <a href="/" target="_blank" rel="noopener noreferrer" className="admin-mobile-site-btn" title="Open Live Website" aria-label="Open Live Website">
-                <ExternalLink size={16} />
-              </a>
-              <button
-                type="button"
-                className="admin-mobile-toggle-btn"
-                onClick={() => setMobileMenuOpen(prev => !prev)}
-                aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
-                aria-expanded={mobileMenuOpen}
-              >
-                {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
-                <span>{mobileMenuOpen ? 'Close' : 'Menu'}</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              className="admin-drawer-close-btn"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close menu drawer"
+            >
+              <X size={20} />
+            </button>
           </div>
-          <div className="admin-mobile-active-pill" onClick={() => setMobileMenuOpen(prev => !prev)}>
-            <span className="admin-mobile-active-label">Active:</span>
-            <strong>{tabLabels[activeTab] || activeTab}</strong>
-            <span className="admin-mobile-active-tap">{mobileMenuOpen ? '▲ Close' : '▼ Switch'}</span>
+          <div className="admin-drawer-active-status">
+            <span className="status-label">ACTIVE SECTION</span>
+            <strong className="status-title">{tabLabels[activeTab] || activeTab}</strong>
           </div>
         </div>
 
-        <nav className={`admin-nav-tabs ${mobileMenuOpen ? 'open' : ''}`}>
+        <nav className="admin-nav-tabs" style={{ display: 'flex', flexDirection: 'column' }}>
           {/* 1. Hero Carousel (16:9) - Homepage Top */}
           <button
             type="button"
@@ -1092,7 +1183,7 @@ export default function MediaAdmin({ name, initialTab }: { name?: string; initia
           </button>
         </nav>
 
-        <div className={`admin-sidebar-footer ${mobileMenuOpen ? 'open' : ''}`}>
+        <div className="admin-sidebar-footer">
           <a
             href="/"
             target="_blank"
