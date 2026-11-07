@@ -35,7 +35,7 @@ async function api(path: string, options?: RequestInit) {
 const date = (s?: string) =>
   s ? new Date(s).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' }) : '—';
 
-export default function PaymentsAdmin() {
+export default function PaymentsAdmin({ embedded = false }: { embedded?: boolean } = {}) {
   const { confirm, DialogComponent } = useConfirmDialog();
 
   const [fee, setFee] = useState('2100');
@@ -221,28 +221,31 @@ export default function PaymentsAdmin() {
   const failedItem = summary.find(x => x._id === 'FAILED');
 
   return (
-    <main className="payments-admin">
-      {/* Top Navigation Bar */}
-      <nav className="pay-topbar" aria-label="Breadcrumb">
-        <div className="pay-topbar-left">
-          <a href="/admin/" className="pay-topbar-back">
-            <ArrowLeft size={15} />
-            <span>Content & Media Admin</span>
-          </a>
-          <span className="pay-topbar-divider">/</span>
-          <span className="pay-topbar-crumb">Membership Payments</span>
-        </div>
-        <div className="pay-topbar-right">
-          <a href="/join/" target="_blank" rel="noreferrer" className="pay-topbar-link">
-            <span>Registration Form</span>
-            <ExternalLink size={13} />
-          </a>
-          <a href="/" target="_blank" rel="noreferrer" className="pay-topbar-link">
-            <span>Live Website</span>
-            <ExternalLink size={13} />
-          </a>
-        </div>
-      </nav>
+    <div className={`payments-admin-wrapper ${embedded ? 'embedded' : ''}`}>
+      <main className="payments-admin">
+        {/* Top Navigation Bar */}
+        {!embedded && (
+          <nav className="pay-topbar" aria-label="Breadcrumb">
+            <div className="pay-topbar-left">
+              <a href="/admin/" className="pay-topbar-back">
+                <ArrowLeft size={15} />
+                <span>Content & Media Admin</span>
+              </a>
+              <span className="pay-topbar-divider">/</span>
+              <span className="pay-topbar-crumb">Membership Payments</span>
+            </div>
+            <div className="pay-topbar-right">
+              <a href="/join/" target="_blank" rel="noreferrer" className="pay-topbar-link">
+                <span>Registration Form</span>
+                <ExternalLink size={13} />
+              </a>
+              <a href="/" target="_blank" rel="noreferrer" className="pay-topbar-link">
+                <span>Live Website</span>
+                <ExternalLink size={13} />
+              </a>
+            </div>
+          </nav>
+        )}
 
       {/* Hero Header */}
       <header className="pay-hero">
@@ -750,5 +753,6 @@ export default function PaymentsAdmin() {
       {/* Themed Confirmation & Alert Dialog */}
       <DialogComponent />
     </main>
+  </div>
   );
 }

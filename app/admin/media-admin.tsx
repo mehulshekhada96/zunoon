@@ -44,6 +44,7 @@ import {
   defaultFounderMedia
 } from '@/lib/media';
 import './media-admin.css';
+import PaymentsAdmin from './payments/payments-admin';
 
 type Assignment = {slot: string; assetId: string};
 
@@ -105,9 +106,60 @@ async function api(url: string, options?: RequestInit) {
 
 export type SectionType = 'values' | 'why' | 'founder' | 'clubs' | 'community';
 
-export default function MediaAdmin({name}: {name: string}) {
+export type AdminTab =
+  | 'hero-carousel'
+  | 'founder'
+  | 'values'
+  | 'why'
+  | 'clubs'
+  | 'community'
+  | 'life-at-zunoon'
+  | 'member-experiences'
+  | 'payments'
+  | 'contact'
+  | 'library';
+
+export default function MediaAdmin({ name, initialTab }: { name?: string; initialTab?: string }) {
   const { confirm: confirmAction, DialogComponent } = useConfirmDialog();
-  const [activeTab, setActiveTab] = useState<'hero-carousel' | 'values' | 'why' | 'founder' | 'clubs' | 'community' | 'life-at-zunoon' | 'member-experiences' | 'library' | 'contact'>('hero-carousel');
+
+  const validTabs: AdminTab[] = [
+    'hero-carousel',
+    'founder',
+    'values',
+    'why',
+    'clubs',
+    'community',
+    'life-at-zunoon',
+    'member-experiences',
+    'payments',
+    'contact',
+    'library'
+  ];
+
+  const [activeTab, setActiveTab] = useState<AdminTab>(() => {
+    if (initialTab && validTabs.includes(initialTab as AdminTab)) {
+      return initialTab as AdminTab;
+    }
+    return 'hero-carousel';
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam && validTabs.includes(tabParam as AdminTab)) {
+        setActiveTab(tabParam as AdminTab);
+      }
+    }
+  }, []);
+
+  const handleTabChange = (tab: AdminTab) => {
+    setActiveTab(tab);
+    if (typeof window !== 'undefined') {
+      const url = tab === 'hero-carousel' ? '/admin/' : `/admin/?tab=${tab}`;
+      window.history.replaceState(null, '', url);
+    }
+  };
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
   const [heroUploading, setHeroUploading] = useState(false);
   const [heroSlideFile, setHeroSlideFile] = useState<File | null>(null);
@@ -884,7 +936,7 @@ export default function MediaAdmin({name}: {name: string}) {
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'hero-carousel' ? 'active' : ''}`}
-            onClick={() => setActiveTab('hero-carousel')}
+            onClick={() => handleTabChange('hero-carousel')}
           >
             <ImageIcon size={18} />
             <span>Hero Carousel (16:9)</span>
@@ -895,7 +947,7 @@ export default function MediaAdmin({name}: {name: string}) {
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'founder' ? 'active' : ''}`}
-            onClick={() => setActiveTab('founder')}
+            onClick={() => handleTabChange('founder')}
           >
             <User size={18} />
             <span>Founder Photo</span>
@@ -906,7 +958,7 @@ export default function MediaAdmin({name}: {name: string}) {
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'values' ? 'active' : ''}`}
-            onClick={() => setActiveTab('values')}
+            onClick={() => handleTabChange('values')}
           >
             <Sparkles size={18} />
             <span>Values Section</span>
@@ -917,7 +969,7 @@ export default function MediaAdmin({name}: {name: string}) {
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'why' ? 'active' : ''}`}
-            onClick={() => setActiveTab('why')}
+            onClick={() => handleTabChange('why')}
           >
             <HelpCircle size={18} />
             <span>Why Join Questions</span>
@@ -928,7 +980,7 @@ export default function MediaAdmin({name}: {name: string}) {
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'clubs' ? 'active' : ''}`}
-            onClick={() => setActiveTab('clubs')}
+            onClick={() => handleTabChange('clubs')}
           >
             <Sparkles size={18} />
             <span>Community Clubs</span>
@@ -939,7 +991,7 @@ export default function MediaAdmin({name}: {name: string}) {
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'community' ? 'active' : ''}`}
-            onClick={() => setActiveTab('community')}
+            onClick={() => handleTabChange('community')}
           >
             <User size={18} />
             <span>Who Can Join Zunoon</span>
@@ -950,7 +1002,7 @@ export default function MediaAdmin({name}: {name: string}) {
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'life-at-zunoon' ? 'active' : ''}`}
-            onClick={() => setActiveTab('life-at-zunoon')}
+            onClick={() => handleTabChange('life-at-zunoon')}
           >
             <Camera size={18} />
             <span>Life at Zunoon</span>
@@ -961,7 +1013,7 @@ export default function MediaAdmin({name}: {name: string}) {
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'member-experiences' ? 'active' : ''}`}
-            onClick={() => setActiveTab('member-experiences')}
+            onClick={() => handleTabChange('member-experiences')}
           >
             <Quote size={18} />
             <span>Member Experiences</span>
@@ -969,16 +1021,20 @@ export default function MediaAdmin({name}: {name: string}) {
           </button>
 
           {/* 9. Membership Payments - Fees & Registrations */}
-          <a href="/admin/payments/" className="admin-nav-item">
+          <button
+            type="button"
+            className={`admin-nav-item ${activeTab === 'payments' ? 'active' : ''}`}
+            onClick={() => handleTabChange('payments')}
+          >
             <CreditCard size={18} />
             <span>Membership Payments</span>
-          </a>
+          </button>
 
           {/* 10. Contact & WhatsApp - Contact Info & Links */}
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'contact' ? 'active' : ''}`}
-            onClick={() => setActiveTab('contact')}
+            onClick={() => handleTabChange('contact')}
           >
             <Phone size={18} />
             <span>Contact &amp; WhatsApp</span>
@@ -988,7 +1044,7 @@ export default function MediaAdmin({name}: {name: string}) {
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'library' ? 'active' : ''}`}
-            onClick={() => setActiveTab('library')}
+            onClick={() => handleTabChange('library')}
           >
             <ImageIcon size={18} />
             <span>Photo Library</span>
@@ -1025,23 +1081,27 @@ export default function MediaAdmin({name}: {name: string}) {
         {/* Top Header */}
         <header className="admin-topbar">
           <div>
-            <span className="eyebrow">IMAGE STUDIO</span>
+            <span className="eyebrow">{activeTab === 'payments' ? 'FINANCE & MEMBERSHIP' : 'ADMIN STUDIO'}</span>
             <h1>
               {activeTab === 'hero-carousel' && 'Hero Carousel Slides (16:9 Banner)'}
+              {activeTab === 'founder' && 'Founder Portrait Photo (9:16)'}
               {activeTab === 'values' && 'Values Section Photos (16:9)'}
               {activeTab === 'why' && 'Why To Join Zunoon Photos (16:9)'}
-              {activeTab === 'founder' && 'Founder Portrait Photo (9:16)'}
               {activeTab === 'clubs' && 'Community Clubs Photos (16:10)'}
               {activeTab === 'community' && 'Who Can Join Zunoon Photos (16:10)'}
               {activeTab === 'life-at-zunoon' && 'Life at Zunoon Photos & Sections'}
               {activeTab === 'member-experiences' && 'Member Experiences & Reviews'}
+              {activeTab === 'payments' && 'Membership & Registrations'}
+              {activeTab === 'contact' && 'Contact & WhatsApp Settings'}
               {activeTab === 'library' && 'Photo Library'}
             </h1>
           </div>
           <div className="admin-topbar-actions">
             <a
               href={
-                activeTab === 'values'
+                activeTab === 'payments'
+                  ? '/join/'
+                  : activeTab === 'values'
                   ? '/#values'
                   : activeTab === 'why'
                   ? '/#why-join'
@@ -1055,6 +1115,8 @@ export default function MediaAdmin({name}: {name: string}) {
                   ? '/#gallery'
                   : activeTab === 'member-experiences'
                   ? '/#testimonials'
+                  : activeTab === 'contact'
+                  ? '/#contact'
                   : '/'
               }
               target="_blank"
@@ -2159,6 +2221,13 @@ export default function MediaAdmin({name}: {name: string}) {
                     </div>
                   </div>
                 )}
+              </section>
+            )}
+
+            {/* TAB: MEMBERSHIP PAYMENTS & REGISTRATIONS */}
+            {activeTab === 'payments' && (
+              <section className="admin-tab-content admin-payments-manager" style={{ padding: 0, background: 'transparent', border: 'none' }}>
+                <PaymentsAdmin embedded={true} />
               </section>
             )}
 

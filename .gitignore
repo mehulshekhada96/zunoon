@@ -9,6 +9,14 @@ Zunoon Club*/
 
 
 
+# Local media & uploaded images (all media must be on Cloudinary CDN)
+public/images/
+*.png
+*.jpg
+*.jpeg
+*.webp
+!public/icon.png
+
 # Local credentials, recovery copy, and generated runtime files
 .env*
 .dev.vars*

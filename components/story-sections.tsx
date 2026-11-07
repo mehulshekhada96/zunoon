@@ -1,6 +1,7 @@
 'use client';
 import {useEffect, useState} from 'react';
 import Image from 'next/image';
+import SkeletonImage from '@/components/skeleton-image';
 import {useMedia} from '@/lib/use-media';
 import {defaultValuesMedia, defaultWhyMedia, defaultFounderMedia, whySlots, communitySlots, defaultCommunityMedia} from '@/lib/media';
 import {Lang,Words,text} from '@/lib/content';
@@ -55,14 +56,12 @@ export function Purpose({lang}:{lang:Lang}){
             const item = media.values[key] || defaultValuesMedia[key];
             return (
               <figure key={v[0]} className="value-image-card">
-                {item?.url && (
-                  <Image
-                    src={item.url}
-                    alt={item.alt || `${v[0]} value`}
-                    fill
-                    sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw"
-                  />
-                )}
+                <SkeletonImage
+                  src={item?.url || ''}
+                  alt={item?.alt || `${v[0]} value`}
+                  fill
+                  sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw"
+                />
                 <figcaption><span className="value-image-title">{lang==='mix'?v[0]:w(v)}</span></figcaption>
               </figure>
             );
@@ -93,17 +92,15 @@ export function Benefits({lang}:{lang:Lang}){
               const img = media.why?.[slot] || defaultWhyMedia[slot];
               return (
                 <div key={idx} className="question-card">
-                  {img?.url && (
-                    <div className="question-image-wrap">
-                      <Image
-                        src={img.url}
-                        alt={img.alt || (lang==='mix'?item.area[0]:w(item.area))}
-                        fill
-                        sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw"
-                      />
-                      <div className="question-image-gradient" />
-                    </div>
-                  )}
+                  <div className="question-image-wrap">
+                    <SkeletonImage
+                      src={img?.url || ''}
+                      alt={img?.alt || (lang==='mix'?item.area[0]:w(item.area))}
+                      fill
+                      sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw"
+                    />
+                    <div className="question-image-gradient" />
+                  </div>
                   <div className="question-card-body">
                     <span className="question-idx">{lang==='mix'?item.area[0]:w(item.area)}</span>
                     <p>{w(item.q)}</p>
@@ -135,18 +132,16 @@ export function WhoCanJoinSection({lang}:{lang:Lang}){
           const img = media.community?.[slot] || defaultCommunityMedia[slot];
           return (
             <div key={idx} className="who-card">
-              {img?.url && (
-                <div className="who-image-wrap">
-                  <Image
-                    src={img.url}
-                    alt={img.alt || (lang==='mix'?item.role[0]:w(item.role))}
-                    fill
-                    sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 25vw"
-                    className="who-card-img"
-                  />
-                  <div className="who-image-gradient" />
-                </div>
-              )}
+              <div className="who-image-wrap">
+                <SkeletonImage
+                  src={img?.url || ''}
+                  alt={img?.alt || (lang==='mix'?item.role[0]:w(item.role))}
+                  fill
+                  sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 25vw"
+                  className="who-card-img"
+                />
+                <div className="who-image-gradient" />
+              </div>
               <div className="who-card-body">
                 <h3>{lang==='mix'?item.role[0]:w(item.role)}</h3>
                 <p>{w(item.description)}</p>
@@ -172,7 +167,7 @@ export function Founder({lang}:{lang:Lang}){
       <div className="founder-grid">
         <div className="founder-profile">
           <div className="founder-photo-container">
-            <Image
+            <SkeletonImage
               src={founderImg.url}
               alt={founderImg.alt || 'Jainit Finaviya — Founder'}
               fill

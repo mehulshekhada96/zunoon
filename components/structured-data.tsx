@@ -1,4 +1,5 @@
 import { faqs } from '@/lib/details';
+import { BRAND_LOGO_URL, BRAND_HERO_OG_URL } from '@/lib/brand';
 
 export function StructuredData() {
   const organizationSchema = {
@@ -7,8 +8,8 @@ export function StructuredData() {
     name: 'Zunoon Club',
     alternateName: ['ઝુનૂન ક્લબ', 'Zunoon Life Experience Community'],
     url: 'https://zunoonclub.com',
-    logo: 'https://zunoonclub.com/images/logo.webp',
-    image: 'https://zunoonclub.com/images/hero.webp',
+    logo: BRAND_LOGO_URL,
+    image: BRAND_HERO_OG_URL,
     description: 'Human 360° Growth & Life Experience Community in Surat, Gujarat. One Community • Six Clubs • Endless Experiences. Health, Sports, Social, Growth, Hobby & Celebration.',
     founder: {
       '@type': 'Person',

@@ -11,6 +11,11 @@
   box-sizing: border-box;
 }
 
+.payments-admin-wrapper.embedded .payments-admin {
+  padding: 0 0 40px;
+  max-width: 100%;
+}
+
 /* --------------------------------------------------------------------------
    Top Navigation Bar
    -------------------------------------------------------------------------- */

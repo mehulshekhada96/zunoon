@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
+import SkeletonImage from '@/components/skeleton-image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { type HeroSlide, defaultHeroSlides } from '@/lib/hero-slides';
 import './hero-carousel.css';
@@ -147,7 +148,7 @@ export default function HeroCarousel({ initialSlides }: HeroCarouselProps) {
                 className={`hero-carousel-slide ${isActive ? 'active' : ''}`}
                 aria-hidden={!isActive}
               >
-                <Image
+                <SkeletonImage
                   src={slide.url}
                   alt={slide.alt || 'Zunoon Club Carousel Slide'}
                   fill

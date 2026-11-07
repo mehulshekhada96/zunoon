@@ -223,17 +223,3 @@ export const clubs: ClubItem[] = [
     icon: 'celebration'
   }
 ];
-export const photos=[
- {src:'celebration-bhajan',category:'Celebration',label:['Live Bhajan, tabla & musical celebration','ભજન, સંગીત અને ઉત્સવની ઉજવણી','भजन, संगीत और उत्सव का आनंद'] as Words},
- {src:'clothes-collection',category:'Donation',label:['Community clothes donation collection','વસ્ત્ર દાન સંગ્રહ અને સેવા','वस्त्र दान संग्रह और सेवा'] as Words},
- {src:'volunteering',category:'Volunteering',label:['Preparing clothes for distribution','વિતરણ માટે કપડાંની તૈયારી','वितरण के लिए कपड़ों की तैयारी'] as Words},
- {src:'community-night',category:'Donation',label:['Night community distribution drive','રાત્રિ વિતરણ અને સેવા અભિયાન','रात्रि वितरण और सेवा अभियान'] as Words},
- {src:'donation',category:'Donation',label:['Sharing clothes, sharing care','કપડાં સાથે લાગણીનું દાન','कपड़ों के साथ अपनापन बाँटना'] as Words},
- {src:'community-support',category:'Donation',label:['Small acts of care, shared together','સાથે મળીને સેવાના નાના પ્રયાસો','मिलकर सेवा के छोटे प्रयास'] as Words},
- {src:'music',category:'Music',label:['A shared love for music','સંગીત સાથેની યાદગાર પળો','संगीत के साथ यादगार पल'] as Words},
- {src:'outdoors',category:'Outdoors',label:['Good company. Open skies.','મિત્રો સાથે પ્રકૃતિની નજીક','दोस्तों के साथ प्रकृति के करीब'] as Words},
- {src:'celebration-clear',category:'Celebration',label:['Together is a celebration','સાથે મળીને ઉજવણી','साथ मिलकर उत्सव'] as Words},
- {src:'singing',category:'Music',label:['A voice. A passion. A community.','ટેલેન્ટને મળે એક મંચ','हुनर को मिले एक मंच'] as Words},
- {src:'group-joy',category:'Community',label:['The joy of making music together','સાથે સંગીત માણવાનો આનંદ','साथ संगीत का आनंद'] as Words},
- {src:'tabla',category:'Music',label:['Rhythm, passion and participation','તાલ, શોખ અને ભાગીદારી','ताल, शौक और भागीदारी'] as Words},
-];

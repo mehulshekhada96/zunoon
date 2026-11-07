@@ -1,9 +1,11 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import SkeletonImage from '@/components/skeleton-image';
+import { BRAND_LOGO_URL } from '@/lib/brand';
 import { ArrowUpRight, ArrowRight, Menu, X, Heart, Trophy, Handshake, TrendingUp, Palette, Sparkles, Check, Plus, Phone, Instagram, MapPin, ChevronLeft, ChevronRight, ChevronDown, Languages } from 'lucide-react';
 import { WhatsAppIcon } from '@/components/icons';
-import { clubs, photos as originalPhotos, text, Lang, Words } from '@/lib/content';
+import { clubs, text, Lang, Words } from '@/lib/content';
 import { Purpose, Benefits, Founder, Journey, Questions, Testimonials, WhoCanJoinSection } from '@/components/story-sections';
 import { activityCatalogue } from '@/lib/activities';
 import { membershipHighlights } from '@/lib/details';
@@ -12,7 +14,6 @@ import HeroCarousel from '@/components/hero-carousel';
 
 import { useMedia } from '@/lib/use-media';
 import { clubSlots, defaultClubsMedia } from '@/lib/media';
-const photoUrl = (src: string) => src.startsWith('https://') ? src : `/images/${src}.webp`;
 import { useMembershipFee } from '@/lib/use-membership';
 import { useContact } from '@/lib/use-contact';
 const icons = [Heart, Trophy, Handshake, TrendingUp, Palette, Sparkles];
@@ -31,19 +32,12 @@ export default function Home() {
   const feeRupees = feePaise / 100;
   const feeLabel = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(feeRupees);
   const media = useMedia();
-  const allPhotos = media.gallery.length > 0
-    ? media.gallery.map(p => ({
-      id: p.id,
-      src: p.url,
-      category: p.category || 'Community',
-      alt: p.alt || ''
-    }))
-    : originalPhotos.map((p, idx) => ({
-      id: `orig-${idx}`,
-      src: photoUrl(p.src),
-      category: p.category,
-      alt: ''
-    }));
+  const allPhotos = media.gallery.map(p => ({
+    id: p.id,
+    src: p.url,
+    category: p.category || 'Community',
+    alt: p.alt || ''
+  }));
 
   const defaultSections = ['Donation', 'Volunteering', 'Music', 'Outdoors', 'Celebration', 'Community'];
   const activeSections = [
@@ -166,6 +160,7 @@ export default function Home() {
     [heading('Experiences', 'અનુભવો', 'अनुभव'), 'testimonials'],
     [heading('Community', 'કમ્યુનિટી', 'समुदाय'), 'community'],
     [heading('Life at Zunoon', 'ઝુનૂનમાં જીવન', 'ज़ुनून में जीवन'), 'gallery'],
+    [heading('Our ventures', 'અમારા સાહસો', 'हमारे उपक्रम'), 'ventures'],
     [heading('Contact us', 'સંપર્ક કરો', 'संपर्क करें'), 'contact']
   ];
 
@@ -177,7 +172,7 @@ export default function Home() {
 
       <header>
         <a href="#" className="brand" aria-label="Zunoon Club home">
-          <Image src="/images/logo.webp" alt="Zunoon — A Celebration of Life" width={225} height={75} priority />
+          <Image src={BRAND_LOGO_URL} alt="Zunoon — A Celebration of Life" width={225} height={75} priority />
         </a>
         <nav aria-label="Main navigation" id="main-nav" className={menu ? 'open' : ''}>
           {nav.map(([title, id]) => <a key={id} href={`#${id}`} onClick={() => setMenu(false)}>{title}</a>)}
@@ -332,7 +327,7 @@ export default function Home() {
                   const clubImg = media.clubs?.[clubSlot] || defaultClubsMedia[clubSlot];
                   return clubImg?.url ? (
                     <div className="club-photo-frame">
-                      <Image
+                      <SkeletonImage
                         src={clubImg.url}
                         width={1200}
                         height={675}
@@ -426,19 +421,25 @@ export default function Home() {
             </div>
 
             <div className="gallery-grid">
-              {filteredPhotos.map((p, idx) => (
-                <button
-                  className="gallery-photo"
-                  key={p.id}
-                  onClick={() => {
-                    setPhoto(idx);
-                    trackEvent({ action: 'view_gallery_photo', category: 'Gallery', label: p.src });
-                  }}
-                  aria-label={`View photo ${idx + 1}`}
-                >
-                  <Image src={p.src} fill sizes="(max-width:600px) 100vw, 33vw" alt={p.alt || 'Life at Zunoon'} />
-                </button>
-              ))}
+              {filteredPhotos.length === 0 ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="gallery-photo skeleton-box" aria-hidden="true" style={{ minHeight: '260px', borderRadius: '12px' }} />
+                ))
+              ) : (
+                filteredPhotos.map((p, idx) => (
+                  <button
+                    className="gallery-photo"
+                    key={p.id}
+                    onClick={() => {
+                      setPhoto(idx);
+                      trackEvent({ action: 'view_gallery_photo', category: 'Gallery', label: p.src });
+                    }}
+                    aria-label={`View photo ${idx + 1}`}
+                  >
+                    <SkeletonImage src={p.src} fill sizes="(max-width:600px) 100vw, 33vw" alt={p.alt || 'Life at Zunoon'} />
+                  </button>
+                ))
+              )}
             </div>
           </div>
         </section>
@@ -514,6 +515,28 @@ export default function Home() {
         {/* SECTION 10: 15 FREQUENTLY ASKED QUESTIONS */}
         <Questions lang={lang} feeLabel={feeLabel} />
 
+        {/* SECTION: OUR VENTURES (PLACEHOLDER FOR UPCOMING DATA) */}
+        <section className="ventures-section wrap section" id="ventures">
+          <div className="section-top">
+            <div>
+              <span className="eyebrow">OUR VENTURES</span>
+              <h2>
+                {heading('Our Ventures. ', 'અમારા સાહસો. ', 'हमारे उपक्रम. ')}
+                <em>{heading('Coming Soon.', 'ટૂંક સમયમાં.', 'जल्द आ रहा है.')}</em>
+              </h2>
+            </div>
+          </div>
+          <div className="ventures-placeholder-card">
+            <p>
+              {t(
+                'Exciting new community initiatives and ventures by Zunoon Club will be announced here soon.',
+                'ઝુનૂન ક્લબ દ્વારા નવી પહેલ અને આગામી સાહસોની સંપૂર્ણ વિગતો ટૂંક સમયમાં અહીં રજૂ કરવામાં આવશે.',
+                'ज़ुनून क्लब द्वारा नई पहल और आगामी उपक्रमों का विवरण जल्द ही यहाँ साझा किया जाएगा.'
+              )}
+            </p>
+          </div>
+        </section>
+
         {/* SECTION 12: FINAL CALL TO ACTION */}
         <section className="contact" id="contact">
           <div className="wrap">
@@ -574,7 +597,7 @@ export default function Home() {
       <footer className="wrap">
         <div className="footer-top">
           <div>
-            <a href="#"><Image src="/images/logo.webp" alt="Zunoon — A Celebration of Life" width={220} height={74} /></a>
+            <a href="#"><Image src={BRAND_LOGO_URL} alt="Zunoon — A Celebration of Life" width={220} height={74} /></a>
           </div>
           <div className="footer-contact">
             <strong className="footer-title">{t('Zunoon Club Community', 'ઝુનૂન ક્લબ કમ્યુનિટી', 'ज़ुनून क्लब समुदाय')}</strong>

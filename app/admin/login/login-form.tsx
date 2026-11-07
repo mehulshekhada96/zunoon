@@ -1,6 +1,7 @@
 'use client';
 import {useState} from 'react';
 import Image from 'next/image';
+import { BRAND_LOGO_URL } from '@/lib/brand';
 import {Eye, EyeOff} from 'lucide-react';
 import '../media-admin.css';
 
@@ -14,7 +15,7 @@ export default function LoginForm() {
       <div className="admin-login-card">
         <div className="admin-login-head">
           <a href="/" className="admin-login-logo" aria-label="Zunoon Club">
-            <Image src="/images/logo.webp" alt="Zunoon Club" width={160} height={54} priority style={{height:'auto'}} />
+            <Image src={BRAND_LOGO_URL} alt="Zunoon Club" width={160} height={54} priority style={{height:'auto'}} />
           </a>
           <div>
             <span className="admin-login-tag">ADMIN STUDIO</span>

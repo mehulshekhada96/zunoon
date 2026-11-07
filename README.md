@@ -12,8 +12,6 @@ Content is based on the supplied Zunoon Club PDF and relevant website requiremen
 
 Run `npm run dev` for development; `npm run build` produces the static `out/` site. Hosting identity remains linked to the existing private preview.
 
-## Added activity imagery
+## Media Architecture
 
-Gallery includes supplied SRNG9968 (clothing donation), SRNG9969 (community support), and SRNG9946 (volunteers preparing clothes). Originals are preserved; WebP derivatives are in public/images.
-
-Sports artwork: public/images/sports-illustration.webp. Created using the built-in image generation tool, labelled as an activity illustration and kept outside the real event gallery. Prompt: Wide editorial hand-painted textured illustration of Indian adults playing friendly casual cricket in a park, with badminton in the background; inclusive community spirit; muted forest green, cream, terracotta and ochre; full figures, cricket bat, stumps and ball; no text or logos; distinctly illustrated, not photorealistic.
+All media assets, carousel slides, and brand imagery are stored and served exclusively from Cloudinary CDN. No images are stored in the local codebase or Git repository. Images render an elegant animated skeleton shimmer until loaded.

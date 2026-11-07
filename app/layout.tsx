@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans, Baloo_Bhai_2 } from 'next/font/google';
 import './globals.css';
+import { BRAND_HERO_OG_URL } from '@/lib/brand';
 import { GoogleAnalytics } from '@/components/analytics';
 import { StructuredData } from '@/components/structured-data';
 
@@ -72,7 +73,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/images/hero.webp',
+        url: BRAND_HERO_OG_URL,
         width: 1200,
         height: 630,
         alt: 'Zunoon Club Community - A Celebration of Life',
@@ -83,7 +84,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Zunoon Club | A Celebration of Life',
     description: 'One Community • Six Clubs • Endless Experiences. Surat, Gujarat.',
-    images: ['/images/hero.webp'],
+    images: [BRAND_HERO_OG_URL],
   },
   robots: {
     index: true,
