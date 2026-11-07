@@ -1,0 +1,196 @@
+/* ==========================================================================
+   ZUNOON CLUB — THEMED ALERT & CONFIRM DIALOG STYLES
+   ========================================================================== */
+
+.theme-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(18, 32, 23, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: dialogFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.theme-dialog-box {
+  background: #faf8f4;
+  border: 1px solid #dce2d6;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 24px 60px -12px rgba(12, 25, 18, 0.25), 0 8px 24px -4px rgba(12, 25, 18, 0.12);
+  padding: 28px 28px 24px;
+  position: relative;
+  overflow: hidden;
+  animation: dialogScaleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.theme-dialog-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #b9382b 0%, #d4a359 100%);
+}
+
+.theme-dialog-box.type-danger::before {
+  background: #b9382b;
+}
+
+.theme-dialog-box.type-warning::before {
+  background: #d4a359;
+}
+
+.theme-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.theme-dialog-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.theme-dialog-icon.danger {
+  background: #fbeee8;
+  color: #b9382b;
+  border: 1px solid #f2cebe;
+}
+
+.theme-dialog-icon.warning {
+  background: #fff8e8;
+  color: #b87b1c;
+  border: 1px solid #f6e1b7;
+}
+
+.theme-dialog-icon.info {
+  background: #edf3ea;
+  color: #244b38;
+  border: 1px solid #cfddcb;
+}
+
+.theme-dialog-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e3325;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.theme-dialog-message {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #425246;
+  margin: 0 0 20px;
+  white-space: pre-line;
+}
+
+.theme-dialog-input-wrap {
+  margin: 0 0 20px;
+}
+
+.theme-dialog-input-wrap label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1e3325;
+  margin-bottom: 6px;
+}
+
+.theme-dialog-input {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1.5px solid #bbc9bd;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1e3325;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.theme-dialog-input:focus {
+  border-color: #244b38;
+  box-shadow: 0 0 0 3px rgba(36, 75, 56, 0.12);
+}
+
+.theme-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.theme-dialog-btn {
+  padding: 10px 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+}
+
+.theme-dialog-btn-cancel {
+  background: #ffffff;
+  border-color: #cfd8cc;
+  color: #425246;
+}
+
+.theme-dialog-btn-cancel:hover {
+  background: #f1f4ed;
+  color: #1e3325;
+}
+
+.theme-dialog-btn-confirm {
+  background: #244b38;
+  color: #ffffff;
+}
+
+.theme-dialog-btn-confirm:hover:not(:disabled) {
+  background: #193627;
+}
+
+.theme-dialog-btn-confirm.danger {
+  background: #b9382b;
+  color: #ffffff;
+}
+
+.theme-dialog-btn-confirm.danger:hover:not(:disabled) {
+  background: #9c2d22;
+}
+
+.theme-dialog-btn-confirm:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@keyframes dialogFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes dialogScaleIn {
+  from { opacity: 0; transform: scale(0.94) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+

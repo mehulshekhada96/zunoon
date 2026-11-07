@@ -1,5 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
+import { useConfirmDialog } from '@/components/theme-dialog';
 import {
   Upload,
   ImageIcon,
@@ -20,8 +21,13 @@ import {
   Quote,
   Star,
   Edit3,
-  Phone
+  Phone,
+  ChevronUp,
+  ChevronDown,
+  CreditCard
 } from 'lucide-react';
+import type { HeroSlide } from '@/lib/hero-slides';
+import HeroCarousel from '@/components/hero-carousel';
 import {MemberReview, defaultMemberReviews} from '@/lib/testimonials';
 import {defaultContactSettings, type ContactSettings} from '@/lib/contact';
 import {
@@ -100,7 +106,15 @@ async function api(url: string, options?: RequestInit) {
 export type SectionType = 'values' | 'why' | 'founder' | 'clubs' | 'community';
 
 export default function MediaAdmin({name}: {name: string}) {
-  const [activeTab, setActiveTab] = useState<'values' | 'why' | 'founder' | 'clubs' | 'community' | 'life-at-zunoon' | 'member-experiences' | 'library' | 'contact'>('values');
+  const { confirm: confirmAction, DialogComponent } = useConfirmDialog();
+  const [activeTab, setActiveTab] = useState<'hero-carousel' | 'values' | 'why' | 'founder' | 'clubs' | 'community' | 'life-at-zunoon' | 'member-experiences' | 'library' | 'contact'>('hero-carousel');
+  const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([]);
+  const [heroUploading, setHeroUploading] = useState(false);
+  const [heroSlideFile, setHeroSlideFile] = useState<File | null>(null);
+  const [heroSlidePreview, setHeroSlidePreview] = useState<string>('');
+  const [heroSlideTitle, setHeroSlideTitle] = useState('');
+  const [heroSlideAlt, setHeroSlideAlt] = useState('');
+  const heroFileInputRef = useRef<HTMLInputElement>(null);
   const [contactForm, setContactForm] = useState<ContactSettings>(defaultContactSettings);
   const [contactSaving, setContactSaving] = useState(false);
   const [contactSavedNotice, setContactSavedNotice] = useState('');
@@ -222,6 +236,109 @@ export default function MediaAdmin({name}: {name: string}) {
     }
   }
 
+  async function refreshHeroSlides() {
+    try {
+      const res = await fetch('/api/admin/hero-slides');
+      const data = await res.json();
+      if (res.ok && Array.isArray(data.slides)) {
+        setHeroSlides(data.slides);
+      }
+    } catch (err) {
+      console.error('Failed to load hero slides:', err);
+    }
+  }
+
+  async function handleUploadHeroSlide(e: React.FormEvent) {
+    e.preventDefault();
+    if (!heroSlideFile) return;
+    setHeroUploading(true);
+    setError('');
+    setMessage('');
+    try {
+      const formData = new FormData();
+      formData.set('file', heroSlideFile);
+      if (heroSlideTitle.trim()) formData.set('title', heroSlideTitle.trim());
+      if (heroSlideAlt.trim()) formData.set('alt', heroSlideAlt.trim());
+
+      const res = await fetch('/api/admin/hero-slides', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to upload slide');
+
+      setHeroSlideFile(null);
+      setHeroSlidePreview('');
+      setHeroSlideTitle('');
+      setHeroSlideAlt('');
+      if (heroFileInputRef.current) heroFileInputRef.current.value = '';
+
+      if (data.slide) {
+        setHeroSlides(prev => [...prev, data.slide]);
+      }
+      await refreshHeroSlides();
+      setMessage('✓ New 16:9 Carousel slide uploaded successfully!');
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setHeroUploading(false);
+    }
+  }
+
+  async function handleDeleteHeroSlide(id: string) {
+    const ok = await confirmAction({
+      title: 'Delete Carousel Slide',
+      message: 'Are you sure you want to delete this 16:9 carousel slide?\nThis action cannot be undone.',
+      confirmLabel: 'Delete Slide',
+      type: 'danger'
+    });
+    if (!ok) return;
+
+    setBusy(true);
+    setError('');
+    setMessage('');
+    try {
+      const res = await fetch('/api/admin/hero-slides', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete slide');
+      setHeroSlides(prev => prev.filter(s => s.id !== id));
+      await refreshHeroSlides();
+      setMessage('✓ Slide deleted from carousel.');
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleMoveHeroSlide(id: string, direction: 'up' | 'down') {
+    const idx = heroSlides.findIndex(s => s.id === id);
+    if (idx < 0) return;
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= heroSlides.length) return;
+
+    const newSlides = [...heroSlides];
+    const [moved] = newSlides.splice(idx, 1);
+    newSlides.splice(targetIdx, 0, moved);
+
+    const payload = newSlides.map((s, order) => ({ id: s.id, order }));
+    setHeroSlides(newSlides);
+    try {
+      await fetch('/api/admin/hero-slides', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slides: payload })
+      });
+    } catch (err) {
+      console.error('Failed to update slide order:', err);
+      await refreshHeroSlides();
+    }
+  }
+
   async function refresh() {
     const data = await api('/api/admin/media');
     setAssets(data.assets);
@@ -230,6 +347,7 @@ export default function MediaAdmin({name}: {name: string}) {
     await refreshSections();
     await refreshReviews();
     await refreshContact();
+    await refreshHeroSlides();
   }
 
   async function handleAddGallerySection(e: React.FormEvent) {
@@ -260,7 +378,13 @@ export default function MediaAdmin({name}: {name: string}) {
   }
 
   async function handleDeleteGallerySection(secName: string) {
-    if (!confirm(`Delete section "${secName}"?`)) return;
+    const ok = await confirmAction({
+      title: 'Delete Section',
+      message: `Are you sure you want to delete section "${secName}"?`,
+      confirmLabel: 'Delete Section',
+      type: 'danger'
+    });
+    if (!ok) return;
     setBusy(true);
     setError('');
     setMessage('');
@@ -400,7 +524,13 @@ export default function MediaAdmin({name}: {name: string}) {
   }
 
   async function handleDeleteReview(id: string, author: string) {
-    if (!confirm(`Delete review from "${author}"?`)) return;
+    const ok = await confirmAction({
+      title: 'Delete Review',
+      message: `Are you sure you want to delete the review from "${author}"?`,
+      confirmLabel: 'Delete Review',
+      type: 'danger'
+    });
+    if (!ok) return;
     setBusy(true);
     setError('');
     setMessage('');
@@ -507,7 +637,13 @@ export default function MediaAdmin({name}: {name: string}) {
 
   // Remove / unassign photo from card
   async function handleRemoveSlot(sec: SectionType, slot: string, label: string) {
-    if (!confirm(`Are you sure you want to remove the custom photo for "${label}"?`)) return;
+    const ok = await confirmAction({
+      title: 'Remove Photo Assignment',
+      message: `Are you sure you want to remove the custom photo for "${label}"?`,
+      confirmLabel: 'Remove Photo',
+      type: 'warning'
+    });
+    if (!ok) return;
     const targetSlot = `${sec}.${slot}`;
     setUpdatingSlot(targetSlot);
     setError('');
@@ -529,7 +665,13 @@ export default function MediaAdmin({name}: {name: string}) {
 
   // Delete photo completely from library (Cloudinary + MongoDB)
   async function handleDeleteAsset(id: string, title: string) {
-    if (!confirm(`Permanently delete "${title}" from your photo library?\nThis cannot be undone.`)) return;
+    const ok = await confirmAction({
+      title: 'Permanently Delete Photo',
+      message: `Permanently delete "${title}" from your photo library?\nThis cannot be undone.`,
+      confirmLabel: 'Delete Photo',
+      type: 'danger'
+    });
+    if (!ok) return;
     setBusy(true);
     setError('');
     setMessage('');
@@ -738,28 +880,18 @@ export default function MediaAdmin({name}: {name: string}) {
         </div>
 
         <nav className="admin-nav-tabs">
-          <a href="/admin/payments/" className="admin-nav-item">💳 Membership payments</a>
-
+          {/* 1. Hero Carousel (16:9) - Homepage Top */}
           <button
             type="button"
-            className={`admin-nav-item ${activeTab === 'values' ? 'active' : ''}`}
-            onClick={() => setActiveTab('values')}
+            className={`admin-nav-item ${activeTab === 'hero-carousel' ? 'active' : ''}`}
+            onClick={() => setActiveTab('hero-carousel')}
           >
-            <Sparkles size={18} />
-            <span>Values Section</span>
-            <span className="nav-badge">6</span>
+            <ImageIcon size={18} />
+            <span>Hero Carousel (16:9)</span>
+            <span className="nav-badge">{heroSlides.length}</span>
           </button>
 
-          <button
-            type="button"
-            className={`admin-nav-item ${activeTab === 'why' ? 'active' : ''}`}
-            onClick={() => setActiveTab('why')}
-          >
-            <HelpCircle size={18} />
-            <span>Why Join Questions</span>
-            <span className="nav-badge">6</span>
-          </button>
-
+          {/* 2. Founder Photo - Under Our Story */}
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'founder' ? 'active' : ''}`}
@@ -770,6 +902,29 @@ export default function MediaAdmin({name}: {name: string}) {
             <span className="nav-badge">1</span>
           </button>
 
+          {/* 3. Values Section - Vision, Mission & 6 Principles */}
+          <button
+            type="button"
+            className={`admin-nav-item ${activeTab === 'values' ? 'active' : ''}`}
+            onClick={() => setActiveTab('values')}
+          >
+            <Sparkles size={18} />
+            <span>Values Section</span>
+            <span className="nav-badge">6</span>
+          </button>
+
+          {/* 4. Why Join Questions - 6 Questions */}
+          <button
+            type="button"
+            className={`admin-nav-item ${activeTab === 'why' ? 'active' : ''}`}
+            onClick={() => setActiveTab('why')}
+          >
+            <HelpCircle size={18} />
+            <span>Why Join Questions</span>
+            <span className="nav-badge">6</span>
+          </button>
+
+          {/* 5. Community Clubs - 6 Clubs */}
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'clubs' ? 'active' : ''}`}
@@ -780,6 +935,7 @@ export default function MediaAdmin({name}: {name: string}) {
             <span className="nav-badge">6</span>
           </button>
 
+          {/* 6. Who Can Join Zunoon - 8 Personas */}
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'community' ? 'active' : ''}`}
@@ -790,6 +946,7 @@ export default function MediaAdmin({name}: {name: string}) {
             <span className="nav-badge">8</span>
           </button>
 
+          {/* 7. Life at Zunoon - Gallery Photos */}
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'life-at-zunoon' ? 'active' : ''}`}
@@ -800,6 +957,7 @@ export default function MediaAdmin({name}: {name: string}) {
             <span className="nav-badge">{galleryAssetsCount}</span>
           </button>
 
+          {/* 8. Member Experiences - Reviews & Testimonials */}
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'member-experiences' ? 'active' : ''}`}
@@ -810,6 +968,23 @@ export default function MediaAdmin({name}: {name: string}) {
             <span className="nav-badge">{reviews.length}</span>
           </button>
 
+          {/* 9. Membership Payments - Fees & Registrations */}
+          <a href="/admin/payments/" className="admin-nav-item">
+            <CreditCard size={18} />
+            <span>Membership Payments</span>
+          </a>
+
+          {/* 10. Contact & WhatsApp - Contact Info & Links */}
+          <button
+            type="button"
+            className={`admin-nav-item ${activeTab === 'contact' ? 'active' : ''}`}
+            onClick={() => setActiveTab('contact')}
+          >
+            <Phone size={18} />
+            <span>Contact &amp; WhatsApp</span>
+          </button>
+
+          {/* 11. Photo Library - All Media Assets Manager */}
           <button
             type="button"
             className={`admin-nav-item ${activeTab === 'library' ? 'active' : ''}`}
@@ -818,15 +993,6 @@ export default function MediaAdmin({name}: {name: string}) {
             <ImageIcon size={18} />
             <span>Photo Library</span>
             <span className="nav-badge">{assets.length}</span>
-          </button>
-
-          <button
-            type="button"
-            className={`admin-nav-item ${activeTab === 'contact' ? 'active' : ''}`}
-            onClick={() => setActiveTab('contact')}
-          >
-            <Phone size={18} />
-            <span>Contact &amp; WhatsApp</span>
           </button>
         </nav>
 
@@ -861,6 +1027,7 @@ export default function MediaAdmin({name}: {name: string}) {
           <div>
             <span className="eyebrow">IMAGE STUDIO</span>
             <h1>
+              {activeTab === 'hero-carousel' && 'Hero Carousel Slides (16:9 Banner)'}
               {activeTab === 'values' && 'Values Section Photos (16:9)'}
               {activeTab === 'why' && 'Why To Join Zunoon Photos (16:9)'}
               {activeTab === 'founder' && 'Founder Portrait Photo (9:16)'}
@@ -935,6 +1102,219 @@ export default function MediaAdmin({name}: {name: string}) {
           </div>
         ) : (
           <>
+            {/* TAB: HERO 16:9 CAROUSEL */}
+            {activeTab === 'hero-carousel' && (
+              <section className="admin-tab-content admin-hero-carousel-manager">
+                {/* Helper Card */}
+                <div className="admin-helper-card">
+                  <div className="helper-icon">🎠</div>
+                  <div className="helper-text">
+                    <strong>Homepage Hero Carousel (16:9):</strong> Add any number of 16:9 widescreen images for the top banner.
+                    <span className="helper-sub">
+                      The carousel automatically auto-swipes every 4.5 seconds and supports manual touch swipe on phones, drag swipe on computers, and arrow buttons. Recommended image resolution: <strong>1920×1080 (16:9)</strong>.
+                    </span>
+                  </div>
+                </div>
+
+                {/* Upload Form Card */}
+                <div className="hero-slides-upload-card">
+                  <div className="hero-slides-upload-header">
+                    <h3>+ Add New 16:9 Carousel Slide</h3>
+                    <p>Upload a new high-resolution 16:9 image to appear in the homepage banner carousel.</p>
+                  </div>
+
+                  <form onSubmit={handleUploadHeroSlide} className="hero-upload-form">
+                    <div
+                      className="hero-dropzone"
+                      onClick={() => heroFileInputRef.current?.click()}
+                    >
+                      <input
+                        ref={heroFileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        style={{ display: 'none' }}
+                        onChange={e => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setHeroSlideFile(file);
+                            setHeroSlidePreview(URL.createObjectURL(file));
+                            if (!heroSlideTitle) {
+                              setHeroSlideTitle(file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' '));
+                            }
+                          }
+                        }}
+                      />
+
+                      {heroSlidePreview ? (
+                        <div className="hero-preview-wrap">
+                          <img src={heroSlidePreview} alt="Slide Preview" className="hero-preview-img" />
+                          <div className="hero-preview-overlay-tag">
+                            Click to change image
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="hero-dropzone-content">
+                          <div className="hero-dropzone-icon">
+                            <Upload size={22} />
+                          </div>
+                          <div className="hero-dropzone-text">
+                            <strong>Choose 16:9 Slide Photo</strong>
+                            <p>Click anywhere to browse or drag an image here</p>
+                            <span className="hero-dropzone-badge">16:9 Landscape · Recommended 1920 × 1080</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="hero-form-fields">
+                      <div className="admin-form-group">
+                        <label htmlFor="hero-slide-title-input">Slide Title / Headline (Optional)</label>
+                        <input
+                          id="hero-slide-title-input"
+                          type="text"
+                          placeholder="e.g. A Celebration of Life, Sports & Health"
+                          value={heroSlideTitle}
+                          onChange={e => setHeroSlideTitle(e.target.value)}
+                        />
+                      </div>
+                      <div className="admin-form-group">
+                        <label htmlFor="hero-slide-alt-input">Image Description (Alt Text for SEO)</label>
+                        <input
+                          id="hero-slide-alt-input"
+                          type="text"
+                          placeholder="e.g. Zunoon Club members gathered together"
+                          value={heroSlideAlt}
+                          onChange={e => setHeroSlideAlt(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="hero-upload-actions">
+                      {heroSlideFile && (
+                        <button
+                          type="button"
+                          className="hero-btn-cancel-select"
+                          onClick={() => {
+                            setHeroSlideFile(null);
+                            setHeroSlidePreview('');
+                            setHeroSlideTitle('');
+                            setHeroSlideAlt('');
+                            if (heroFileInputRef.current) heroFileInputRef.current.value = '';
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      )}
+                      {heroSlideFile ? (
+                        <button
+                          type="submit"
+                          disabled={heroUploading}
+                          className="hero-btn-submit-upload"
+                        >
+                          {heroUploading ? (
+                            <>
+                              <RefreshCw size={16} className="spin" />
+                              <span>Uploading 16:9 Slide…</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload size={16} />
+                              <span>Upload 16:9 Slide Now</span>
+                            </>
+                          )}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => heroFileInputRef.current?.click()}
+                          className="hero-btn-submit-upload disabled-empty"
+                        >
+                          <Upload size={16} />
+                          <span>Select Photo to Upload</span>
+                        </button>
+                      )}
+                    </div>
+                  </form>
+                </div>
+
+                {/* Slides List & Management */}
+                <div>
+                  <div className="hero-slides-grid-header">
+                    <h3>Active Carousel Slides</h3>
+                    <span>{heroSlides.length} slide{heroSlides.length === 1 ? '' : 's'} active</span>
+                  </div>
+
+                  {heroSlides.length === 0 ? (
+                    <div className="admin-empty-box" style={{ background: '#ffffff', borderRadius: '12px', border: '1.5px dashed #cbd5e1', padding: '36px' }}>
+                      <p style={{ margin: '0 0 8px', fontWeight: 600, color: '#1e3325' }}>No custom slides uploaded yet</p>
+                      <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>
+                        The homepage currently shows default high-resolution 16:9 slides. Upload your own 16:9 photos above to customize the carousel!
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="hero-slides-grid">
+                      {heroSlides.map((slide, idx) => (
+                        <div key={slide.id} className="hero-slide-card">
+                          <div className="hero-slide-thumb-wrap">
+                            <img src={slide.url} alt={slide.alt || 'Slide'} className="hero-slide-thumb-img" />
+                            <span className="hero-slide-badge">Slide #{idx + 1}</span>
+                            <span className="hero-slide-ratio-tag">16:9</span>
+                          </div>
+                          <div className="hero-slide-body">
+                            <div className="hero-slide-info">
+                              <h4>{slide.title || 'Untitled Slide'}</h4>
+                              <p>{slide.alt || 'No description provided'}</p>
+                            </div>
+                            <div className="hero-slide-actions">
+                              <div className="hero-slide-order-btns">
+                                <button
+                                  type="button"
+                                  className="hero-order-btn"
+                                  disabled={idx === 0 || busy}
+                                  onClick={() => handleMoveHeroSlide(slide.id, 'up')}
+                                  title="Move earlier in carousel"
+                                >
+                                  <ChevronUp size={16} />
+                                </button>
+                                <button
+                                  type="button"
+                                  className="hero-order-btn"
+                                  disabled={idx === heroSlides.length - 1 || busy}
+                                  onClick={() => handleMoveHeroSlide(slide.id, 'down')}
+                                  title="Move later in carousel"
+                                >
+                                  <ChevronDown size={16} />
+                                </button>
+                              </div>
+
+                              <button
+                                type="button"
+                                className="hero-btn-delete-slide"
+                                disabled={busy}
+                                onClick={() => handleDeleteHeroSlide(slide.id)}
+                              >
+                                <Trash2 size={13} />
+                                <span>Delete</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Live Preview Card */}
+                <div className="hero-live-preview-section">
+                  <div className="hero-live-preview-header">
+                    <h3>Live Interactive Preview</h3>
+                    <p>This is exactly how the 16:9 carousel behaves on the homepage (with auto-swipe and manual drag/touch swipe):</p>
+                  </div>
+                  <HeroCarousel key={heroSlides.map(s => s.id).join('-') || 'empty'} initialSlides={heroSlides.length > 0 ? heroSlides : undefined} />
+                </div>
+              </section>
+            )}
+
             {/* TAB 1: VALUES SECTION */}
             {activeTab === 'values' && (
               <section className="admin-tab-content">
@@ -2140,6 +2520,7 @@ export default function MediaAdmin({name}: {name: string}) {
           </>
         )}
       </main>
+      <DialogComponent />
     </div>
   );
 }

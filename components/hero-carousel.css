@@ -1,0 +1,272 @@
+/* ==========================================================================
+   ZUNOON CLUB — 16:9 HERO CAROUSEL COMPONENT
+   ========================================================================== */
+
+.hero-carousel-section {
+  width: 100%;
+  max-width: 1360px;
+  margin: 16px auto 36px;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.hero-carousel-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 16px 45px -8px rgba(18, 32, 23, 0.18), 0 4px 16px rgba(18, 32, 23, 0.08);
+  border: 1px solid rgba(220, 226, 214, 0.8);
+  background: #192b1f;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y pinch-zoom;
+}
+
+/* Slides track */
+.hero-carousel-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-carousel-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  transform: scale(1.02);
+}
+
+.hero-carousel-slide.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  z-index: 2;
+}
+
+.hero-carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Gradient vignette over slide */
+.hero-carousel-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 28, 20, 0.25) 0%,
+    transparent 35%,
+    rgba(10, 22, 15, 0.55) 75%,
+    rgba(10, 22, 15, 0.88) 100%
+  );
+  pointer-events: none;
+}
+
+/* Slide Caption / Title (if present) */
+.hero-carousel-caption {
+  position: absolute;
+  bottom: 26px;
+  left: 32px;
+  right: auto;
+  max-width: min(85%, 680px);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.hero-carousel-caption h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(17px, 2.3vw, 27px);
+  font-weight: 700;
+  margin: 0;
+  color: #ffffff !important;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  background: rgba(12, 24, 16, 0.76);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 8px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  display: inline-block;
+}
+
+/* Navigation Arrow Buttons */
+.hero-carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(250, 248, 244, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  color: #1e3325;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+}
+
+.hero-carousel-container:hover .hero-carousel-btn,
+.hero-carousel-btn:focus-visible {
+  opacity: 1;
+}
+
+.hero-carousel-btn:hover {
+  background: #ffffff;
+  color: #b9382b;
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.hero-carousel-btn-prev {
+  left: 20px;
+}
+
+.hero-carousel-btn-next {
+  right: 20px;
+}
+
+/* Pagination Dots */
+.hero-carousel-dots {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(18, 32, 23, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 6px 14px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hero-carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.hero-carousel-dot:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.hero-carousel-dot.active {
+  width: 24px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+/* Slide Counter Badge */
+.hero-carousel-badge {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  z-index: 10;
+  background: rgba(18, 32, 23, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Styles */
+@media (max-width: 900px) {
+  .hero-carousel-section {
+    padding: 0 14px;
+    margin: 12px auto 28px;
+  }
+  .hero-carousel-container {
+    border-radius: 16px;
+  }
+  .hero-carousel-btn {
+    opacity: 0.9;
+    width: 38px;
+    height: 38px;
+  }
+  .hero-carousel-btn-prev {
+    left: 10px;
+  }
+  .hero-carousel-btn-next {
+    right: 10px;
+  }
+  .hero-carousel-caption {
+    left: 14px;
+    bottom: 14px;
+    max-width: calc(100% - 28px);
+  }
+  .hero-carousel-caption h3 {
+    font-size: 13.5px;
+    padding: 6px 12px;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-carousel-section {
+    padding: 0 10px;
+    margin: 8px auto 22px;
+  }
+  .hero-carousel-container {
+    border-radius: 14px;
+  }
+  .hero-carousel-btn {
+    width: 34px;
+    height: 34px;
+    opacity: 0.85;
+  }
+  .hero-carousel-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  .hero-carousel-dots {
+    bottom: 12px;
+    padding: 4px 10px;
+    gap: 6px;
+  }
+  .hero-carousel-dot {
+    width: 6px;
+    height: 6px;
+  }
+  .hero-carousel-dot.active {
+    width: 18px;
+  }
+  .hero-carousel-badge {
+    top: 12px;
+    right: 12px;
+    font-size: 11px;
+    padding: 3px 9px;
+  }
+}
+

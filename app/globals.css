@@ -1393,7 +1393,7 @@ nav a:hover::after {
 }
 
 .club-quote-card {
-  margin: 0 0 22px;
+  margin: 0;
   padding: 14px 18px;
   background: #f9faf7;
   border: 1px solid #e1e8dc;
@@ -1426,12 +1426,6 @@ nav a:hover::after {
   margin: 0 !important;
   overflow-wrap: break-word;
   word-break: break-word;
-}
-
-.club-action-btn {
-  align-self: flex-start;
-  margin-top: 4px;
-  gap: 8px;
 }
 
 /* Right Column: Activities */
@@ -2573,21 +2567,43 @@ body > footer {
   color: var(--red);
 }
 
+.footer-legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0 20px;
+  font-size: 12.5px;
+  color: var(--muted);
+  border-top: 1px dashed #dce2d6;
+}
+
+.footer-legal a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-legal a:hover {
+  color: var(--red);
+  text-decoration: underline;
+}
+
+.footer-legal-dot {
+  color: #abb6a7;
+  font-size: 10px;
+}
+
 .footer-bottom {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  gap: 20px;
+  text-align: center;
   border-top: 1px solid var(--line);
   padding-top: 22px;
   font-size: 12px;
   color: var(--muted);
-}
-
-.footer-bottom > div {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
 }
 
 /* ==========================================================================
@@ -2597,32 +2613,90 @@ body > footer {
   position: fixed;
   bottom: 22px;
   right: 24px;
-  z-index: 45;
+  z-index: 999;
   background: var(--ink);
   color: #ffffff;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   padding: 11px 20px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
   border-radius: var(--radius-full);
   font-size: 12.5px;
   font-weight: 600;
-  transition: var(--transition);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: ctaBlinkPulse 1.5s ease-in-out infinite;
+  box-sizing: border-box;
 }
 
 .floating-join:hover {
+  animation-play-state: paused;
   background: var(--red);
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 12px 35px rgba(185, 56, 43, 0.35);
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 12px 35px rgba(185, 56, 43, 0.45);
+}
+
+.floating-join span {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
 }
 
 .floating-join small {
   display: block;
   font-size: 10.5px;
-  color: #d6ded1;
+  color: #f1dfcf;
   margin-top: 2px;
+}
+
+@keyframes ctaBlinkPulse {
+  0%, 100% {
+    background-color: #1e3325;
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(185, 56, 43, 0.75);
+    transform: scale(1);
+  }
+  35%, 65% {
+    background-color: #b9382b;
+    border-color: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 10px 28px rgba(185, 56, 43, 0.55), 0 0 0 10px rgba(185, 56, 43, 0);
+    transform: scale(1.03);
+  }
+}
+
+@media (max-width: 768px) {
+  .floating-join {
+    bottom: 16px;
+    right: 12px;
+    width: calc(52vw - 12px);
+    min-width: 175px;
+    max-width: 250px;
+    padding: 10px 14px;
+    gap: 8px;
+    justify-content: space-between;
+    font-size: 12px;
+    border-radius: var(--radius-full);
+    box-sizing: border-box;
+  }
+
+  .floating-join span {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .floating-join small {
+    font-size: 10px;
+    white-space: nowrap;
+    margin-top: 1px;
+    color: #f1dfcf;
+  }
+
+  .floating-join svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+  }
 }
 
 /* ==========================================================================
@@ -3367,14 +3441,6 @@ dialog::backdrop {
     margin-bottom: 18px;
   }
 
-  .club-action-btn {
-    width: 100%;
-    align-self: stretch;
-    justify-content: center;
-    padding: 13px 20px;
-    font-size: 14px;
-  }
-
   .activities-header {
     gap: 8px;
     padding-bottom: 12px;
@@ -3605,27 +3671,49 @@ dialog::backdrop {
     font-size: 13px;
   }
   
-  .footer-bottom {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+  .footer-legal {
+    gap: 8px 12px;
+    font-size: 11.5px;
+    padding: 14px 0 16px;
   }
-  
-  .footer-bottom > div {
-    gap: 10px;
-    flex-direction: column;
+
+  .footer-bottom {
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    padding-top: 18px;
   }
   
   .floating-join {
-    bottom: 12px;
+    bottom: 16px;
     right: 12px;
-    padding: 8px 14px;
-    gap: 10px;
-    font-size: 11px;
+    width: calc(52vw - 12px);
+    min-width: 175px;
+    max-width: 250px;
+    padding: 10px 14px;
+    gap: 8px;
+    justify-content: space-between;
+    font-size: 12px;
+    border-radius: var(--radius-full);
+    box-sizing: border-box;
   }
   
+  .floating-join span {
+    min-width: 0;
+    overflow: hidden;
+  }
+
   .floating-join small {
-    font-size: 9px;
+    font-size: 10px;
+    white-space: nowrap;
+    margin-top: 1px;
+    color: #f1dfcf;
+  }
+
+  .floating-join svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
   }
 }
 

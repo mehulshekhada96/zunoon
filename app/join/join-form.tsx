@@ -366,7 +366,10 @@ export default function JoinForm() {
                 />
               </label>
               <p className="join-small">
-                Membership is valid for one year. Activity and event charges may apply separately. Payment details are entered securely in Razorpay.
+                Membership is valid for 1 year. Activity &amp; event charges may apply separately. By proceeding, you agree to our{' '}
+                <a href="/terms" target="_blank" rel="noopener noreferrer">Terms</a>,{' '}
+                <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy</a> &amp;{' '}
+                <a href="/refund" target="_blank" rel="noopener noreferrer">Refund Policy</a>.
               </p>
               <button className="join-pay" disabled={busy || !config?.enabled || !config?.configured}>
                 {busy ? 'Checking payment…' : reference ? 'Resume secure payment' : config ? 'Pay ' + inr(config.feePaise) + ' & join' : 'Loading…'}

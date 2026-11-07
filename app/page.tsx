@@ -8,6 +8,7 @@ import { Purpose, Benefits, Founder, Journey, Questions, Testimonials, WhoCanJoi
 import { activityCatalogue } from '@/lib/activities';
 import { membershipHighlights } from '@/lib/details';
 import { trackEvent } from '@/lib/analytics';
+import HeroCarousel from '@/components/hero-carousel';
 
 import { useMedia } from '@/lib/use-media';
 import { clubSlots, defaultClubsMedia } from '@/lib/media';
@@ -232,60 +233,8 @@ export default function Home() {
       </header>
 
       <main id="main">
-        {/* SECTION 01: HERO BANNER */}
-        <section className="hero wrap">
-          <div className="hero-copy">
-            <div className="hero-badge-wrap">
-              <span className="hero-badge-item"><strong>5</strong> {t('Life Zones', 'લાઇફ ઝોન', 'लाइफ ज़ोन')}</span>
-              <span className="hero-badge-item"><strong>6</strong> {t('Clubs', 'ક્લબ', 'क्लब')}</span>
-              <span className="hero-badge-item"><strong>30</strong> {t('Categories', 'કેટેગરીઝ', 'श्रेणियाँ')}</span>
-              <span className="hero-badge-item"><strong>100+</strong> {t('Experiences', 'અનુભવો', 'अनुभव')}</span>
-            </div>
-            <div className="eyebrow"><span /> A CELEBRATION OF LIFE · HUMAN 360° COMMUNITY</div>
-            <h1>
-              {heading('A Celebration of Life.', 'જીવનનો એક સુંદર ઉત્સવ.', 'जीवन का एक सुंदर उत्सव.')}<br />
-              <em>{heading('Live Better Together.', 'સાથે મળીને સુંદર જીવો.', 'साथ मिलकर बेहतर जिएँ.')}</em>
-            </h1>
-            <p>
-              {t(
-                'Life is not just about professional success, but about healthy living, deeper friendships, pursuing passions, social contribution and celebrating every precious moment together.',
-                'જીવન માત્ર સફળતા મેળવવા માટે નથી, પરંતુ સ્વસ્થ રહેવા, નવા લોકો સાથે જોડાવા, નવી Skills શીખવા, પોતાની Passionને ઓળખવા, સમાજમાં યોગદાન આપવા અને જીવનની દરેક ખાસ પળને Celebrate કરવા માટે પણ છે.',
-                'जीवन सिर्फ सफलता पाने के लिए नहीं, बल्कि स्वस्थ रहने, नए लोगों से जुड़ने, नई स्किल सीखने, अपने शौक को समय देने, समाज में योगदान देने और हर पल का जश्न साथ मनाने के लिए है.'
-              )}
-            </p>
-            <div className="hero-actions">
-              <a
-                className="button"
-                href="#membership"
-                onClick={() => trackEvent({ action: 'click_cta', category: 'Conversion', label: 'Hero Join Button', value: feeRupees })}
-              >
-                {heading(`Join Zunoon Now · ₹${feeLabel}`, `ઝુનૂન સાથે જોડાઓ · ₹${feeLabel}`, `ज़ुनून से जुड़ें · ₹${feeLabel}`)}<ArrowUpRight size={18} />
-              </a>
-              <a
-                className="text-link"
-                href="#clubs"
-                onClick={() => trackEvent({ action: 'click_navigation', category: 'Navigation', label: 'Hero Explore Clubs' })}
-              >
-                {heading('Explore Our Clubs', 'અમારા ક્લબ્સ જુઓ', 'हमारे क्लब देखें')}<ArrowRight size={17} />
-              </a>
-            </div>
-          </div>
-          <div className="hero-art">
-            <div className="hero-photo">
-              <Image src="/images/hero.webp" fill sizes="(max-width:800px) 100vw, 50vw" alt="Zunoon members sharing a moment together outdoors" priority />
-              <span className="photo-label">THE BEST PART? THE PEOPLE.</span>
-            </div>
-            <div className="photo-inset">
-              <Image src="/images/music.webp" fill sizes="240px" alt="Members gathered for a music session" />
-            </div>
-            <div className="circle-note">
-              One community.<br />
-              <strong>Countless<br />possibilities.</strong>
-              <Sparkles size={22} />
-            </div>
-            <span className="art-star" aria-hidden="true">✳</span>
-          </div>
-        </section>
+        {/* SECTION 01: 16:9 HERO CAROUSEL BANNER (AUTO & MANUAL SWIPE) */}
+        <HeroCarousel />
 
         {/* SECTION 02: ABOUT ZUNOON */}
         <section className="wrap section about" id="about">
@@ -401,18 +350,6 @@ export default function Home() {
                     {c.callToAction && <p className="club-cta-text"><em>{c.callToAction}</em></p>}
                   </div>
                 )}
-
-                <a
-                  className="button club-action-btn"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={`${wa}?text=${encodeURIComponent(`Hello! I would like to explore the Zunoon ${c.name} Club activities.`)}`}
-                  onClick={() => trackEvent({ action: 'whatsapp_lead', category: 'Lead', label: `Club ${c.name} WhatsApp Enquiry` })}
-                >
-                  <WhatsAppIcon size={17} />
-                  <span>{heading(`Explore ${c.name} Club`, `${c.local[1]} વિશે વધુ જાણો`, `${c.local[2]} के बारे में जानें`)}</span>
-                  <ArrowUpRight size={18} />
-                </a>
               </div>
 
               {/* Right Column: 5 Main Activities */}
@@ -540,10 +477,8 @@ export default function Home() {
             <div className="membership-card">
               <span className="eyebrow">ZUNOON CLUB ANNUAL MEMBERSHIP</span>
               <div className="price">
-
                 <strong>₹{feeLabel}<span> / {heading('year', 'વર્ષ', 'वर्ष')}</span></strong>
               </div>
-              <p>{t('One year validity. One community. Endless experiences.', 'વાર્ષિક માન્યતા: 1 વર્ષ. એક કમ્યુનિટી. અનંત અનુભવો.', 'एक वर्ष की मान्यता. एक समुदाय. अनगिनत अनुभव.')}</p>
 
               <ul className="highlights-full">
                 {membershipHighlights.map((w) => (
@@ -677,9 +612,16 @@ export default function Home() {
           <a href="#contact">{heading("Contact", "સંપર્ક", "संपर्क")}</a>
         </div>
 
+        <div className="footer-legal">
+          <a href="/privacy">{heading("Privacy Policy", "પ્રાઈવસી પોલિસી", "गोपनीयता नीति")}</a>
+          <span className="footer-legal-dot">•</span>
+          <a href="/terms">{heading("Terms & Conditions", "નિયમો અને શરતો", "नियम एवं शर्तें")}</a>
+          <span className="footer-legal-dot">•</span>
+          <a href="/refund">{heading("Refund Policy", "રિફંડ પોલિસી", "रिफंड नीति")}</a>
+        </div>
+
         <div className="footer-bottom">
           <span>Copyright © 2026 Zunoon Club. All Rights Reserved.</span>
-          <div>{nav.map(([title, id]) => <a key={id} href={`#${id}`}>{title}</a>)}</div>
         </div>
       </footer>
 

@@ -39,3 +39,47 @@ export async function GET(request:Request){try{await protect(request);const p=ne
  if(p.get('export')==='csv'){if(total>10000)throw new HttpError(400,'Narrow filters to 10,000 records or fewer before exporting.');const all=await db.records.find(filter).sort({createdAt:-1}).toArray();const keys=['name','phone','email','status','mode','amount','currency','orderId','paymentId','method','createdAt','paidAt','checkoutClosedAt','failureReason'] as const;const escape=(v:unknown)=>'"'+String(v??'').replace(/^[=+@\-\t\r]/,"'$&").replace(/"/g,'""')+'"';const csv=[keys.map(k=>k==='amount'?'amountINR':k).join(','),...all.map(r=>keys.map(k=>escape(k==='amount'?r.amount/100:r[k])).join(','))].join('\r\n');return new Response('\uFEFF'+csv,{headers:{'Content-Type':'text/csv; charset=utf-8','Content-Disposition':'attachment; filename="zunoon-payments.csv"','Cache-Control':'no-store'}})}
  return Response.json({rows,total,page,pages:Math.ceil(total/25),summary},{headers:{'Cache-Control':'no-store'}});
  }catch(e){return paymentError(e)}}
+
+export async function DELETE(request:Request){
+  try{
+    await protect(request);
+    const body=await request.json().catch(()=>({}));
+    const db=await paymentDb();
+
+    if(body.all){
+      const qParams=body.queryParams||{};
+      const filter:Filter<PaymentRecord>={};
+      const status=qParams.status;
+      if(status&&status!=='ALL'&&['SUCCESS','FAILED','PENDING'].includes(status)){
+        filter.status=status as PaymentRecord['status'];
+      }
+      const mode=qParams.mode;
+      if(mode==='test'||mode==='live')filter.mode=mode;
+      const dateField=qParams.dateField==='paidAt'?'paidAt':'createdAt';
+      try{
+        const range=dateRange(qParams.from,qParams.to);
+        if(Object.keys(range).length)filter[dateField]=range;
+      }catch{
+        // ignore invalid range in bulk delete
+      }
+      const q=(qParams.q||'').trim().slice(0,100);
+      if(q){
+        const re={$regex:q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),$options:'i'};
+        filter.$or=[{name:re},{email:re},{phone:re},{orderId:re},{paymentId:re}];
+      }
+
+      const res=await db.records.deleteMany(filter);
+      return Response.json({success:true,deletedCount:res.deletedCount},{headers:{'Cache-Control':'no-store'}});
+    }
+
+    const ids:string[]=Array.isArray(body.ids)?body.ids:(body.id?[body.id]:[]);
+    if(!ids.length){
+      throw new HttpError(400,'Please specify member ID(s) to delete.');
+    }
+
+    const res=await db.records.deleteMany({_id:{$in:ids}});
+    return Response.json({success:true,deletedCount:res.deletedCount},{headers:{'Cache-Control':'no-store'}});
+  }catch(e){
+    return paymentError(e);
+  }
+}
